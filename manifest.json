@@ -1,0 +1,30 @@
+{
+  "name": "Indiana",
+  "description": "A 'click-to-build' xpath and css selector generator",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "*://*/*"
+  ],
+  "action": {
+    "default_title": "Open Menu",
+    "default_popup": "pages/popup/index.html"
+  },
+  "commands": {
+    "run-indiana": {
+      "suggested_key": {
+        "default": "Ctrl+I",
+        "mac": "Command+I"
+      },
+      "description": "Pause execution of current page and run indiana"
+    }
+  },
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "devtools_page": "pages/devtools/bootstrap.html"
+}
