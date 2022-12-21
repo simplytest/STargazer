@@ -1,23 +1,40 @@
-import { Badge, Group, MantineProvider, Text } from "@mantine/core";
+import {
+  Badge,
+  Group,
+  LoadingOverlay,
+  MantineProvider,
+  Stack,
+  Text,
+} from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { generatePath, Result } from "../../src/generator";
+import { getDom, getInspectedElement } from "../../src/utils";
 import theme from "../theme";
-
-async function getInspectedElement(): Promise<string> {
-  return new Promise<string>((resolve) => {
-    chrome.devtools.inspectedWindow.eval(`$0.outerHTML`, {}, (result) => {
-      resolve(result.substring(0, 25));
-    });
-  });
-}
 
 function DevTools() {
   const [inspectedElement, setInspected] = useState<string>();
+  const [results, setResults] = useState<Result[]>([]);
+  const domParser = new DOMParser();
 
   useEffect(() => {
-    (async () => {
-      setInspected(await getInspectedElement());
-    })();
+    if (!inspectedElement) {
+      return;
+    }
+
+    getDom().then((result) => {
+      const dom = domParser.parseFromString(result, "text/html");
+      const node = domParser.parseFromString(inspectedElement, "text/html").body
+        .firstChild;
+
+      setResults(generatePath("xpath", dom, node as Element));
+    });
+  }, [inspectedElement]);
+
+  useEffect(() => {
+    getInspectedElement()
+      .then((result) => setInspected(result))
+      .catch(console.error);
   }, []);
 
   chrome.devtools.panels.elements.onSelectionChanged.addListener(async () => {
@@ -26,10 +43,20 @@ function DevTools() {
 
   return (
     <>
-      <h1>Indiana</h1>
-      <Group noWrap>
-        <Text>Selected Node</Text>
-        <Badge>{inspectedElement}</Badge>
+      <LoadingOverlay
+        visible={results.length <= 0}
+        overlayBlur={2}
+      ></LoadingOverlay>
+      <Group align="center">
+        <h1>Generated Selectors</h1>
+        <Stack>
+          {results.map((result) => (
+            <Group noWrap>
+              <Badge color="yellow">{result.occurrences}</Badge>
+              <Text>{result.selector.value}</Text>
+            </Group>
+          ))}
+        </Stack>
       </Group>
     </>
   );
