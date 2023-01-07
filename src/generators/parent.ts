@@ -1,5 +1,5 @@
 import { getParentOfInspected, InspectedElement } from "../utils";
-import getPrimitive from "./attributes";
+import generateByAttributes from "./attributes";
 
 export default async function (type: 'xpath', dom: Document, inspectedElement: InspectedElement): Promise<string[]> {
     const parent = await getParentOfInspected();
@@ -17,8 +17,8 @@ export default async function (type: 'xpath', dom: Document, inspectedElement: I
         return results;
     }
 
-    const parentSelectors = getPrimitive(type, dom, parent);
-    const selectors = getPrimitive(type, dom, inspectedElement);
+    const parentSelectors = generateByAttributes(type, dom, parent);
+    const selectors = generateByAttributes(type, dom, inspectedElement);
 
     if (parentTag && index !== -1) {
         results.push(`//${parentTag}/${tagName}[${index + 1}]`);

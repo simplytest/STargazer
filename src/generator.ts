@@ -1,5 +1,5 @@
-import primitive from "./generators/attributes";
-import parent from "./generators/parent";
+import generateByAttributes from "./generators/attributes";
+import generateByParent from "./generators/parent";
 
 import { InspectedElement } from "./utils";
 
@@ -31,8 +31,8 @@ function getOccurrences(type: 'xpath', dom: Document, selector: string) {
 
 async function generatePath(type: 'xpath', dom: Document, inspectedElement: InspectedElement): Promise<Result[]> {
     const selectors = [
-        ...primitive(type, dom, inspectedElement),
-        ...(await parent(type, dom, inspectedElement)),
+        ...generateByAttributes(type, dom, inspectedElement),
+        ...(await generateByParent(type, dom, inspectedElement)),
     ];
 
     return selectors.map(selector =>
