@@ -20,7 +20,7 @@
   },
   "scripts": {
     "build": "bash build.sh",
-    "dev": "bash build.sh --no-optimize"
+    "dev": "bash build.sh --no-optimize --no-source-maps --no-cache"
   },
   "devDependencies": {
     "chrome-types": "^0.1.155"
