@@ -3,38 +3,42 @@ import {
   Group,
   LoadingOverlay,
   MantineProvider,
-  Stack,
+  Modal,
+  Table,
   Text,
+  TextInput,
 } from "@mantine/core";
+import { IconAlertTriangle } from "@tabler/icons";
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { generatePath, Result } from "../../src/generator";
-import { getDom, getInspectedElement } from "../../src/utils";
+import { getDom, getInspectedElement, InspectedElement } from "../../src/utils";
 import theme from "../theme";
 
 function DevTools() {
-  const [inspectedElement, setInspected] = useState<string>();
-  const [results, setResults] = useState<Result[]>([]);
-  const domParser = new DOMParser();
+  const [inspectedElement, setInspected] = useState<InspectedElement>();
+  const [error, setError] = useState<DOMException | string>();
+  const [results, setResults] = useState<Result[]>();
 
   useEffect(() => {
+    setError(undefined);
+    setResults(undefined);
+
     if (!inspectedElement) {
       return;
     }
 
-    getDom().then((result) => {
-      const dom = domParser.parseFromString(result, "text/html");
-      const node = domParser.parseFromString(inspectedElement, "text/html").body
-        .firstChild;
-
-      setResults(generatePath("xpath", dom, node as Element));
-    });
+    getDom()
+      .then(async (dom) => {
+        setResults(await generatePath("xpath", dom, inspectedElement));
+      })
+      .catch(setError);
   }, [inspectedElement]);
 
   useEffect(() => {
     getInspectedElement()
       .then((result) => setInspected(result))
-      .catch(console.error);
+      .catch(setError);
   }, []);
 
   chrome.devtools.panels.elements.onSelectionChanged.addListener(async () => {
@@ -43,20 +47,42 @@ function DevTools() {
 
   return (
     <>
-      <LoadingOverlay
-        visible={results.length <= 0}
-        overlayBlur={2}
-      ></LoadingOverlay>
+      <LoadingOverlay visible={!results} overlayBlur={2}></LoadingOverlay>
+      <Modal
+        centered
+        title="Whoops!"
+        onClose={() => {}}
+        opened={typeof error !== "undefined"}
+      >
+        <Group noWrap>
+          <IconAlertTriangle size="xl" color="red" />
+          <Text>{error?.toString()}</Text>
+        </Group>
+      </Modal>
       <Group align="center">
         <h1>Generated Selectors</h1>
-        <Stack>
-          {results.map((result) => (
-            <Group noWrap>
-              <Badge color="yellow">{result.occurrences}</Badge>
-              <Text>{result.selector.value}</Text>
-            </Group>
-          ))}
-        </Stack>
+        <Table>
+          <thead>
+            <tr>
+              <th>Occurrences</th>
+              <th>Selector</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results?.map((result) => {
+              return (
+                <tr key={result.selector}>
+                  <td>
+                    <Badge color="gray">{result.occurrences}</Badge>
+                  </td>
+                  <td>
+                    <TextInput disabled value={result.selector} />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
       </Group>
     </>
   );
