@@ -1,7 +1,9 @@
 <hr>
 
 <div align="center"> 
-    <img src="./assets/logo.png" height=312 />
+
+![Logo.png](./assets/logo.png)
+
 </div>
 
 <p align="center"> 
