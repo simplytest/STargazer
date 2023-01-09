@@ -6,6 +6,7 @@
   "license": "MIT",
   "dependencies": {
     "@emotion/react": "^11.10.5",
+    "@extend-chrome/clipboard": "^2.0.0",
     "@mantine/core": "^5.9.5",
     "@mantine/hooks": "^5.9.5",
     "@tabler/icons": "^1.117.0",
@@ -23,6 +24,15 @@
     "dev": "bash build.sh --no-optimize --no-source-maps --no-cache"
   },
   "devDependencies": {
-    "chrome-types": "^0.1.155"
+    "@types/react": "^18.0.19",
+    "@types/react-dom": "^18.0.6",
+    "@typescript-eslint/eslint-plugin": "~5.37.0",
+    "@typescript-eslint/parser": "~5.37.0",
+    "chrome-types": "^0.1.155",
+    "eslint": "^8.23.1",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.31.8",
+    "prettier": "^2.7.1"
   }
 }
