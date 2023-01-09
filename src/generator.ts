@@ -1,49 +1,30 @@
-import generateByAttributes from "./generators/attributes";
-import generateByParent from "./generators/parent";
+import attributes from './generators/attributes';
+import parent from './generators/parent';
+import { GeneratorOptions, Result } from './types/generator';
+import { findBySelector, getDom, getInspected } from './utils/dom';
 
-import { InspectedElement } from "./utils";
+const generators = [attributes, parent];
 
-interface Result {
-    selector: string;
-    occurrences: number;
-};
+async function generateSelectors() {
+  const inspected = await getInspected();
+  const dom = await getDom();
 
-// TODO: Options setting!
-interface Options {
-    ignoreNames: boolean;
-};
+  if (!inspected || !inspected.element) {
+    return [];
+  }
 
-function getOccurrences(type: 'xpath', dom: Document, selector: string) {
-    let rtn = 0;
+  const options: GeneratorOptions = { inspected, dom, type: 'xpath' };
+  const selectors = (await Promise.all(generators.map(generator => generator(options)))).flat();
 
-    try {
-        switch (type) {
-            case 'xpath':
-                rtn = dom.evaluate(selector, dom, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength;
-                break;
-        }
-    } catch (error) {
-        console.warn(`Encountered Error while checking occurrences: ${error}`);
-    }
+  const withOccurrences: Result[] = selectors.map(x => ({
+    selector: x,
+    occurrences: findBySelector(dom, x).snapshotLength,
+  }));
 
-    return rtn;
+  return withOccurrences
+    .filter(x => x.occurrences > 0)
+    .sort((a, b) => a.selector.length - b.selector.length)
+    .sort((a, b) => a.occurrences - b.occurrences);
 }
 
-async function generatePath(type: 'xpath', dom: Document, inspectedElement: InspectedElement): Promise<Result[]> {
-    const selectors = [
-        ...generateByAttributes(type, dom, inspectedElement),
-        ...(await generateByParent(type, dom, inspectedElement)),
-    ];
-
-    return selectors.map(selector =>
-        ({ selector, occurrences: getOccurrences(type, dom, selector) })
-    )
-        .filter(x => x.occurrences > 0)
-        .sort((a, b) => a.selector.length - b.selector.length)
-        .sort((a, b) => a.occurrences - b.occurrences);
-}
-
-export {
-    Result,
-    generatePath
-};
+export { generateSelectors };
