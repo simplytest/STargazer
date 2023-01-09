@@ -5,7 +5,8 @@
   "manifest_version": 3,
   "permissions": [
     "scripting",
-    "activeTab"
+    "activeTab",
+    "clipboardWrite"
   ],
   "host_permissions": [
     "*://*/*"
@@ -15,7 +16,7 @@
     "default_popup": "pages/popup/index.html"
   },
   "commands": {
-    "run-indiana": {
+    "pause-execution": {
       "suggested_key": {
         "default": "Ctrl+I",
         "mac": "Command+I"
