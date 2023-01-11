@@ -3,6 +3,10 @@ import { Selector, SelectorChain } from '../types/selector';
 function constructConditions(select: Selector, conditions: number) {
   let selector = '';
 
+  if (conditions > 0) {
+    selector += '[';
+  }
+
   if ('text' in select) {
     conditions -= 1;
     selector += `text() = "${select.text}"${conditions > 0 ? ' and ' : ']'}`;
@@ -53,10 +57,6 @@ function generateXPath(chain: SelectorChain): string {
 
     if ('index' in select) {
       conditions -= 1;
-    }
-
-    if (conditions > 0) {
-      selector += '[';
     }
 
     selector += constructConditions(select, conditions);

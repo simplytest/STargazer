@@ -22,12 +22,20 @@ async function getInspectedParent(): Promise<[Inspected, number]> {
   return [{ element, html, innerText }, index];
 }
 
-function findBySelector(dom: Document, selector: string): XPathResult | undefined {
+function findByXPath(dom: Document, selector: string): number {
   try {
-    return dom.evaluate(selector, dom, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+    return dom.evaluate(selector, dom, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength;
   } catch (error) {
     return undefined;
   }
 }
 
-export { getDom, getInspected, findBySelector, getInspectedParent };
+function findByCSS(dom: Document, selector: string): number {
+  try {
+    return dom.querySelectorAll(selector).length;
+  } catch (error) {
+    return undefined;
+  }
+}
+
+export { getDom, getInspected, findByXPath, findByCSS, getInspectedParent };

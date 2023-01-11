@@ -15,16 +15,6 @@
 <br/>
 
 <div align="center"> 
-   
-## Work In Progress
-
-</div>
-
-- [ ] CSS Selectors
-    > Currently only XPath Selectors are generated, this is due to XPath Selectors being more powerful than css selectors, thus the focus mainly lies on XPath for now - CSS Selectors will be added soon.
-
-
-<div align="center"> 
 
 ## Supported Generators
 
