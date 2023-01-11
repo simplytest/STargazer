@@ -33,6 +33,8 @@ export default async function ({ inspected, gibberishTolerance }: GeneratorOptio
   const attributes = element.getAttributeNames();
   const allowedAttributes = attributes.filter(x => !excludeList.includes(x));
 
+  tagName && results.push([{ tag: tagName } as Select<[ByTag]>]);
+
   for (const attribute of allowedAttributes) {
     results.push([
       {
