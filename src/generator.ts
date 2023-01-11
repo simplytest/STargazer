@@ -1,12 +1,13 @@
 import attributes from './generators/attributes';
 import parent from './generators/parent';
 import { GeneratorOptions, Result } from './types/generator';
-import { findBySelector, getDom, getInspected } from './utils/dom';
-import { generateXPath } from './utils/selector';
+import { findByCSS, findByXPath, getDom, getInspected } from './utils/dom';
+import { generateXPath } from './selectors/xpath';
+import { generateCSS } from './selectors/css';
 
 const generators = [attributes, parent];
 
-async function generateSelectors() {
+async function generateSelectors(type: 'xpath' | 'css', gibberishTolerance: number) {
   const inspected = await getInspected();
   const dom = await getDom();
 
@@ -14,14 +15,18 @@ async function generateSelectors() {
     return [];
   }
 
-  const options: GeneratorOptions = { inspected, dom };
+  const options: GeneratorOptions = { inspected, dom, gibberishTolerance };
   const selectorChains = (await Promise.all(generators.map(generator => generator(options)))).flat();
 
-  const selectors = selectorChains.map(generateXPath);
+  const generator = type == 'css' ? generateCSS : generateXPath;
+  const finder = type == 'css' ? findByCSS : findByXPath;
 
-  const withOccurrences: Result[] = selectors.map(x => ({
+  const selectors = selectorChains.map(generator);
+  const uniqueSelectors = selectors.filter((x, i) => selectors.indexOf(x) === i);
+
+  const withOccurrences: Result[] = uniqueSelectors.map(x => ({
     selector: x,
-    occurrences: findBySelector(dom, x)?.snapshotLength || 0,
+    occurrences: finder(dom, x) || 0,
   }));
 
   return withOccurrences

@@ -3,7 +3,7 @@ import { Amend, ByIndex, ByTag, Select, SelectorChain } from '../types/selector'
 import { getInspectedParent } from '../utils/dom';
 import attributes from './attributes';
 
-export default async function ({ inspected, dom }: GeneratorOptions): Promise<SelectorChain[]> {
+export default async function ({ inspected, dom, gibberishTolerance }: GeneratorOptions): Promise<SelectorChain[]> {
   const results: SelectorChain[] = [];
   const { element } = inspected;
 
@@ -17,8 +17,8 @@ export default async function ({ inspected, dom }: GeneratorOptions): Promise<Se
     return results;
   }
 
-  const parentSelectors = await attributes({ dom, inspected: parent });
-  const selectors = await attributes({ dom, inspected });
+  const parentSelectors = await attributes({ dom, inspected: parent, gibberishTolerance });
+  const selectors = await attributes({ dom, inspected, gibberishTolerance });
 
   if (parentTag && index !== -1) {
     results.push([{ tag: parentTag } as Select<[ByTag]>, { tag: tagName, index } as Select<[ByTag, ByIndex]>]);

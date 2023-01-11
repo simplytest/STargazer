@@ -24,7 +24,7 @@ const excludeList = [
   'class',
 ];
 
-export default async function ({ inspected }: GeneratorOptions): Promise<SelectorChain[]> {
+export default async function ({ inspected, gibberishTolerance }: GeneratorOptions): Promise<SelectorChain[]> {
   const { innerText, element } = inspected;
 
   const results: SelectorChain[] = [];
@@ -55,7 +55,7 @@ export default async function ({ inspected }: GeneratorOptions): Promise<Selecto
     const classes = element.getAttribute('class').split(' ');
 
     for (const clazz of classes) {
-      if (textScorer.getTextScore(clazz) < 0.075) {
+      if (textScorer.getTextScore(clazz) < gibberishTolerance) {
         continue;
       }
 

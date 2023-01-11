@@ -1,17 +1,26 @@
 import { clipboard } from '@extend-chrome/clipboard';
 import {
+  Accordion,
   ActionIcon,
   Alert,
   Badge,
   Center,
+  Container,
   Group,
   LoadingOverlay,
   MantineProvider,
   Modal,
+  NumberInput,
+  Radio,
+  Slider,
+  Stack,
+  Switch,
   Table,
   Text,
   TextInput,
+  Title,
 } from '@mantine/core';
+import { useDebouncedValue } from '@mantine/hooks';
 import { IconAlertTriangle, IconCopy, IconDatabaseOff } from '@tabler/icons';
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -79,19 +88,72 @@ function ResultTable({ results }: { results: Result[] }) {
   );
 }
 
+function Options({
+  gibberish,
+  setGibberish,
+  type,
+  setType,
+}: {
+  gibberish: number;
+  setGibberish: (value: number) => void;
+  type: 'xpath' | 'css';
+  setType: (value: 'xpath' | 'css') => void;
+}) {
+  return (
+    <Accordion variant="separated">
+      <Accordion.Item value="Options">
+        <Accordion.Control>Options</Accordion.Control>
+        <Accordion.Panel>
+          <Radio.Group
+            name="type"
+            value={type}
+            withAsterisk
+            label="Selector type"
+            style={{ marginBottom: 20 }}
+            onChange={newType => setType(newType as 'xpath' | 'css')}
+            description="Your preferred selector type (Note: XPath is mightier than CSS)"
+          >
+            <Radio value="xpath" label="XPath" />
+            <Radio value="css" label="CSS" />
+          </Radio.Group>
+          <NumberInput
+            defaultValue={gibberish}
+            min={0}
+            max={1}
+            step={0.01}
+            noClampOnBlur
+            precision={3}
+            stepHoldDelay={500}
+            stepHoldInterval={0.1}
+            onChange={setGibberish}
+            label="Gibberish Tolerance"
+            description="(Lower = More Gibberish, Higher = Less Gibberish)"
+          />
+        </Accordion.Panel>
+      </Accordion.Item>
+    </Accordion>
+  );
+}
+
 function DevTools() {
+  const [type, setType] = useState<'xpath' | 'css'>('xpath');
   const [results, setResults] = useState<Result[]>([]);
   const [error, setError] = useState<unknown>();
 
+  const [gibberish, setGibberish] = useState<number>(0.075);
+  const [debouncedGibberish] = useDebouncedValue(gibberish, 200);
+
   useEffect(() => {
-    generateSelectors().then(setResults).catch(setError);
-  }, []);
+    setResults([]);
+    setError(undefined);
+    generateSelectors(type, debouncedGibberish).then(setResults).catch(setError);
+  }, [type, debouncedGibberish]);
 
   useEffect(() => {
     chrome.devtools.panels.elements.onSelectionChanged.addListener(() => {
       setResults([]);
       setError(undefined);
-      generateSelectors().then(setResults).catch(setError);
+      generateSelectors(type, gibberish).then(setResults).catch(setError);
     });
   }, []);
 
@@ -99,10 +161,13 @@ function DevTools() {
     <div style={{ width: '100%', height: '100%' }}>
       <LoadingOverlay visible={!results} overlayBlur={2} />
       {!!error && <ErrorModal error={error} />}
-      <Group align="center">
-        <h1>Generated Selectors</h1>
+      <Stack justify="center">
+        <Title order={1} align="center">
+          Generated Selectors
+        </Title>
+        <Options type={type} setType={setType} gibberish={gibberish} setGibberish={setGibberish} />
         <ResultTable results={results} />
-      </Group>
+      </Stack>
     </div>
   );
 }

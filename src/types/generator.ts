@@ -8,6 +8,7 @@ interface Result {
 interface GeneratorOptions {
   dom: Document;
   inspected?: Inspected;
+  gibberishTolerance: number;
 }
 
 export { Result, GeneratorOptions };
