@@ -14,18 +14,20 @@ async function getInspected(): Promise<Inspected> {
   return { element, html, innerText };
 }
 
-async function getInspectedParent(): Promise<Inspected> {
-  const [html, innerText] = await execute<[string, string]>(
-    '[$0.parentElement.outerHTML, $0.parentElement.innerText]'
-  );
-
+async function getInspectedParent(): Promise<[Inspected, number]> {
+  const [html, innerText] = await execute<[string, string]>('[$0.parentElement.outerHTML, $0.parentElement.innerText]');
+  const index = await execute<number>('[...$0.parentElement.children].indexOf($0)');
   const element = getFromHTML(html, 'Element');
 
-  return { element, html, innerText };
+  return [{ element, html, innerText }, index];
 }
 
-function findBySelector(dom: Document, selector: string): XPathResult {
-  return dom.evaluate(selector, dom, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+function findBySelector(dom: Document, selector: string): XPathResult | undefined {
+  try {
+    return dom.evaluate(selector, dom, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+  } catch (error) {
+    return undefined;
+  }
 }
 
 export { getDom, getInspected, findBySelector, getInspectedParent };
