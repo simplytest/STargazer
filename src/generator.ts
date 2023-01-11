@@ -1,9 +1,9 @@
 import attributes from './generators/attributes';
 import parent from './generators/parent';
+import { generateCSS } from './selectors/css';
+import { generateXPath } from './selectors/xpath';
 import { GeneratorOptions, Result } from './types/generator';
 import { findByCSS, findByXPath, getDom, getInspected } from './utils/dom';
-import { generateXPath } from './selectors/xpath';
-import { generateCSS } from './selectors/css';
 
 const generators = [attributes, parent];
 
