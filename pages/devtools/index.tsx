@@ -5,16 +5,13 @@ import {
   Alert,
   Badge,
   Center,
-  Container,
   Group,
   LoadingOverlay,
   MantineProvider,
   Modal,
   NumberInput,
   Radio,
-  Slider,
   Stack,
-  Switch,
   Table,
   Text,
   TextInput,
@@ -44,10 +41,20 @@ function ErrorModal({ error }: { error: unknown }) {
 }
 
 function ResultTable({ results }: { results: Result[] }) {
+  const color = (occurrences: number) => {
+    if (occurrences === 1) {
+      return 'green';
+    }
+    if (occurrences < 5) {
+      return 'orange';
+    }
+    return 'red';
+  };
+
   const mapped = results.map(result => (
     <tr key={result.selector}>
       <td>
-        <Badge color="gray">{result.occurrences}</Badge>
+        <Badge color={color(result.occurrences)}>{result.occurrences}</Badge>
       </td>
       <td>
         <TextInput
