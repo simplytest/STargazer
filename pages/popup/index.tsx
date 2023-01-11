@@ -15,7 +15,8 @@ function PopUp() {
 
   return (
     <Stack align="center" style={{ padding: '10px', width: '300px', height: '500px' }}>
-      <h1>Indiana</h1>
+      <img src="/assets/logo.png" style={{ width: '75px', height: '75px', marginBottom: -40 }} />
+      <h1 style={{ paddingBottom: 0, margin: 0 }}>Indiana</h1>
       <Group>
         <Text>Version</Text>
         <Badge color="green">{version}</Badge>
