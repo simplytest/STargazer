@@ -84,17 +84,14 @@ function DevTools() {
   const [error, setError] = useState<unknown>();
 
   useEffect(() => {
-    generateSelectors()
-      .then(result => setResults(result))
-      .catch(error => setError(error));
+    generateSelectors().then(setResults).catch(setError);
   }, []);
 
   useEffect(() => {
     chrome.devtools.panels.elements.onSelectionChanged.addListener(() => {
+      setResults([]);
       setError(undefined);
-      generateSelectors()
-        .then(result => setResults(result))
-        .catch(error => setError(error));
+      generateSelectors().then(setResults).catch(setError);
     });
   }, []);
 
