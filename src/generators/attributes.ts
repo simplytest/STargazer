@@ -1,5 +1,6 @@
 import { TextScorer } from 'text-scorer';
 import { GeneratorOptions } from '../types/generator';
+import { ByAttribute, ByTag, ByText, Select, SelectorChain } from '../types/selector';
 
 const textScorer = new TextScorer(true, {
   ignoreCase: true,
@@ -23,34 +24,56 @@ const excludeList = [
   'class',
 ];
 
-function attributeSelector(prefix: string, attribute: string, value: string) {
-  return [`${prefix}[${attribute} = "${value}"]`, `${prefix}[contains(${attribute}, "${value}")]`];
-}
-
-export default async function ({ inspected }: GeneratorOptions): Promise<string[]> {
+export default async function ({ inspected }: GeneratorOptions): Promise<SelectorChain[]> {
   const { innerText, element } = inspected;
 
-  const results: string[] = [];
+  const results: SelectorChain[] = [];
   const tagName = element.tagName.toLowerCase();
 
   const attributes = element.getAttributeNames();
   const allowedAttributes = attributes.filter(x => !excludeList.includes(x));
 
   for (const attribute of allowedAttributes) {
-    results.push(...attributeSelector('//*', `@${attribute}`, element.getAttribute(attribute)));
-    tagName && results.push(...attributeSelector(`//${tagName}`, `@${attribute}`, element.getAttribute(attribute)));
+    results.push([
+      {
+        attribute: attribute,
+        value: element.getAttribute(attribute),
+      } as Select<[ByAttribute]>,
+    ]);
+
+    tagName &&
+      results.push([
+        {
+          tag: tagName,
+          attribute: attribute,
+          value: element.getAttribute(attribute),
+        } as Select<[ByTag, ByAttribute]>,
+      ]);
   }
 
   if (attributes.includes('class')) {
     const classes = element.getAttribute('class').split(' ');
 
     for (const clazz of classes) {
-      if (textScorer.getTextScore(clazz) < 0.08) {
+      if (textScorer.getTextScore(clazz) < 0.075) {
         continue;
       }
 
-      results.push(attributeSelector('//*', `@class`, clazz)[1]);
-      tagName && results.push(attributeSelector(`//${tagName}`, `@class`, clazz)[1]);
+      results.push([
+        {
+          attribute: 'class',
+          value: clazz,
+        } as Select<[ByAttribute]>,
+      ]);
+
+      tagName &&
+        results.push([
+          {
+            tag: tagName,
+            attribute: 'class',
+            value: clazz,
+          } as Select<[ByTag, ByAttribute]>,
+        ]);
     }
   }
 
@@ -61,16 +84,11 @@ export default async function ({ inspected }: GeneratorOptions): Promise<string[
   const snapshot = [...results];
 
   for (const result of snapshot) {
-    const joinableResult = result.slice(0, -1);
-    const textChecks = attributeSelector('', 'text()', innerText);
-
-    for (const check of textChecks) {
-      results.push(`${joinableResult} and ${check.substring(1)}`);
-    }
+    results.push([...result, { text: innerText } as Select<[ByText]>]);
   }
 
-  results.push(...attributeSelector('//*', 'text()', innerText));
-  tagName && results.push(...attributeSelector(`//${tagName}`, 'text()', innerText));
+  results.push([{ text: innerText } as Select<[ByText]>]);
+  tagName && results.push([{ tag: tagName, text: innerText } as Select<[ByTag, ByText]>]);
 
   return results;
 }

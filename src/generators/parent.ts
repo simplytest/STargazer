@@ -1,17 +1,14 @@
 import { GeneratorOptions } from '../types/generator';
+import { Amend, ByIndex, ByTag, Select, SelectorChain } from '../types/selector';
 import { getInspectedParent } from '../utils/dom';
 import attributes from './attributes';
 
-export default async function ({ inspected, dom }: GeneratorOptions): Promise<string[]> {
-  const results: string[] = [];
-
+export default async function ({ inspected, dom }: GeneratorOptions): Promise<SelectorChain[]> {
+  const results: SelectorChain[] = [];
   const { element } = inspected;
 
-  const parent = await getInspectedParent();
+  const [parent, index] = await getInspectedParent();
   const { element: parentElement } = parent;
-
-  const children = Array.from(parentElement.children).filter(x => x.tagName === element.tagName);
-  const index = children.indexOf(children.find(x => x.outerHTML === element.outerHTML)); //TODO: This is error prone!
 
   const parentTag = parentElement.tagName.toLowerCase();
   const tagName = element.tagName.toLowerCase();
@@ -20,11 +17,11 @@ export default async function ({ inspected, dom }: GeneratorOptions): Promise<st
     return results;
   }
 
-  const parentSelectors = await attributes({ dom, inspected: parent, type: 'xpath' });
-  const selectors = await attributes({ dom, inspected, type: 'xpath' });
+  const parentSelectors = await attributes({ dom, inspected: parent });
+  const selectors = await attributes({ dom, inspected });
 
   if (parentTag && index !== -1) {
-    results.push(`//${parentTag}/${tagName}[${index + 1}]`);
+    results.push([{ tag: parentTag } as Select<[ByTag]>, { tag: tagName, index } as Select<[ByTag, ByIndex]>]);
   }
 
   if (parentSelectors.length === 0) {
@@ -32,17 +29,17 @@ export default async function ({ inspected, dom }: GeneratorOptions): Promise<st
   }
 
   for (const selector of selectors) {
-    results.push(`//${parentTag}${selector.substring(1)}`);
-    results.push(`//${parentTag}${selector.substring(1)}[${index + 1}]`);
+    results.push([{ tag: parentTag } as Select<[ByTag]>, ...selector]);
+    results.push([{ tag: parentTag } as Select<[ByTag]>, ...selector, Amend({ index } as Select<[ByIndex]>)]);
   }
 
   for (const parentSelector of parentSelectors) {
     if (tagName && index !== -1) {
-      results.push(`${parentSelector}/${tagName}[${index + 1}]`);
+      results.push([...parentSelector, { tag: tagName, index } as Select<[ByTag, ByIndex]>]);
     }
 
     for (const selector of selectors) {
-      results.push(`${parentSelector}${selector.substring(1)}`);
+      results.push([...parentSelector, ...selector]);
     }
   }
 

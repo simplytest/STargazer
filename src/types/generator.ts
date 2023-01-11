@@ -8,7 +8,6 @@ interface Result {
 interface GeneratorOptions {
   dom: Document;
   inspected?: Inspected;
-  type: 'xpath' | 'css';
 }
 
 export { Result, GeneratorOptions };
