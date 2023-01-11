@@ -1,6 +1,6 @@
 async function getHotkey(): Promise<string> {
   const commands = await chrome.commands.getAll();
-  return commands.find(x => x.name === 'pause-execution').shortcut || '<No Hotkey set>';
+  return commands.find(x => x.name === 'pause-execution').shortcut;
 }
 
 function getVersion(): string {
