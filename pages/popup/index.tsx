@@ -10,7 +10,7 @@ function PopUp() {
   const version = getVersion();
 
   useEffect(() => {
-    getHotkey().then(result => setHotkey(result));
+    getHotkey().then(setHotkey);
   }, []);
 
   return (
@@ -28,8 +28,13 @@ function PopUp() {
         and use the specified hotkey to freeze the webpage if necessary. Use the "Inspect Element" feature to locate
         your desired element and head over to the "Indiana" tab on the right besides "Styles"
       </Text>
-      <Group>
-        <Badge color="orange">{hotkey}</Badge>
+      <Group position="center">
+        <Badge color="orange">{hotkey || '<No Hotkey set>'}</Badge>
+        {!hotkey && (
+          <Text italic align="center">
+            You can change your hotkeys under "chrome://extensions/shortcuts"
+          </Text>
+        )}
       </Group>
       <hr style={{ width: '80%' }} />
       <Space style={{ marginTop: 'auto', marginBottom: 'auto' }} />
