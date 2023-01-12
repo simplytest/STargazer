@@ -5,10 +5,17 @@ interface Result {
   occurrences: number;
 }
 
+interface SelectorOptions {
+  type: 'xpath' | 'css';
+  onlyUnique: boolean;
+  resultsToDisplay: number;
+  gibberishTolerance: number;
+}
+
 interface GeneratorOptions {
   dom: Document;
   inspected?: Inspected;
   gibberishTolerance: number;
 }
 
-export { Result, GeneratorOptions };
+export { Result, SelectorOptions, GeneratorOptions };

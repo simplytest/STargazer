@@ -12,17 +12,17 @@ import {
   NumberInput,
   Radio,
   Stack,
+  Switch,
   Table,
   Text,
   TextInput,
   Title,
 } from '@mantine/core';
-import { useDebouncedValue } from '@mantine/hooks';
 import { IconAlertTriangle, IconCopy, IconDatabaseOff } from '@tabler/icons';
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { generateSelectors } from '../../src/generator';
-import { Result } from '../../src/types/generator';
+import { Result, SelectorOptions } from '../../src/types/generator';
 import theme from '../theme';
 
 function ErrorModal({ error }: { error: unknown }) {
@@ -95,17 +95,17 @@ function ResultTable({ results }: { results: Result[] }) {
   );
 }
 
-function Options({
-  gibberish,
-  setGibberish,
-  type,
-  setType,
-}: {
-  gibberish: number;
-  setGibberish: (value: number) => void;
-  type: 'xpath' | 'css';
-  setType: (value: 'xpath' | 'css') => void;
-}) {
+function Options({ options, setOptions }: { options: SelectorOptions; setOptions: (value: SelectorOptions) => void }) {
+  const update = <T,>(key: keyof SelectorOptions, value: T) => {
+    const copy = { ...options };
+    (copy[key] as T) = value;
+    setOptions(copy);
+  };
+
+  if (!options) {
+    return;
+  }
+
   return (
     <Accordion variant="separated">
       <Accordion.Item value="Options">
@@ -113,18 +113,17 @@ function Options({
         <Accordion.Panel>
           <Radio.Group
             name="type"
-            value={type}
             withAsterisk
+            value={options.type}
             label="Selector type"
             style={{ marginBottom: 20 }}
-            onChange={newType => setType(newType as 'xpath' | 'css')}
+            onChange={v => update('type', v)}
             description="Your preferred selector type (Note: XPath is mightier than CSS)"
           >
             <Radio value="xpath" label="XPath" />
             <Radio value="css" label="CSS" />
           </Radio.Group>
           <NumberInput
-            defaultValue={gibberish}
             min={0}
             max={1}
             step={0.01}
@@ -132,9 +131,29 @@ function Options({
             precision={3}
             stepHoldDelay={500}
             stepHoldInterval={0.1}
-            onChange={setGibberish}
+            style={{ marginBottom: 20 }}
             label="Gibberish Tolerance"
+            defaultValue={options.gibberishTolerance}
+            onChange={v => update('gibberishTolerance', v)}
             description="(Lower = More Gibberish, Higher = Less Gibberish)"
+          />
+          <Switch
+            label="Hide Ambiguous"
+            checked={options.onlyUnique}
+            style={{ marginBottom: 20 }}
+            description="Hides selectors with more than one occurrence"
+            onChange={v => update('onlyUnique', v.currentTarget.checked)}
+            onLabel="ON"
+            offLabel="OFF"
+          />
+          <NumberInput
+            min={1}
+            max={Infinity}
+            step={1}
+            label="Results to display"
+            description="Only show first N results"
+            defaultValue={options.resultsToDisplay}
+            onChange={v => update('resultsToDisplay', v)}
           />
         </Accordion.Panel>
       </Accordion.Item>
@@ -143,26 +162,44 @@ function Options({
 }
 
 function DevTools() {
-  const [type, setType] = useState<'xpath' | 'css'>('xpath');
-  const [results, setResults] = useState<Result[]>([]);
   const [error, setError] = useState<unknown>();
+  const [results, setResults] = useState<Result[]>([]);
 
-  const [gibberish, setGibberish] = useState<number>(0.075);
-  const [debouncedGibberish] = useDebouncedValue(gibberish, 200);
+  const [options, _setOptions] = useState<SelectorOptions>({
+    type: 'xpath',
+    onlyUnique: true,
+    resultsToDisplay: 3,
+    gibberishTolerance: 0.075,
+  });
+
+  const setOptions = (value: SelectorOptions) => {
+    chrome.storage.local.set({ options: value }).then(() => _setOptions({ ...value }));
+  };
 
   useEffect(() => {
+    chrome.storage.local.get(['options']).then(results => {
+      if (!results.options) {
+        return;
+      }
+      setOptions({ ...results.options });
+    });
+  }, []);
+
+  const generate = (options: SelectorOptions) => {
     setResults([]);
     setError(undefined);
-    generateSelectors(type, debouncedGibberish).then(setResults).catch(setError);
-  }, [type, debouncedGibberish]);
+    generateSelectors(options).then(setResults).catch(setError);
+  };
+
+  useEffect(() => {
+    generate(options);
+  }, [options]);
 
   useEffect(() => {
     chrome.devtools.panels.elements.onSelectionChanged.addListener(() => {
-      setResults([]);
-      setError(undefined);
-      generateSelectors(type, gibberish).then(setResults).catch(setError);
+      generate(options);
     });
-  }, []);
+  }, [options]);
 
   return (
     <div style={{ width: '100%', height: '100%' }}>
@@ -172,7 +209,7 @@ function DevTools() {
         <Title order={1} align="center">
           Generated Selectors
         </Title>
-        <Options type={type} setType={setType} gibberish={gibberish} setGibberish={setGibberish} />
+        <Options options={options} setOptions={setOptions} />
         <ResultTable results={results} />
       </Stack>
     </div>
