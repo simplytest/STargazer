@@ -3,9 +3,7 @@ import parent from './generators/parent';
 import { generateCSS } from './selectors/css';
 import { generateXPath } from './selectors/xpath';
 import { GeneratorOptions, Result, SelectorOptions } from './types/generator';
-import { findByCSS, findByXPath, getDom, getInspected } from './utils/dom';
-
-const generators = [attributes, parent];
+import { findByCSS, findByXPath, getDom, getInspected, getInspectedParent } from './utils/dom';
 
 async function generateSelectors({ type, gibberishTolerance, onlyUnique, resultsToDisplay }: SelectorOptions) {
   const inspected = await getInspected();
@@ -17,7 +15,11 @@ async function generateSelectors({ type, gibberishTolerance, onlyUnique, results
 
   const options: GeneratorOptions = { inspected, dom, gibberishTolerance };
 
-  const generated = await Promise.all(generators.map(x => x(options)));
+  const generated = [
+    await attributes(options), //
+    await parent(options, await getInspectedParent()), //
+  ];
+
   const selectorChains = generated.flat().sort((a, b) => a.length - b.length);
 
   const generator = type == 'css' ? generateCSS : generateXPath;

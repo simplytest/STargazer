@@ -1,13 +1,15 @@
+import { Inspected } from '../types/dom';
 import { GeneratorOptions } from '../types/generator';
 import { Amend, ByIndex, ByTag, Select, SelectorChain } from '../types/selector';
-import { getInspectedParent } from '../utils/dom';
 import attributes from './attributes';
 
-export default async function ({ inspected, dom, gibberishTolerance }: GeneratorOptions): Promise<SelectorChain[]> {
+export default async function (
+  { inspected, dom, gibberishTolerance }: GeneratorOptions,
+  [parent, index]: [Inspected, number]
+): Promise<SelectorChain[]> {
   const results: SelectorChain[] = [];
-  const { element } = inspected;
 
-  const [parent, index] = await getInspectedParent();
+  const { element } = inspected;
   const { element: parentElement } = parent;
 
   const parentTag = parentElement.tagName.toLowerCase();
