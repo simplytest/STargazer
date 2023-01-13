@@ -35,11 +35,6 @@ function generateXPath(chain: SelectorChain): string {
   for (const [index, select] of chain.entries()) {
     let conditions = Object.entries(select).length;
 
-    if ('amend' in select) {
-      selector += constructConditions(select, conditions);
-      continue;
-    }
-
     if (index !== 0) {
       selector += '/';
     }

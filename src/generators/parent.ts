@@ -1,6 +1,6 @@
 import { Inspected } from '../types/dom';
 import { GeneratorOptions } from '../types/generator';
-import { Amend, ByIndex, ByTag, Select, SelectorChain } from '../types/selector';
+import { ByIndex, ByTag, Select, SelectorChain } from '../types/selector';
 import attributes from './attributes';
 
 export default async function (
@@ -32,7 +32,10 @@ export default async function (
 
   for (const selector of selectors) {
     results.push([{ tag: parentTag } as Select<[ByTag]>, ...selector]);
-    results.push([{ tag: parentTag } as Select<[ByTag]>, ...selector, Amend({ index } as Select<[ByIndex]>)]);
+
+    const remaining = selector.slice(0, -1);
+    const last: unknown & Select<[ByIndex]> = { ...selector.at(-1), index };
+    results.push([{ tag: parentTag } as Select<[ByTag]>, ...remaining, last]);
   }
 
   for (const parentSelector of parentSelectors) {

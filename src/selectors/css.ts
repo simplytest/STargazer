@@ -27,11 +27,6 @@ function generateCSS(chain: SelectorChain): string {
   }
 
   for (const [index, select] of chain.entries()) {
-    if ('amend' in select) {
-      selector += constructConditions(select);
-      continue;
-    }
-
     if (index !== 0) {
       selector += ' > ';
     }
