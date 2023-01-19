@@ -1,19 +1,9 @@
-import { TextScorer } from 'text-scorer';
 import { GeneratorOptions } from '../types/generator';
 import { ByAttribute, ByTag, ByText, Select, SelectorChain } from '../types/selector';
-
-const textScorer = new TextScorer(true, {
-  ignoreCase: true,
-});
 
 const excludeList = [
   'jscontroller',
   'jsaction',
-  'data-ved',
-  'data-iml',
-  'data-atf',
-  'tabindex',
-  'data-frt',
   'jsmodel',
   'jsname',
   'jsdata',
@@ -24,7 +14,7 @@ const excludeList = [
   'class',
 ];
 
-export default async function ({ inspected, gibberishTolerance }: GeneratorOptions): Promise<SelectorChain[]> {
+export default async function ({ inspected }: GeneratorOptions): Promise<SelectorChain[]> {
   const { innerText, element } = inspected;
 
   const results: SelectorChain[] = [];
@@ -57,10 +47,6 @@ export default async function ({ inspected, gibberishTolerance }: GeneratorOptio
     const classes = element.getAttribute('class').split(' ');
 
     for (const clazz of classes) {
-      if (textScorer.getTextScore(clazz) < gibberishTolerance) {
-        continue;
-      }
-
       results.push([
         {
           attribute: 'class',

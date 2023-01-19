@@ -1,11 +1,48 @@
 import attributes from './generators/attributes';
 import parent from './generators/parent';
+import { score } from './scorer';
 import { generateCSS } from './selectors/css';
 import { generateXPath } from './selectors/xpath';
 import { GeneratorOptions, Result, SelectorOptions } from './types/generator';
 import { findByCSS, findByXPath, getDom, getInspected, getInspectedParent } from './utils/dom';
 
-async function generateSelectors({ type, gibberishTolerance, onlyUnique, resultsToDisplay }: SelectorOptions) {
+function normalizeRecursive(results: Result[]) {
+  for (const result of results) {
+    const last = result.chain.at(-1);
+
+    if ('attribute' in last) {
+      const others = results.filter(x => {
+        const _last = x.chain.at(-1);
+
+        if (!('attribute' in _last)) {
+          return false;
+        }
+
+        if (_last.attribute !== last.attribute || _last.value !== last.value) {
+          return false;
+        }
+
+        return true;
+      });
+
+      for (const other of others) {
+        if (other.chain.length > result.chain.length) {
+          other.score -= Math.abs(other.score);
+        }
+      }
+    }
+  }
+
+  return results;
+}
+
+async function generateSelectors({
+  type,
+  gibberishTolerance,
+  onlyUnique,
+  resultsToDisplay,
+  scoreTolerance,
+}: SelectorOptions) {
   const inspected = await getInspected();
   const dom = await getDom();
 
@@ -20,28 +57,38 @@ async function generateSelectors({ type, gibberishTolerance, onlyUnique, results
     await parent(options, await getInspectedParent()), //
   ];
 
-  const selectorChains = generated.flat().sort((a, b) => a.length - b.length);
+  const selectorChains = generated.flat();
 
   const generator = type == 'css' ? generateCSS : generateXPath;
   const finder = type == 'css' ? findByCSS : findByXPath;
 
-  const selectors: string[] = selectorChains.map(generator);
-  const uniqueSelectors = selectors.filter((x, i) => selectors.indexOf(x) === i);
-
-  let withOccurrences: Result[] = uniqueSelectors.map(x => ({
-    selector: x,
-    occurrences: finder(dom, x) || 0,
+  const selectors: Partial<Result>[] = selectorChains.map(x => ({
+    chain: x,
+    selector: generator(x),
   }));
+
+  const uniqueSelectors = selectors.filter(
+    (x, i) => selectors.indexOf(selectors.find(y => y.selector == x.selector)) === i
+  );
+
+  let withOccurrences: Partial<Result>[] = uniqueSelectors
+    .map(x => ({
+      ...x,
+      occurrences: finder(dom, x.selector) || 0,
+    }))
+    .filter(x => x.occurrences > 0);
 
   if (onlyUnique) {
     withOccurrences = withOccurrences.filter(x => x.occurrences === 1);
   }
 
-  return withOccurrences
-    .filter(x => x.occurrences > 0)
-    .sort((a, b) => a.selector.length - b.selector.length)
-    .sort((a, b) => a.occurrences - b.occurrences)
-    .slice(0, resultsToDisplay);
+  let rtn = withOccurrences.map(x => ({ ...x, score: score(x as Result, gibberishTolerance) })) as Result[];
+
+  rtn = normalizeRecursive(rtn);
+  rtn = rtn.sort((a, b) => b.score - a.score);
+  rtn = rtn.filter(x => x.score > scoreTolerance);
+
+  return rtn.slice(0, resultsToDisplay);
 }
 
 export { generateSelectors };

@@ -151,9 +151,18 @@ function Options({ options, setOptions }: { options: SelectorOptions; setOptions
             max={Infinity}
             step={1}
             label="Results to display"
+            value={options.resultsToDisplay}
             description="Only show first N results"
-            defaultValue={options.resultsToDisplay}
             onChange={v => update('resultsToDisplay', v)}
+          />
+          <NumberInput
+            min={-Infinity}
+            max={Infinity}
+            step={1}
+            label="Score Tolerance"
+            value={options.scoreTolerance}
+            description="Only show results with scores above N"
+            onChange={v => update('scoreTolerance', v)}
           />
         </Accordion.Panel>
       </Accordion.Item>
@@ -168,8 +177,9 @@ function DevTools() {
   const [options, _setOptions] = useState<SelectorOptions>({
     type: 'xpath',
     onlyUnique: true,
-    resultsToDisplay: 3,
-    gibberishTolerance: 0.075,
+    resultsToDisplay: 5,
+    scoreTolerance: -100,
+    gibberishTolerance: 0.073,
   });
 
   const setOptions = (value: SelectorOptions) => {
