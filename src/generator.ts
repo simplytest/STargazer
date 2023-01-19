@@ -1,5 +1,6 @@
 import attributes from './generators/attributes';
 import parent from './generators/parent';
+import recursiveParent from './generators/absolute';
 import { score } from './scorer';
 import { generateCSS } from './selectors/css';
 import { generateXPath } from './selectors/xpath';
@@ -55,6 +56,7 @@ async function generateSelectors({
   const generated = [
     await attributes(options), //
     await parent(options, await getInspectedParent()), //
+    await recursiveParent(options),
   ];
 
   const selectorChains = generated.flat();
