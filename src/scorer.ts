@@ -36,9 +36,12 @@ function scoreSelector(selector: Selector, gibberishTolerance: number) {
       const gibberishScore = textScorer.getTextScore(selector.value);
       const delta = 1 / gibberishTolerance;
 
-      //? https://www.geogebra.org/calculator/fych9fjc
-      const gibFn = (x: number) => Math.pow(x - 5, 5) * ((x + 1) / 5);
-      score += gibFn(gibberishScore * delta * 5);
+      const gibFn = (x: number) => {
+        const d = x > 5 ? 0.01 : 1;
+        return d * Math.pow(x - 4, 3) - 1;
+      };
+
+      score += gibberishScore === 1 ? 10 : gibFn(gibberishScore * delta * 5);
     } else {
       const scorer = attributeScores.find(x => selector.attribute.match(x[0]));
       score += (scorer && scorer[1]) || 0;
@@ -67,11 +70,11 @@ export function score(result: Result, gibberishTolerance: number) {
   let score = scores.reduce((p, c) => p + c);
 
   //? https://www.geogebra.org/calculator/gx2rnqks (f)
-  const occFn = (x: number) => (Math.pow(Math.sqrt(x), 2) / x) * Math.pow(-x, 5) + 2;
+  const occFn = (x: number) => (Math.pow(Math.sqrt(x), 2) / x) * Math.pow(-x, 9) + 2;
   score += occFn(result.occurrences);
 
   //? https://www.geogebra.org/calculator/gx2rnqks (g)
-  const lenFn = (x: number) => (1 / x) * (Math.pow(Math.sqrt(x), 2) / x) - 0.5;
+  const lenFn = (x: number) => Math.pow(Math.sqrt(x), 2) / x - Math.pow(x, 4) + 2;
   score += lenFn(result.chain.length);
 
   return score;
