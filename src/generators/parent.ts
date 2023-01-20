@@ -22,8 +22,10 @@ export default async function (
   const parentSelectors = await attributes({ dom, inspected: parent, gibberishTolerance });
   const selectors = await attributes({ dom, inspected, gibberishTolerance });
 
-  if (parentTag && index !== -1) {
-    results.push([{ tag: parentTag } as Select<[ByTag]>, { tag: tagName, index } as Select<[ByTag, ByIndex]>]);
+  if (index !== -1) {
+    selectors.push([{ index }]);
+    results.push([{ tag: parentTag }, { index }]);
+    parentTag && results.push([{ tag: parentTag }, { tag: tagName, index }]);
   }
 
   if (parentSelectors.length === 0) {
