@@ -8,7 +8,7 @@ function getFromHTML(html: string, type: 'Document' | 'Element') {
     case 'Document':
       return parser.parseFromString(html, 'text/html');
     case 'Element':
-      return parser.parseFromString(html, 'text/html').body.firstElementChild;
+      return parser.parseFromString(html, 'text/xml').firstElementChild;
   }
 }
 
