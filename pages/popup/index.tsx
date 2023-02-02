@@ -1,12 +1,26 @@
-import { Badge, Group, MantineProvider, Space, Stack, Text } from '@mantine/core';
-import { IconHeartHandshake } from '@tabler/icons';
+import {
+  Badge,
+  Button,
+  Divider,
+  Group,
+  Image,
+  MantineProvider,
+  Space,
+  Stack,
+  Text,
+  Title,
+  Tooltip,
+  useMantineTheme,
+} from '@mantine/core';
 import React, { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
+import { load } from '../../src/sidebar';
 import { getHotkey, getVersion } from '../../src/utils/extension';
 import theme from '../theme';
 
 function PopUp() {
   const [hotkey, setHotkey] = React.useState('');
+  const theme = useMantineTheme();
   const version = getVersion();
 
   useEffect(() => {
@@ -15,35 +29,31 @@ function PopUp() {
 
   return (
     <Stack align="center" style={{ padding: '10px', width: '300px', height: '500px' }}>
-      <img src="/assets/logo.png" style={{ width: '75px', height: '75px', marginBottom: -40 }} />
-      <h1 style={{ paddingBottom: 0, margin: 0 }}>Indiana</h1>
-      <Group>
-        <Text>Version</Text>
-        <Badge color="green">{version}</Badge>
+      <Image src="/assets/logo.png" fit="contain" width={75} height={75} mb={-40} />
+      <Group noWrap p={0}>
+        <Title order={1}>Indiana</Title>
+        <Badge color="green">v{version}</Badge>
       </Group>
-      <hr style={{ width: '80%' }} />
-      <Text align="center">
-        <a href="https://developer.chrome.com/docs/devtools/open/" target="_blank" rel="noreferrer">
-          Open the Dev-Tools
-        </a>{' '}
-        and use the specified hotkey to freeze the webpage if necessary. Use the "Inspect Element" feature to locate
-        your desired element and head over to the "Indiana" tab on the right besides "Styles"
+      <Space h="md" />
+      <Divider orientation="horizontal" w={280} />
+      <Space h="xs" />
+      <Button fullWidth onClick={() => load(theme.colors.dark[8])}>
+        Open Editor
+      </Button>
+      <Text fz="sm" italic align="center">
+        Or use the DevTools by inspecting an element and then opening the "Indiana" tab besides "Styles"
       </Text>
-      <Group position="center">
-        <Badge color="orange">{hotkey || '<No Hotkey set>'}</Badge>
-        {!hotkey && (
-          <Text italic align="center">
-            You can change your hotkeys under "chrome://extensions/shortcuts"
-          </Text>
-        )}
-      </Group>
-      <hr style={{ width: '80%' }} />
-      <Space style={{ marginTop: 'auto', marginBottom: 'auto' }} />
-      <Text>
-        Made with <IconHeartHandshake color="red" /> by{' '}
-        <a href="https://simplytest.de/" target="_blank" rel="noreferrer">
-          SimplyTest
-        </a>
+      <Space h="xs" />
+      <Divider orientation="horizontal" w={280} />
+      <Space h="sm" />
+      <Tooltip label="Causes the page execution to halt">
+        <Group>
+          <Text>Debugger Hotkey: </Text>
+          <Badge>{hotkey || 'Unset'}</Badge>
+        </Group>
+      </Tooltip>
+      <Text fz="sm" italic align="center">
+        You can always change the hotkey under: chrome://extensions/shortcuts
       </Text>
     </Stack>
   );
