@@ -14,7 +14,7 @@
   ],
   "action": {
     "default_title": "Open Menu",
-    "default_popup": "pages/popup/index.html"
+    "default_popup": "/pages/popup/index.html"
   },
   "commands": {
     "pause-execution": {
@@ -26,7 +26,17 @@
     }
   },
   "background": {
-    "service_worker": "src/background.js"
+    "service_worker": "/src/background.js"
   },
-  "devtools_page": "pages/devtools/bootstrap.html"
+  "devtools_page": "/pages/devtools/bootstrap.html",
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "/pages/editor/index.html"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
 }
