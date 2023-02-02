@@ -1,7 +1,6 @@
-import { maximumZIndex } from './sidebar';
-
 function inspect() {
   const old = document.getElementById('indiana_inspect');
+  const maximumZIndex = '2147483647';
 
   if (old) {
     old.remove();

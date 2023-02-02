@@ -1,9 +1,8 @@
 import { inject } from './utils/chrome';
 
-const maximumZIndex = '2147483647';
-
 function createSidebar(url: string, background: string) {
   const old = document.getElementById('indiana_sidebar');
+  const maximumZIndex = '2147483647';
 
   if (old) {
     old.remove();
@@ -36,4 +35,4 @@ async function loaded(): Promise<boolean> {
   return result;
 }
 
-export { createSidebar, load, loaded, maximumZIndex };
+export { createSidebar, load, loaded };
