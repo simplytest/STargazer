@@ -7,29 +7,35 @@ import { generateXPath } from './selectors/xpath';
 import { GeneratorOptions, Result, SelectorOptions } from './types/generator';
 import { findByCSS, findByXPath, getDom, getInspected, getInspectedParent } from './utils/dom';
 
-function normalizeRecursive(results: Result[]) {
+function adjustSelectorsWithParent(results: Result[]) {
   for (const result of results) {
-    const last = result.chain.at(-1);
+    const lastSelector = result.chain.at(-1);
 
-    if ('attribute' in last) {
-      const others = results.filter(x => {
-        const _last = x.chain.at(-1);
+    if (!('attribute' in lastSelector)) {
+      continue;
+    }
 
-        if (!('attribute' in _last)) {
-          return false;
-        }
+    for (const other of results) {
+      const otherLastSelector = other.chain.at(-1);
 
-        if (_last.attribute !== last.attribute || _last.value !== last.value) {
-          return false;
-        }
+      if (!('attribute' in otherLastSelector)) {
+        continue;
+      }
 
-        return true;
-      });
+      if (otherLastSelector.attribute !== lastSelector.attribute) {
+        continue;
+      }
 
-      for (const other of others) {
-        if (other.chain.length > result.chain.length) {
-          other.score -= Math.abs(other.score);
-        }
+      if (otherLastSelector.value !== lastSelector.value) {
+        continue;
+      }
+
+      if (result.occurrences < other.occurrences) {
+        other.score -= 100;
+      }
+
+      if (result.chain.length < other.chain.length) {
+        other.score -= 50;
       }
     }
   }
@@ -69,24 +75,20 @@ async function generateSelectors({
     selector: generator(x),
   }));
 
-  const uniqueSelectors = selectors.filter(
+  const withoutDuplicates = selectors.filter(
     (x, i) => selectors.indexOf(selectors.find(y => y.selector == x.selector)) === i
   );
 
-  let withOccurrences: Partial<Result>[] = uniqueSelectors
+  const withOccurrences: Partial<Result>[] = withoutDuplicates
     .map(x => ({
       ...x,
       occurrences: finder(dom, x.selector) || 0,
     }))
-    .filter(x => x.occurrences > 0);
+    .filter(x => (onlyUnique ? x.occurrences === 1 : x.occurrences > 0));
 
-  if (onlyUnique) {
-    withOccurrences = withOccurrences.filter(x => x.occurrences === 1);
-  }
+  let rtn: Result[] = withOccurrences.map((x: Result) => ({ ...x, score: score(x, gibberishTolerance) }));
 
-  let rtn = withOccurrences.map(x => ({ ...x, score: score(x as Result, gibberishTolerance) })) as Result[];
-
-  rtn = normalizeRecursive(rtn);
+  rtn = adjustSelectorsWithParent(rtn);
   rtn = rtn.sort((a, b) => b.score - a.score);
   rtn = rtn.filter(x => x.score > scoreTolerance);
 
