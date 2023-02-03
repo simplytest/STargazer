@@ -37,7 +37,7 @@ function PopUp() {
       <Space h="md" />
       <Divider orientation="horizontal" w={280} />
       <Space h="xs" />
-      <Button fullWidth onClick={() => load(theme.colors.dark[8])}>
+      <Button fullWidth onClick={() => load(theme.colors.dark[8], theme.colors.dark[3])}>
         Open Editor
       </Button>
       <Text fz="sm" italic align="center">
