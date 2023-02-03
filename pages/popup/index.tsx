@@ -12,20 +12,26 @@ import {
   Tooltip,
   useMantineTheme,
 } from '@mantine/core';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { load } from '../../src/sidebar';
+import { load, loaded } from '../../src/sidebar';
 import { getHotkey, getVersion } from '../../src/utils/extension';
 import theme from '../theme';
 
 function PopUp() {
-  const [hotkey, setHotkey] = React.useState('');
+  const [isLoaded, setLoaded] = useState(false);
+  const [hotkey, setHotkey] = useState('');
   const theme = useMantineTheme();
   const version = getVersion();
 
   useEffect(() => {
     getHotkey().then(setHotkey);
+    loaded().then(setLoaded);
   }, []);
+
+  const loadSidebar = () => {
+    load(theme.colors.dark[8], theme.colors.dark[3]).then(() => window.close());
+  };
 
   return (
     <Stack align="center" style={{ padding: '10px', width: '300px', height: '500px' }}>
@@ -37,8 +43,8 @@ function PopUp() {
       <Space h="md" />
       <Divider orientation="horizontal" w={280} />
       <Space h="xs" />
-      <Button fullWidth onClick={() => load(theme.colors.dark[8], theme.colors.dark[3])}>
-        Open Editor
+      <Button fullWidth onClick={loadSidebar}>
+        {isLoaded ? 'Reload Editor' : 'Open Editor'}
       </Button>
       <Text fz="sm" italic align="center">
         Or use the DevTools by inspecting an element and then opening the "Indiana" tab besides "Styles"
