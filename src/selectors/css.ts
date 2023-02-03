@@ -31,7 +31,9 @@ function generateCSS(chain: SelectorChain): string {
       selector += ' > ';
     }
 
-    selector += 'tag' in select ? select.tag : '*';
+    if ('tag' in select) {
+      selector += select.tag;
+    }
 
     selector += constructConditions(select);
   }
