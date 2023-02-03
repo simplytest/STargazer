@@ -19,9 +19,9 @@ import { ErrorModal } from '../../components/ErrorModal';
 import { Options } from '../../components/Options';
 import { ResultTable } from '../../components/ResultTable';
 import { generateSelectors } from '../../src/generator';
+import { startPicking, stopPicking } from '../../src/picker';
 import { Result, SelectorOptions } from '../../src/types/generator';
 import { inject } from '../../src/utils/chrome';
-import { inspect, unloadInspect } from '../../src/inspectElement';
 import { defaultOptions, getOptions, saveOptions } from '../../src/utils/options';
 import theme from '../theme';
 
@@ -61,16 +61,19 @@ function Editor() {
 
   const toggleInspect = () => {
     if (inspecting) {
-      inject(unloadInspect);
+      inject(stopPicking);
       setInspecting(false);
     } else {
-      inject(inspect);
+      inject(startPicking);
       setInspecting(true);
     }
   };
 
   const setOptions = (value: SelectorOptions) => {
-    saveOptions(value).then(() => _setOptions({ ...value }));
+    saveOptions(value).then(() => {
+      _setOptions({ ...value });
+      generate(value);
+    });
   };
 
   const generate = (options: SelectorOptions) => {

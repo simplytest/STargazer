@@ -1,4 +1,4 @@
-function inspect() {
+function startPicking() {
   const old = document.getElementById('indiana_inspect');
   const maximumZIndex = '2147483647';
 
@@ -15,7 +15,7 @@ function inspect() {
   overlay.style.top = '0px';
   overlay.style.left = '0px';
   overlay.style.position = 'absolute';
-  overlay.style.zIndex = `${maximumZIndex} - 1`;
+  overlay.style.zIndex = maximumZIndex;
 
   overlay.style.border = '1px solid #05F';
   overlay.style.background = 'rgba(0, 85, 255, 0.4)';
@@ -24,13 +24,19 @@ function inspect() {
     const { clientX, clientY } = ev;
 
     overlay.style.display = 'none';
-    window['indiana_inspected_element'] = document.elementFromPoint(clientX, clientY);
+    window['indiana_inspected'] = document.elementFromPoint(clientX, clientY);
 
     chrome.runtime.sendMessage(null, { name: 'Selected' });
     overlay.remove();
   };
 
-  document.body.appendChild(overlay);
+  const sidebar = document.getElementById('indiana_sidebar');
+
+  if (sidebar) {
+    sidebar.parentElement.insertBefore(overlay, sidebar);
+  } else {
+    document.appendChild(overlay);
+  }
 
   document.addEventListener('mousemove', e => {
     const { target, clientX, clientY } = e;
@@ -60,7 +66,7 @@ function inspect() {
   });
 }
 
-function unloadInspect() {
+function stopPicking() {
   const inspect = document.getElementById('indiana_inspect');
 
   if (!inspect) {
@@ -70,4 +76,4 @@ function unloadInspect() {
   inspect.remove();
 }
 
-export { inspect, unloadInspect };
+export { startPicking, stopPicking };
