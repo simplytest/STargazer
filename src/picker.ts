@@ -42,7 +42,9 @@ function startPicking() {
     const { target, clientX, clientY } = e;
     const id: string = 'id' in target ? (target.id as string) : '';
 
-    if (id.includes('indiana_')) {
+    const overSelf = id.includes('indiana_');
+
+    if (overSelf) {
       overlay.style.display = 'none';
     }
 
@@ -60,7 +62,7 @@ function startPicking() {
     overlay.style.width = `${bounds.width}px`;
     overlay.style.height = `${bounds.height}px`;
 
-    if (id.includes('indiana_')) {
+    if (overSelf) {
       overlay.style.display = 'inline';
     }
   });
