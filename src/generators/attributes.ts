@@ -1,5 +1,5 @@
 import { GeneratorOptions } from '../types/generator';
-import { ByAttribute, ByTag, ByText, Select, SelectorChain } from '../types/selector';
+import { select, SelectorChain } from '../types/selector';
 
 const excludeList = [
   'jscontroller',
@@ -23,23 +23,23 @@ export default async function ({ inspected }: GeneratorOptions): Promise<Selecto
   const attributes = element.getAttributeNames();
   const allowedAttributes = attributes.filter(x => !excludeList.includes(x));
 
-  tagName && results.push([{ tag: tagName } as Select<[ByTag]>]);
+  tagName && results.push([select({ tag: tagName })]);
 
   for (const attribute of allowedAttributes) {
     results.push([
-      {
+      select({
         attribute: attribute,
         value: element.getAttribute(attribute),
-      } as Select<[ByAttribute]>,
+      }),
     ]);
 
     tagName &&
       results.push([
-        {
+        select({
           tag: tagName,
           attribute: attribute,
           value: element.getAttribute(attribute),
-        } as Select<[ByTag, ByAttribute]>,
+        }),
       ]);
   }
 
@@ -48,19 +48,19 @@ export default async function ({ inspected }: GeneratorOptions): Promise<Selecto
 
     for (const clazz of classes) {
       results.push([
-        {
+        select({
           attribute: 'class',
           value: clazz,
-        } as Select<[ByAttribute]>,
+        }),
       ]);
 
       tagName &&
         results.push([
-          {
+          select({
             tag: tagName,
             attribute: 'class',
             value: clazz,
-          } as Select<[ByTag, ByAttribute]>,
+          }),
         ]);
     }
   }
@@ -72,11 +72,11 @@ export default async function ({ inspected }: GeneratorOptions): Promise<Selecto
   const snapshot = [...results];
 
   for (const result of snapshot) {
-    results.push([...result, { text: innerText } as Select<[ByText]>]);
+    results.push([...result, select({ text: innerText })]);
   }
 
-  results.push([{ text: innerText } as Select<[ByText]>]);
-  tagName && results.push([{ tag: tagName, text: innerText } as Select<[ByTag, ByText]>]);
+  results.push([select({ text: innerText })]);
+  tagName && results.push([select({ tag: tagName, text: innerText })]);
 
   return results;
 }

@@ -1,5 +1,5 @@
 import { GeneratorOptions } from '../types/generator';
-import { ByIndex, ByTag, Select, SelectorChain } from '../types/selector';
+import { select, SelectorChain } from '../types/selector';
 import { getInspectedParentCount, getInspectedParentRecursive } from '../utils/dom';
 import attributes from './attributes';
 
@@ -19,7 +19,7 @@ export default async function ({ dom, gibberishTolerance }: GeneratorOptions): P
     }
 
     const tag = current.element.tagName.toLowerCase();
-    tag && index >= 0 && selectors.push([{ tag, index } as Select<[ByTag, ByIndex]>]);
+    tag && index >= 0 && selectors.push([select({ tag, index })]);
 
     children.set(i, selectors);
   }

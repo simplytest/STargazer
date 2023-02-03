@@ -18,6 +18,8 @@ interface ByAttribute {
 type Selector = ByTag | ByText | ByIndex | ByAttribute;
 type SelectorChain = Selector[];
 
-type Select<T extends unknown[]> = T extends [infer F, ...infer R] ? F & Select<R> : unknown;
+function select<T extends Selector>(by: T) {
+  return by;
+}
 
-export { ByTag, ByText, ByIndex, ByAttribute, Selector, SelectorChain, Select };
+export { ByTag, ByText, ByIndex, ByAttribute, Selector, SelectorChain, select };
