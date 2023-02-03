@@ -1,11 +1,11 @@
-import { getFromHTML } from '.';
+import { getFromHTML } from './html';
 import { Inspected } from '../types/dom';
 import { execute, inject } from './chrome';
 
-const canUseDevTools = () => !!chrome.devtools?.inspectedWindow;
-
 async function exec<R, T extends unknown[]>(func: (...args: T) => R, ...args: T) {
-  if (!canUseDevTools()) {
+  const devToolsAvailable = !!chrome.devtools?.inspectedWindow;
+
+  if (!devToolsAvailable) {
     return inject<R, T>(func, ...args);
   }
 
