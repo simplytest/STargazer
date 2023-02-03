@@ -53,6 +53,7 @@ function Shell({ children }: { children: React.ReactNode }) {
 }
 
 function Editor() {
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<unknown>();
   const [results, setResults] = useState<Result[]>([]);
 
@@ -78,8 +79,13 @@ function Editor() {
 
   const generate = (options: SelectorOptions) => {
     setResults([]);
+    setLoading(true);
     setError(undefined);
-    generateSelectors(options).then(setResults).catch(setError);
+
+    generateSelectors(options)
+      .then(setResults)
+      .catch(setError)
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -105,7 +111,7 @@ function Editor() {
   return (
     <>
       <Shell>
-        <LoadingOverlay visible={!results} overlayBlur={2} />
+        <LoadingOverlay visible={loading} overlayBlur={2} />
         {!!error && <ErrorModal error={error} />}
         <Stack justify="center">
           <Stack style={{ width: '100%' }} m={15} align="center">

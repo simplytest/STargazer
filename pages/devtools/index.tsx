@@ -21,6 +21,7 @@ function Warning() {
 
 function DevTools() {
   const [error, setError] = useState<unknown>();
+  const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Result[]>([]);
   const [options, _setOptions] = useState(defaultOptions);
 
@@ -28,15 +29,20 @@ function DevTools() {
     saveOptions(value).then(() => _setOptions({ ...value }));
   };
 
+  const generate = (options: SelectorOptions) => {
+    setResults([]);
+    setLoading(true);
+    setError(undefined);
+
+    generateSelectors(options)
+      .then(setResults)
+      .catch(setError)
+      .finally(() => setLoading(false));
+  };
+
   useEffect(() => {
     getOptions().then(options => _setOptions({ ...options }));
   }, []);
-
-  const generate = (options: SelectorOptions) => {
-    setResults([]);
-    setError(undefined);
-    generateSelectors(options).then(setResults).catch(setError);
-  };
 
   useEffect(() => {
     generate(options);
@@ -50,7 +56,7 @@ function DevTools() {
 
   return (
     <>
-      <LoadingOverlay visible={!results} overlayBlur={2} />
+      <LoadingOverlay visible={loading} overlayBlur={2} />
       {!!error && <ErrorModal error={error} />}
       <Stack justify="center">
         <Title order={1} align="center">
