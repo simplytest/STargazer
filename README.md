@@ -26,3 +26,6 @@
 
 - Parent
   > Utilizes the "Attributes" Generator in conjunction with the parent node.
+
+- Absolute
+  > Generates an absolute selector
