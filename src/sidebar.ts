@@ -25,6 +25,7 @@ function createSidebar(url: string, background: string, handle: string) {
   const drag = document.createElement('div');
   drag.style.background = handle;
   drag.style.height = '30px';
+  drag.style.cursor = 'grab';
   drag.style.width = '100%';
 
   const iframe = document.createElement('iframe');
