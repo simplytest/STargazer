@@ -84,8 +84,10 @@ function Editor() {
 
   useEffect(() => {
     getOptions().then(options => _setOptions({ ...options }));
+  }, []);
 
-    chrome.runtime.onMessage.addListener(message => {
+  useEffect(() => {
+    const listener = (message: { name: string }) => {
       const { name } = message;
 
       if (name === 'Selected') {
@@ -94,8 +96,11 @@ function Editor() {
       }
 
       return false;
-    });
-  }, []);
+    };
+
+    chrome.runtime.onMessage.removeListener(listener);
+    chrome.runtime.onMessage.addListener(listener);
+  }, [options]);
 
   return (
     <>
