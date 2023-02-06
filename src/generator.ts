@@ -90,7 +90,12 @@ async function generateSelectors({
 
   rtn = adjustSelectorsWithParent(rtn);
   rtn = rtn.sort((a, b) => b.score - a.score);
-  rtn = rtn.filter(x => x.score > scoreTolerance);
+
+  const withTolerance = rtn.filter(x => x.score > scoreTolerance);
+
+  if (withTolerance.length > 0) {
+    rtn = withTolerance;
+  }
 
   return rtn.slice(0, resultsToDisplay);
 }
