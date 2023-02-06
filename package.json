@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "author": "Curve <fynnbwdt@gmail.com>",
   "description": "A 'click-to-build' generator for css and xpath selectors",
-  "license": "MIT",
+  "license": "GNU GPLv3",
   "repository": {
     "url": "https://github.com/simplytest/stargazer"
   },
