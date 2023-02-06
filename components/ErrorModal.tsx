@@ -1,5 +1,5 @@
 import { Group, Modal, Text } from '@mantine/core';
-import { IconAlertTriangle } from '@tabler/icons';
+import { IconAlertTriangle } from '@tabler/icons-react';
 import { useState } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

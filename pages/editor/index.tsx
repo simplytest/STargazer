@@ -12,7 +12,7 @@ import {
   Title,
   useMantineTheme,
 } from '@mantine/core';
-import { IconClick } from '@tabler/icons';
+import { IconClick } from '@tabler/icons-react';
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ErrorModal } from '../../components/ErrorModal';

@@ -1,6 +1,6 @@
 import { clipboard } from '@extend-chrome/clipboard';
 import { ActionIcon, Alert, Badge, Center, Table, TextInput } from '@mantine/core';
-import { IconCopy, IconDatabaseOff } from '@tabler/icons';
+import { IconCopy, IconDatabaseOff } from '@tabler/icons-react';
 import { Result } from '../src/types/generator';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
