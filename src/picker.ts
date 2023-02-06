@@ -49,6 +49,11 @@ function startPicking() {
     }
 
     const element = document.elementFromPoint(clientX, clientY);
+
+    if (!element) {
+      return;
+    }
+
     const bounds = element.getBoundingClientRect();
 
     const documentElement = document.documentElement;
