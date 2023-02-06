@@ -1,5 +1,6 @@
-import { Accordion, NumberInput, Radio, Switch } from '@mantine/core';
+import { Accordion, Button, NumberInput, Radio, Switch } from '@mantine/core';
 import { SelectorOptions } from '../src/types/generator';
+import { defaultOptions } from '../src/utils/options';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React from 'react';
@@ -21,11 +22,11 @@ function Options({ options, setOptions }: { options: SelectorOptions; setOptions
         <Accordion.Control>Options</Accordion.Control>
         <Accordion.Panel>
           <Radio.Group
+            mb={20}
             name="type"
             withAsterisk
             value={options.type}
             label="Selector type"
-            style={{ marginBottom: 20 }}
             onChange={v => update('type', v)}
             description="Your preferred selector type (Note: XPath is mightier than CSS)"
           >
@@ -35,27 +36,28 @@ function Options({ options, setOptions }: { options: SelectorOptions; setOptions
           <NumberInput
             min={0}
             max={1}
+            mb={20}
             step={0.01}
             noClampOnBlur
             precision={3}
             stepHoldDelay={500}
             stepHoldInterval={0.1}
-            style={{ marginBottom: 20 }}
             label="Gibberish Tolerance"
             defaultValue={options.gibberishTolerance}
             onChange={v => update('gibberishTolerance', v)}
             description="(Lower = More Gibberish, Higher = Less Gibberish)"
           />
           <Switch
+            mb={20}
             label="Hide Ambiguous"
             checked={options.onlyUnique}
-            style={{ marginBottom: 20 }}
             description="Hides selectors with more than one occurrence"
             onChange={v => update('onlyUnique', v.currentTarget.checked)}
             onLabel="ON"
             offLabel="OFF"
           />
           <NumberInput
+            mb={20}
             min={1}
             max={Infinity}
             step={1}
@@ -65,6 +67,7 @@ function Options({ options, setOptions }: { options: SelectorOptions; setOptions
             onChange={v => update('resultsToDisplay', v)}
           />
           <NumberInput
+            mb={20}
             min={-Infinity}
             max={Infinity}
             step={1}
@@ -73,6 +76,9 @@ function Options({ options, setOptions }: { options: SelectorOptions; setOptions
             description="Only show results with scores above N"
             onChange={v => update('scoreTolerance', v)}
           />
+          <Button fullWidth onClick={() => setOptions(defaultOptions)}>
+            Restore Defaults
+          </Button>
         </Accordion.Panel>
       </Accordion.Item>
     </Accordion>
