@@ -6,7 +6,7 @@ export default function (selector: Selector) {
   }
 
   if (!selector.value) {
-    return -100;
+    return -500;
   }
 
   return 0;
