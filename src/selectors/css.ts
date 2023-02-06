@@ -4,7 +4,9 @@ function constructConditions(select: Selector) {
   let selector = '';
 
   if ('attribute' in select) {
-    if (select.attribute === 'class') {
+    if (select.attribute == 'id') {
+      selector += `#${select.value}`;
+    } else if (select.attribute === 'class') {
       selector += `.${select.value}`;
     } else {
       selector += `[${select.attribute}="${select.value}"]`;
