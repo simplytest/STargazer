@@ -114,8 +114,8 @@ function Editor() {
         <LoadingOverlay visible={loading} overlayBlur={2} />
         {!!error && <ErrorModal error={error} />}
         <Stack justify="center">
-          <Stack style={{ width: '100%' }} m={15} align="center">
-            <ActionIcon variant="subtle" color={inspecting ? 'orange' : undefined} onClick={toggleInspect}>
+          <Stack style={{ width: '100%', cursor: 'pointer' }} m={15} align="center" onClick={toggleInspect}>
+            <ActionIcon variant="subtle" color={inspecting ? 'orange' : undefined}>
               <IconClick size={32} />
             </ActionIcon>
             <Text fz="sm" italic>
