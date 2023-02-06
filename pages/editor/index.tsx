@@ -28,7 +28,7 @@ import theme from '../theme';
 function Shell({ children }: { children: React.ReactNode }) {
   const theme = useMantineTheme();
 
-  const close = () => inject(() => document.getElementById('indiana_sidebar').remove());
+  const close = () => inject(() => document.getElementById('stargazer_sidebar').remove());
 
   const Head = () => (
     <Header height={60} p={5} bg={theme.colors.dark[5]}>
@@ -36,7 +36,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         <Grid.Col span={10}>
           <Group style={{ height: '100%' }} position="left" noWrap>
             <Title ml={15} align="center">
-              Indiana Editor
+              STargazer
             </Title>
           </Group>
         </Grid.Col>

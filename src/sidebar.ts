@@ -1,7 +1,7 @@
 import { inject } from './utils/chrome';
 
 function createSidebar(url: string, background: string, handle: string) {
-  const old = document.getElementById('indiana_sidebar');
+  const old = document.getElementById('stargazer_sidebar');
   const maximumZIndex = '2147483647';
 
   if (old) {
@@ -9,7 +9,7 @@ function createSidebar(url: string, background: string, handle: string) {
   }
 
   const sidebar = document.createElement('div');
-  sidebar.id = 'indiana_sidebar';
+  sidebar.id = 'stargazer_sidebar';
 
   sidebar.style.background = background;
   sidebar.style.position = 'fixed';
@@ -87,7 +87,7 @@ async function load(background: string, handle: string) {
 }
 
 async function loaded(): Promise<boolean> {
-  const result = await inject(() => !!document.getElementById('indiana_sidebar'));
+  const result = await inject(() => !!document.getElementById('stargazer_sidebar'));
   return result;
 }
 

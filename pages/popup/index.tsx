@@ -35,23 +35,21 @@ function PopUp() {
 
   return (
     <Stack align="center" style={{ padding: '10px', width: '300px', height: '500px' }}>
-      <Image src="/assets/logo.png" fit="contain" width={75} height={75} mb={-40} />
+      <Image src="/assets/logo.png" fit="contain" style={{ filter: 'invert(1)' }} width={75} height={75} />
       <Group noWrap p={0}>
-        <Title order={1}>Indiana</Title>
+        <Title order={1}>STargazer</Title>
         <Badge color="green">v{version}</Badge>
       </Group>
-      <Space h="md" />
       <Divider orientation="horizontal" w={280} />
       <Space h="xs" />
       <Button fullWidth onClick={loadSidebar}>
         {isLoaded ? 'Reload Editor' : 'Open Editor'}
       </Button>
       <Text fz="sm" italic align="center">
-        Or use the DevTools by inspecting an element and then opening the "Indiana" tab besides "Styles"
+        Or use the DevTools by inspecting an element and then opening the "STargazer" tab besides "Styles"
       </Text>
       <Space h="xs" />
       <Divider orientation="horizontal" w={280} />
-      <Space h="sm" />
       <Tooltip label="Causes the page execution to halt">
         <Group>
           <Text>Debugger Hotkey: </Text>

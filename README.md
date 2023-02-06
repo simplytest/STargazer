@@ -2,12 +2,15 @@
 
 <div align="center"> 
 
-![Logo.png](./assets/logo.png)
+
+<img src="./assets/logo.png" width=150 height=150 />
+<br/>
+<br/>
 
 </div>
 
 <p align="center"> 
-    Easily Generate XPath & CSS Selectors from the Chrome Dev-Tools
+    Easily Generate XPath & CSS Selectors
 </p>
 
 ---

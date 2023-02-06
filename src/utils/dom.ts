@@ -9,7 +9,7 @@ async function exec<R, T extends unknown[]>(func: (...args: T) => R, ...args: T)
     return inject<R, T>(func, ...args);
   }
 
-  const serializedFunc = func.toString().replaceAll(/window\[.indiana_inspected.\]/gi, '$0');
+  const serializedFunc = func.toString().replaceAll(/window\[.stargazer_inspected.\]/gi, '$0');
   return execute<R>(`(${serializedFunc})(${args})`);
 }
 
@@ -20,7 +20,7 @@ async function getDom(): Promise<Document> {
 
 async function getInspected(): Promise<Inspected> {
   const [html, innerText] = await exec(() => {
-    const element: HTMLElement = window['indiana_inspected'];
+    const element: HTMLElement = window['stargazer_inspected'];
     return [element.outerHTML, element.innerText];
   });
 
@@ -30,12 +30,12 @@ async function getInspected(): Promise<Inspected> {
 
 async function getInspectedParent(): Promise<[Inspected, number]> {
   const [html, innerText] = await exec(() => {
-    const element: HTMLElement = window['indiana_inspected'];
+    const element: HTMLElement = window['stargazer_inspected'];
     return [element.parentElement.outerHTML, element.parentElement.innerText];
   });
 
   const index = await exec(() => {
-    const element: HTMLElement = window['indiana_inspected'];
+    const element: HTMLElement = window['stargazer_inspected'];
     return [...(element.parentElement.children as unknown as HTMLElement[])].indexOf(element);
   });
 
@@ -45,7 +45,7 @@ async function getInspectedParent(): Promise<[Inspected, number]> {
 
 async function getInspectedParentCount(): Promise<number> {
   return await exec(() => {
-    const element: HTMLElement = window['indiana_inspected'];
+    const element: HTMLElement = window['stargazer_inspected'];
 
     const parent = (x: HTMLElement, n: number, i = 0) => {
       if (i >= n) {
@@ -67,7 +67,7 @@ async function getInspectedParentCount(): Promise<number> {
 
 async function getInspectedParentRecursive(n: number): Promise<[Inspected, number]> {
   const [html, innerText, index] = await exec(n => {
-    const element: HTMLElement = window['indiana_inspected'];
+    const element: HTMLElement = window['stargazer_inspected'];
 
     const parent = (x: HTMLElement, n: number, i = 0) => {
       if (i >= n) {

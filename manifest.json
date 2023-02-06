@@ -1,5 +1,5 @@
 {
-  "name": "Indiana",
+  "name": "STargazer",
   "description": "A 'click-to-build' xpath and css selector generator",
   "version": "1.0",
   "manifest_version": 3,
@@ -22,7 +22,7 @@
         "default": "Ctrl+I",
         "mac": "Command+I"
       },
-      "description": "Pause execution of current page and run indiana"
+      "description": "Pause execution of current page (only works with devtools open!)"
     }
   },
   "background": {

@@ -14,7 +14,7 @@ function Warning() {
   return (
     <ErrorModal
       persistent
-      error="You can't use Indiana from Dev-Tools while the Editor is active, please close it first and then re-open the Dev-Tools"
+      error="You can't use STargazer from Dev-Tools while the Editor is active, please close it first and then re-open the Dev-Tools"
     />
   );
 }

@@ -1,9 +1,12 @@
 {
-  "name": "indiana",
+  "name": "stargazer",
   "version": "1.0.0",
   "author": "Curve <fynnbwdt@gmail.com>",
   "description": "A 'click-to-build' generator for css and xpath selectors",
   "license": "MIT",
+  "repository": {
+    "url": "https://github.com/simplytest/stargazer"
+  },
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@extend-chrome/clipboard": "^2.0.0",

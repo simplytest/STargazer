@@ -1,5 +1,5 @@
 function startPicking() {
-  const old = document.getElementById('indiana_inspect');
+  const old = document.getElementById('stargazer_inspect');
   const maximumZIndex = '2147483647';
 
   if (old) {
@@ -7,7 +7,7 @@ function startPicking() {
   }
 
   const overlay = document.createElement('div');
-  overlay.id = 'indiana_inspect';
+  overlay.id = 'stargazer_inspect';
 
   overlay.style.width = '0px';
   overlay.style.height = '0px';
@@ -24,13 +24,13 @@ function startPicking() {
     const { clientX, clientY } = ev;
 
     overlay.style.display = 'none';
-    window['indiana_inspected'] = document.elementFromPoint(clientX, clientY);
+    window['stargazer_inspected'] = document.elementFromPoint(clientX, clientY);
 
     chrome.runtime.sendMessage(null, { name: 'Selected' });
     overlay.remove();
   };
 
-  const sidebar = document.getElementById('indiana_sidebar');
+  const sidebar = document.getElementById('stargazer_sidebar');
 
   if (sidebar) {
     sidebar.parentElement.insertBefore(overlay, sidebar);
@@ -42,7 +42,7 @@ function startPicking() {
     const { target, clientX, clientY } = e;
     const id: string = 'id' in target ? (target.id as string) : '';
 
-    const overSelf = id.includes('indiana_');
+    const overSelf = id.includes('stargazer_');
 
     if (overSelf) {
       overlay.style.display = 'none';
@@ -69,7 +69,7 @@ function startPicking() {
 }
 
 function stopPicking() {
-  const inspect = document.getElementById('indiana_inspect');
+  const inspect = document.getElementById('stargazer_inspect');
 
   if (!inspect) {
     return;
