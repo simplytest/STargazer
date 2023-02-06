@@ -9,7 +9,7 @@ async function exec<R, T extends unknown[]>(func: (...args: T) => R, ...args: T)
     return inject<R, T>(func, ...args);
   }
 
-  const serializedFunc = func.toString().replaceAll(/window\[.stargazer_inspected.\]/gi, '$0');
+  const serializedFunc = func.toString().replaceAll(/window\[?.stargazer_inspected.\]?/gi, '$0');
   return execute<R>(`(${serializedFunc})(${args})`);
 }
 
