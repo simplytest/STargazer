@@ -60,6 +60,8 @@ function Editor() {
   const [inspecting, setInspecting] = useState(false);
   const [options, _setOptions] = useState(defaultOptions);
 
+  const [removeListener, setRemover] = useState<() => void>(undefined);
+
   const toggleInspect = () => {
     if (inspecting) {
       inject(stopPicking);
@@ -104,8 +106,9 @@ function Editor() {
       return false;
     };
 
-    chrome.runtime.onMessage.removeListener(listener);
+    removeListener && removeListener();
     chrome.runtime.onMessage.addListener(listener);
+    setRemover(() => () => chrome.runtime.onMessage.removeListener(listener));
   }, [options]);
 
   return (

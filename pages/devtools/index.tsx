@@ -21,12 +21,16 @@ function Warning() {
 
 function DevTools() {
   const [error, setError] = useState<unknown>();
+
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Result[]>([]);
   const [options, _setOptions] = useState(defaultOptions);
 
+  const [removeListener, setRemover] = useState<() => void>(undefined);
+
   const setOptions = (value: SelectorOptions) => {
     saveOptions(value).then(() => _setOptions({ ...value }));
+    generate(value);
   };
 
   const generate = (options: SelectorOptions) => {
@@ -41,17 +45,20 @@ function DevTools() {
   };
 
   useEffect(() => {
-    getOptions().then(options => _setOptions({ ...options }));
+    getOptions().then(options => {
+      _setOptions({ ...options });
+      generate(options);
+    });
   }, []);
 
   useEffect(() => {
-    generate(options);
-  }, [options]);
-
-  useEffect(() => {
-    chrome.devtools.panels.elements.onSelectionChanged.addListener(() => {
+    const generator = () => {
       generate(options);
-    });
+    };
+
+    removeListener && removeListener();
+    chrome.devtools.panels.elements.onSelectionChanged.addListener(generator);
+    setRemover(() => () => chrome.devtools.panels.elements.onSelectionChanged.removeListener(generator));
   }, [options]);
 
   return (
