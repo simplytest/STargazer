@@ -90,17 +90,17 @@ async function getInspectedParentRecursive(n: number): Promise<[Inspected, numbe
   return [{ element, html, innerText }, index];
 }
 
-function findByXPath(dom: Document, selector: string): number {
+function findByXPath(selector: string): number {
   try {
-    return dom.evaluate(selector, dom, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength;
+    return document.evaluate(selector, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength;
   } catch (error) {
     return undefined;
   }
 }
 
-function findByCSS(dom: Document, selector: string): number {
+function findByCSS(selector: string): number {
   try {
-    return dom.querySelectorAll(selector).length;
+    return document.querySelectorAll(selector).length;
   } catch (error) {
     return undefined;
   }

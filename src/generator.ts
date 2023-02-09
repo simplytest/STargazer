@@ -6,6 +6,7 @@ import { generateCSS } from './selectors/css';
 import { generateXPath } from './selectors/xpath';
 import { GeneratorOptions, Result, SelectorOptions } from './types/generator';
 import { findByCSS, findByXPath, getDom, getInspected, getInspectedParent } from './utils/dom';
+import { inject } from './utils/chrome';
 
 function adjustSelectorsWithParent(results: Result[]) {
   for (const result of results) {
@@ -79,12 +80,14 @@ async function generateSelectors({
     (x, i) => selectors.indexOf(selectors.find(y => y.selector == x.selector)) === i
   );
 
-  const withOccurrences: Partial<Result>[] = withoutDuplicates
-    .map(x => ({
-      ...x,
-      occurrences: finder(dom, x.selector) || 0,
-    }))
-    .filter(x => (onlyUnique ? x.occurrences === 1 : x.occurrences > 0));
+  let withOccurrences: Partial<Result>[] = [];
+
+  for (const selector of withoutDuplicates) {
+    const occurrences = await inject(finder, selector.selector);
+    withOccurrences.push({ ...selector, occurrences });
+  }
+
+  withOccurrences = withOccurrences.filter(x => (onlyUnique ? x.occurrences === 1 : x.occurrences > 0));
 
   let rtn: Result[] = withOccurrences.map((x: Result) => ({ ...x, score: score(x, gibberishTolerance) }));
 
