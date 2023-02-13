@@ -3,13 +3,16 @@ import { Selector } from '../../../types/selector';
 const desired: [regex: RegExp, score: number][] = [
   // Best
   [/^data.+$/g, 25],
-  [/^id$/g, 15],
+  [/^id$/g, 25],
   // Good
   [/^name$/g, 10],
   // Average
   [/^class$/g, 2],
   [/^src$/g, 2],
-  [/^alt$/g, 1],
+  // Undesired
+  [/^type$/g, -10],
+  [/^alt$/g, -10],
+  [/^on[a-z]+$/g, -25],
 ];
 
 export default function (selector: Selector) {
