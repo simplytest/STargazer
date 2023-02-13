@@ -3,9 +3,6 @@ import { ActionIcon, Alert, Badge, Center, Table, TextInput } from '@mantine/cor
 import { IconCopy, IconDatabaseOff } from '@tabler/icons-react';
 import { Result } from '../src/types/generator';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from 'react';
-
 function ResultTable({ results }: { results: Result[] }) {
   const color = (occurrences: number) => {
     if (occurrences === 1) {

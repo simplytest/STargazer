@@ -2,9 +2,6 @@ import { Accordion, Button, NumberInput, Radio, Switch } from '@mantine/core';
 import { SelectorOptions } from '../src/types/generator';
 import { defaultOptions } from '../src/utils/options';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from 'react';
-
 function Options({ options, setOptions }: { options: SelectorOptions; setOptions: (value: SelectorOptions) => void }) {
   const update = <T,>(key: keyof SelectorOptions, value: T) => {
     const copy = { ...options };

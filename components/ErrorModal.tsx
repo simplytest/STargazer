@@ -2,9 +2,6 @@ import { Group, Modal, Text } from '@mantine/core';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import { useState } from 'react';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from 'react';
-
 function ErrorModal({ error, persistent }: { error: unknown; persistent?: boolean }) {
   const [open, setOpen] = useState(true);
 

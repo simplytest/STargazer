@@ -1,16 +1,11 @@
 {
-    "compilerOptions": {
-        "module": "ESNext",
-        "target": "ESNext",
-        "lib": [
-            "ESNext",
-            "DOM"
-        ],
-        "types": [
-            "chrome-types",
-        ],
-        "esModuleInterop": true,
-        "moduleResolution": "Node",
-        "jsx": "react"
-    }
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "types": ["chrome-types", "node", "jest"],
+    "esModuleInterop": true,
+    "moduleResolution": "Node",
+    "jsx": "preserve"
+  }
 }
