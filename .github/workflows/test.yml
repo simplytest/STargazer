@@ -1,0 +1,29 @@
+on:
+  push:
+    branches: [master]
+    paths:
+      - '**.ts'
+      - '**.tsx'
+      - 'yarn.lock'
+      - 'package.json'
+  workflow_dispatch:
+
+name: Run Tests
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📦 Checkout
+        uses: actions/checkout@v3.3.0
+
+      - name: 🚧 Setup Node
+        uses: actions/setup-node@v3.6.0
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: 🤖 Setup Project
+        run: 'yarn'
+
+      - name: 🔍 Test
+        run: 'yarn test'

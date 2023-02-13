@@ -1,12 +1,10 @@
 on:
-  push:
-    branches: [master]
-    paths:
-      - '**.ts'
-      - '**.tsx'
-      - 'yarn.lock'
-      - 'package.json'
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Run Tests"]
+    branches: [main]
+    types: 
+      - completed
 
 name: Build Extension
 jobs:
