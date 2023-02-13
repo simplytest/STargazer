@@ -3,10 +3,12 @@ import { SelectorOptions } from '../src/types/generator';
 import { defaultOptions } from '../src/utils/options';
 
 function Options({ options, setOptions }: { options: SelectorOptions; setOptions: (value: SelectorOptions) => void }) {
-  const update = <T,>(key: keyof SelectorOptions, value: T) => {
-    const copy = { ...options };
-    (copy[key] as T) = value;
-    setOptions(copy);
+  const update = <T,>(key: keyof SelectorOptions) => {
+    return (value: T) => {
+      const copy = { ...options };
+      (copy[key] as T) = value;
+      setOptions(copy);
+    };
   };
 
   if (!options) {
@@ -24,7 +26,7 @@ function Options({ options, setOptions }: { options: SelectorOptions; setOptions
             withAsterisk
             value={options.type}
             label="Selector type"
-            onChange={v => update('type', v)}
+            onChange={update('type')}
             description="Your preferred selector type (Note: XPath is mightier than CSS)"
           >
             <Radio value="xpath" label="XPath" />
@@ -40,8 +42,8 @@ function Options({ options, setOptions }: { options: SelectorOptions; setOptions
             stepHoldDelay={500}
             stepHoldInterval={0.1}
             label="Gibberish Tolerance"
+            onChange={update('gibberishTolerance')}
             defaultValue={options.gibberishTolerance}
-            onChange={v => update('gibberishTolerance', v)}
             description="(Lower = More Gibberish, Higher = Less Gibberish)"
           />
           <Switch
@@ -49,7 +51,7 @@ function Options({ options, setOptions }: { options: SelectorOptions; setOptions
             label="Hide Ambiguous"
             checked={options.onlyUnique}
             description="Hides selectors with more than one occurrence"
-            onChange={v => update('onlyUnique', v.currentTarget.checked)}
+            onChange={v => update('onlyUnique')(v.currentTarget.checked)}
             onLabel="ON"
             offLabel="OFF"
           />
@@ -60,8 +62,8 @@ function Options({ options, setOptions }: { options: SelectorOptions; setOptions
             step={1}
             label="Results to display"
             value={options.resultsToDisplay}
+            onChange={update('resultsToDisplay')}
             description="Only show first N results"
-            onChange={v => update('resultsToDisplay', v)}
           />
           <NumberInput
             mb={20}
@@ -70,8 +72,8 @@ function Options({ options, setOptions }: { options: SelectorOptions; setOptions
             step={1}
             label="Score Tolerance"
             value={options.scoreTolerance}
+            onChange={update('scoreTolerance')}
             description="Only show results with scores above N"
-            onChange={v => update('scoreTolerance', v)}
           />
           <Button fullWidth onClick={() => setOptions(defaultOptions)}>
             Restore Defaults
