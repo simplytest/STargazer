@@ -24,7 +24,7 @@ export default function (selector: Selector, gibberishTolerance: number) {
   const score = textScorer.getTextScore(selector.value);
 
   if (score < gibberishTolerance) {
-    return -((gibberishTolerance - score) * 1000);
+    return -((gibberishTolerance - score) * 5_000);
   }
 
   return Math.min(score * 1000, 20);

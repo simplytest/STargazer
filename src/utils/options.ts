@@ -5,7 +5,7 @@ const defaultOptions: SelectorOptions = {
   onlyUnique: true,
   resultsToDisplay: 5,
   scoreTolerance: -100,
-  gibberishTolerance: 0.073,
+  gibberishTolerance: 0.028,
 };
 
 async function saveOptions(options: SelectorOptions) {
