@@ -28,7 +28,10 @@ import theme from '../theme';
 function Shell({ children }: { children: React.ReactNode }) {
   const theme = useMantineTheme();
 
-  const close = () => inject(() => document.getElementById('stargazer_sidebar').remove());
+  const close = () => {
+    inject(stopPicking);
+    inject(() => document.getElementById('stargazer_sidebar').remove());
+  };
 
   const Head = () => (
     <Header height={60} p={5} bg={theme.colors.dark[5]}>
