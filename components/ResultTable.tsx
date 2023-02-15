@@ -1,9 +1,13 @@
 import { clipboard } from '@extend-chrome/clipboard';
 import { ActionIcon, Alert, Badge, Center, Table, TextInput } from '@mantine/core';
+import { useHover } from '@mantine/hooks';
 import { IconCopy, IconDatabaseOff } from '@tabler/icons-react';
+import { useEffect, useState } from 'react';
+import { highlightBySelector } from '../src/highlight';
 import { Result } from '../src/types/generator';
+import { findBySelector } from '../src/utils/dom';
 
-function ResultTable({ results }: { results: Result[] }) {
+function TableEntry({ result }: { result: Result }) {
   const color = (occurrences: number) => {
     if (occurrences === 1) {
       return 'green';
@@ -14,15 +18,34 @@ function ResultTable({ results }: { results: Result[] }) {
     return 'red';
   };
 
-  const mapped = results.map(result => (
-    <tr key={result.selector}>
+  const [value, setValue] = useState(result.selector);
+  const { hovered, ref } = useHover<HTMLTableRowElement>();
+  const [occurrences, setOccurrences] = useState(result.occurrences);
+
+  useEffect(() => {
+    if (hovered) {
+      highlightBySelector(value);
+    }
+  }, [hovered]);
+
+  useEffect(() => {
+    if (value !== result.selector) {
+      highlightBySelector(value);
+    }
+  }, [value]);
+
+  return (
+    <tr ref={ref}>
       <td>
-        <Badge color={color(result.occurrences)}>{result.occurrences}</Badge>
+        <Badge color={color(occurrences)}>{occurrences}</Badge>
       </td>
       <td>
         <TextInput
-          disabled
-          value={result.selector}
+          value={value}
+          onChange={v => {
+            setValue(v.currentTarget.value);
+            findBySelector(v.currentTarget.value).then(setOccurrences);
+          }}
           rightSection={
             <ActionIcon
               onClick={async () => {
@@ -35,7 +58,11 @@ function ResultTable({ results }: { results: Result[] }) {
         />
       </td>
     </tr>
-  ));
+  );
+}
+
+function ResultTable({ results }: { results: Result[] }) {
+  const mapped = results.map(result => <TableEntry key={result.selector} result={result} />);
 
   return mapped.length > 0 ? (
     <Table>
