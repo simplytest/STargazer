@@ -1,17 +1,16 @@
 import { GeneratorOptions } from '../types/generator';
-import { select, SelectorChain } from '../types/selector';
+import { SelectorChain } from '../types/selector';
+import { select } from '../utils/selector';
 
 const excludeList = [
-  'jscontroller',
-  'jsaction',
-  'jsmodel',
-  'jsname',
-  'jsdata',
-  'height',
-  'xmlns',
-  'width',
-  'style',
-  'class',
+  //
+  /^js[a-z]+/g,
+  /^height$/g,
+  /^xmlns$/g,
+  /^width$/g,
+  /^style$/g,
+  /^class$/g,
+  /^on[a-z]+/g,
 ];
 
 export default async function ({ inspected }: GeneratorOptions): Promise<SelectorChain[]> {
@@ -21,7 +20,7 @@ export default async function ({ inspected }: GeneratorOptions): Promise<Selecto
   const tagName = element.tagName.toLowerCase();
 
   const attributes = element.getAttributeNames();
-  const allowedAttributes = attributes.filter(x => !excludeList.includes(x));
+  const allowedAttributes = attributes.filter(x => !excludeList.find(y => x.match(y)));
 
   tagName && results.push([select({ tag: tagName })]);
 

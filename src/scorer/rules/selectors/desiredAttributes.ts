@@ -12,7 +12,6 @@ const desired: [regex: RegExp, score: number][] = [
   // Undesired
   [/^type$/g, -10],
   [/^alt$/g, -10],
-  [/^on[a-z]+$/g, -25],
 ];
 
 export default function (selector: Selector) {
