@@ -1,4 +1,4 @@
-import { InspectedElement } from './inspected';
+import { Inspected } from './inspected';
 import { SelectorChain } from './selector';
 
 export interface Result {
@@ -10,6 +10,6 @@ export interface Result {
 
 export interface GeneratorOptions {
   document: Document;
+  inspected?: Inspected;
   gibberishTolerance: number;
-  inspected?: InspectedElement;
 }
