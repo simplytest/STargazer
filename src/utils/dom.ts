@@ -1,96 +1,12 @@
+import { exec } from './chrome';
 import { getFromHTML } from './html';
-import { Inspected } from '../types/dom';
-import { execute, inject } from './chrome';
 
-async function exec<R, T extends unknown[]>(func: (...args: T) => R, ...args: T) {
-  const devToolsAvailable = !!chrome.devtools?.inspectedWindow;
-
-  if (!devToolsAvailable) {
-    return inject<R, T>(func, ...args);
-  }
-
-  const serializedFunc = func.toString().replaceAll(/window[[.]["'`]?stargazer_inspected["'`]?\]?/gi, '$0');
-  return execute<R>(`(${serializedFunc})(${args})`);
-}
-
-async function getDom(): Promise<Document> {
+export async function getDocument() {
   const html = await exec(() => document.body.outerHTML);
   return getFromHTML(html, 'Document');
 }
 
-async function getInspected(): Promise<Inspected> {
-  const [html, innerText] = await exec(() => {
-    const element: HTMLElement = window['stargazer_inspected'];
-    return [element.outerHTML, element.innerText];
-  });
-
-  const element = getFromHTML(html, 'Element');
-  return { element, html, innerText };
-}
-
-async function getInspectedParent(): Promise<[Inspected, number]> {
-  const [html, innerText] = await exec(() => {
-    const element: HTMLElement = window['stargazer_inspected'];
-    return [element.parentElement.outerHTML, element.parentElement.innerText];
-  });
-
-  const index = await exec(() => {
-    const element: HTMLElement = window['stargazer_inspected'];
-    return [...(element.parentElement.children as unknown as HTMLElement[])].indexOf(element);
-  });
-
-  const element = getFromHTML(html, 'Element');
-  return [{ element, html, innerText }, index];
-}
-
-async function getInspectedParentCount(): Promise<number> {
-  return await exec(() => {
-    const element: HTMLElement = window['stargazer_inspected'];
-
-    const parent = (x: HTMLElement, n: number, i = 0) => {
-      if (i >= n) {
-        return x;
-      } else {
-        return parent(x.parentElement, n, i + 1);
-      }
-    };
-
-    let parents = 0;
-
-    for (let i = 0; parent(element, i); i++) {
-      parents++;
-    }
-
-    return parents;
-  });
-}
-
-async function getInspectedParentRecursive(n: number): Promise<[Inspected, number]> {
-  const [html, innerText, index] = await exec(n => {
-    const element: HTMLElement = window['stargazer_inspected'];
-
-    const parent = (x: HTMLElement, n: number, i = 0) => {
-      if (i >= n) {
-        return x;
-      } else {
-        return parent(x.parentElement, n, i + 1);
-      }
-    };
-
-    const rtn = parent(element, n);
-
-    return [
-      rtn.outerHTML,
-      rtn.innerText,
-      [...rtn.parentElement.children].filter(x => x.tagName === rtn.tagName).indexOf(rtn),
-    ];
-  }, n);
-
-  const element = getFromHTML(html, 'Element');
-  return [{ element, html, innerText }, index];
-}
-
-function findByXPath(selector: string): number {
+export async function findByXPath(selector: string) {
   try {
     return document.evaluate(selector, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength;
   } catch (error) {
@@ -98,7 +14,7 @@ function findByXPath(selector: string): number {
   }
 }
 
-function findByCSS(selector: string): number {
+export async function findByCSS(selector: string) {
   try {
     return document.querySelectorAll(selector).length;
   } catch (error) {
@@ -106,12 +22,32 @@ function findByCSS(selector: string): number {
   }
 }
 
-export {
-  getDom,
-  getInspected,
-  findByXPath,
-  findByCSS,
-  getInspectedParent,
-  getInspectedParentCount,
-  getInspectedParentRecursive,
-};
+export async function findBySelector(selector: string) {
+  if (selector.startsWith('//')) {
+    return exec(findByXPath, selector);
+  }
+
+  return exec(findByCSS, selector);
+}
+
+export async function markBySelector(selector: string) {
+  return exec(selector => {
+    try {
+      if (selector.startsWith('//')) {
+        const result = document.evaluate(selector, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+        const items = [];
+
+        for (let i = 0; result.snapshotLength > i; i++) {
+          items.push(result.snapshotItem(i));
+        }
+
+        window.stargazer_marked = items;
+        return;
+      }
+
+      window.stargazer_marked = [...(document.querySelectorAll(selector) as unknown as HTMLElement[])];
+    } catch (error) {
+      // Errors are most likely caused by bad selectors, we can ignore them.
+    }
+  }, selector);
+}

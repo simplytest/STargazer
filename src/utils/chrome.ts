@@ -1,4 +1,4 @@
-async function execute<T>(script: string): Promise<T> {
+export async function evalScript<T>(script: string): Promise<T> {
   return new Promise<T>(resolve => {
     chrome.devtools.inspectedWindow.eval(script, {}, result => {
       resolve(result as T);
@@ -6,7 +6,7 @@ async function execute<T>(script: string): Promise<T> {
   });
 }
 
-async function inject<R, T extends unknown[]>(func: (...args: T) => R, ...args: T): Promise<R> {
+export async function executeScript<R, T extends Array<any>>(func: (...args: T) => R, ...args: T): Promise<R> {
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
   const tab = tabs[0].id;
 
@@ -22,4 +22,22 @@ async function inject<R, T extends unknown[]>(func: (...args: T) => R, ...args: 
   });
 }
 
-export { execute, inject };
+export async function exec<R, T extends Array<any>>(func: (...args: T) => R, ...args: T): Promise<R> {
+  const hasDevTools = !!chrome?.devtools?.inspectedWindow;
+
+  if (!hasDevTools) {
+    return executeScript(func, ...args);
+  }
+
+  const serializedFunc = func.toString().replaceAll(/window.stargazer_inspected/gi, '$0');
+  return evalScript<R>(`(${serializedFunc})(JSON.parse(${JSON.stringify(JSON.stringify(args))}))`);
+}
+
+export async function getHotkey(): Promise<string> {
+  const commands = await chrome.commands.getAll();
+  return commands.find(x => x.name === 'pause-execution').shortcut;
+}
+
+export function getVersion(): string {
+  return chrome.runtime.getManifest().version;
+}

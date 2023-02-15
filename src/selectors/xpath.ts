@@ -1,6 +1,6 @@
 import { Selector, SelectorChain } from '../types/selector';
 
-function constructConditions(select: Selector, conditions: number) {
+function construct(select: Selector, conditions: number) {
   let selector = '';
 
   if (conditions > 0) {
@@ -29,7 +29,7 @@ function constructConditions(select: Selector, conditions: number) {
   return selector;
 }
 
-function generateXPath(chain: SelectorChain): string {
+export function generateXPath(chain: SelectorChain): string {
   let selector = '//';
 
   for (const [index, select] of chain.entries()) {
@@ -54,10 +54,8 @@ function generateXPath(chain: SelectorChain): string {
       conditions -= 1;
     }
 
-    selector += constructConditions(select, conditions);
+    selector += construct(select, conditions);
   }
 
   return selector;
 }
-
-export { generateXPath };

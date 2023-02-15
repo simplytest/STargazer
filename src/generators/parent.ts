@@ -1,11 +1,12 @@
-import { Inspected } from '../types/dom';
 import { GeneratorOptions } from '../types/generator';
-import { select, SelectorChain } from '../types/selector';
+import { InspectedParent } from '../types/inspected';
+import { SelectorChain } from '../types/selector';
+import { select } from '../utils/selector';
 import attributes from './attributes';
 
 export default async function (
-  { inspected, dom, gibberishTolerance }: GeneratorOptions,
-  [parent, index]: [Inspected, number]
+  { inspected, document, gibberishTolerance }: GeneratorOptions,
+  { parent, index }: InspectedParent
 ): Promise<SelectorChain[]> {
   const results: SelectorChain[] = [];
 
@@ -19,8 +20,8 @@ export default async function (
     return results;
   }
 
-  const parentSelectors = await attributes({ dom, inspected: parent, gibberishTolerance });
-  const selectors = await attributes({ dom, inspected, gibberishTolerance });
+  const parentSelectors = await attributes({ document, inspected: parent, gibberishTolerance });
+  const selectors = await attributes({ document, inspected, gibberishTolerance });
 
   if (index !== -1) {
     selectors.push([select({ index })]);

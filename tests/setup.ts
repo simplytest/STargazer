@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { inject } from '../src/utils/chrome';
+import { exec } from '../src/utils/chrome';
 import { getFromHTML } from '../src/utils/html';
 
 jest.mock('../src/utils/chrome');
@@ -21,8 +21,8 @@ mockGetFromHtml.mockImplementation((html, type: unknown) => {
   return rtn as Document;
 });
 
-const mockInject = inject as jest.MockedFunction<typeof inject>;
-mockInject.mockImplementation((fn, args) => Promise.resolve(fn(args)));
+const mockExec = exec as jest.MockedFunction<typeof exec>;
+mockExec.mockImplementation((fn, args) => Promise.resolve(fn(args)));
 Object.defineProperty(global, 'chrome', { value: { devtools: undefined } });
 
 export default function (dom: Document, inspected: HTMLElement) {

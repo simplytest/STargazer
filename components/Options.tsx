@@ -1,19 +1,21 @@
 import { Accordion, Button, NumberInput, Radio, Switch } from '@mantine/core';
-import { SelectorOptions } from '../src/types/generator';
-import { defaultOptions } from '../src/utils/options';
+import { useContext } from 'react';
+import { defaultSettings } from '../src/defaults/settings';
+import { SettingsContext } from '../src/utils/settings';
 
-function Options({ options, setOptions }: { options: SelectorOptions; setOptions: (value: SelectorOptions) => void }) {
-  const update = <T,>(key: keyof SelectorOptions) => {
-    return (value: T) => {
-      const copy = { ...options };
-      (copy[key] as T) = value;
-      setOptions(copy);
-    };
-  };
-
-  if (!options) {
-    return;
-  }
+function Options() {
+  const {
+    type,
+    setType,
+    gibberishTolerance,
+    setGibberishTolerance,
+    onlyUnique,
+    setOnlyUnique,
+    resultsToDisplay,
+    setResultsToDisplay,
+    scoreTolerance,
+    setScoreTolerance,
+  } = useContext(SettingsContext);
 
   return (
     <Accordion variant="separated">
@@ -24,9 +26,9 @@ function Options({ options, setOptions }: { options: SelectorOptions; setOptions
             mb={20}
             name="type"
             withAsterisk
-            value={options.type}
+            value={type}
+            onChange={setType}
             label="Selector type"
-            onChange={update('type')}
             description="Your preferred selector type (Note: XPath is mightier than CSS)"
           >
             <Radio value="xpath" label="XPath" />
@@ -42,18 +44,18 @@ function Options({ options, setOptions }: { options: SelectorOptions; setOptions
             stepHoldDelay={500}
             stepHoldInterval={0.1}
             label="Gibberish Tolerance"
-            onChange={update('gibberishTolerance')}
-            defaultValue={options.gibberishTolerance}
+            onChange={setGibberishTolerance}
+            defaultValue={gibberishTolerance}
             description="(Lower = More Gibberish, Higher = Less Gibberish)"
           />
           <Switch
             mb={20}
-            label="Hide Ambiguous"
-            checked={options.onlyUnique}
-            description="Hides selectors with more than one occurrence"
-            onChange={v => update('onlyUnique')(v.currentTarget.checked)}
+            checked={onlyUnique}
+            onChange={v => setOnlyUnique(v.currentTarget.checked)}
             onLabel="ON"
             offLabel="OFF"
+            label="Hide Ambiguous"
+            description="Hides selectors with more than one occurrence"
           />
           <NumberInput
             mb={20}
@@ -61,8 +63,8 @@ function Options({ options, setOptions }: { options: SelectorOptions; setOptions
             max={Infinity}
             step={1}
             label="Results to display"
-            value={options.resultsToDisplay}
-            onChange={update('resultsToDisplay')}
+            value={resultsToDisplay}
+            onChange={setResultsToDisplay}
             description="Only show first N results"
           />
           <NumberInput
@@ -71,11 +73,20 @@ function Options({ options, setOptions }: { options: SelectorOptions; setOptions
             max={Infinity}
             step={1}
             label="Score Tolerance"
-            value={options.scoreTolerance}
-            onChange={update('scoreTolerance')}
+            value={scoreTolerance}
+            onChange={setScoreTolerance}
             description="Only show results with scores above N"
           />
-          <Button fullWidth onClick={() => setOptions(defaultOptions)}>
+          <Button
+            fullWidth
+            onClick={() => {
+              setType(defaultSettings.type);
+              setOnlyUnique(defaultSettings.onlyUnique);
+              setScoreTolerance(defaultSettings.scoreTolerance);
+              setResultsToDisplay(defaultSettings.resultsToDisplay);
+              setGibberishTolerance(defaultSettings.gibberishTolerance);
+            }}
+          >
             Restore Defaults
           </Button>
         </Accordion.Panel>

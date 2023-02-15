@@ -1,87 +1,78 @@
-import { LoadingOverlay, MantineProvider, Stack, Title } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import { ErrorModal } from '../../components/ErrorModal';
+import { LoadingOverlay, Stack, Title } from '@mantine/core';
+import { useContext, useEffect, useState } from 'react';
+import { showError } from '../../components/ErrorModal';
 import { Options } from '../../components/Options';
 import { ResultTable } from '../../components/ResultTable';
 import { generateSelectors } from '../../src/generator';
-import { loaded } from '../../src/sidebar';
-import { Result, SelectorOptions } from '../../src/types/generator';
-import { defaultOptions, getOptions, saveOptions } from '../../src/utils/options';
-import theme from '../theme';
-
-function Warning() {
-  return (
-    <ErrorModal
-      persistent
-      error="You can't use STargazer from Dev-Tools while the Editor is active, please close it first and then re-open the Dev-Tools"
-    />
-  );
-}
+import { removeHighlights } from '../../src/highlight';
+import { isSidebarActive } from '../../src/sidebar';
+import { Result } from '../../src/types/generator';
+import { Settings } from '../../src/types/settings';
+import setup from '../../src/utils/react';
+import { SettingsContext } from '../../src/utils/settings';
 
 function DevTools() {
-  const [error, setError] = useState<unknown>();
-
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Result[]>([]);
-  const [options, _setOptions] = useState(defaultOptions);
 
+  const { ...settings } = useContext(SettingsContext);
   const [removeListener, setRemover] = useState<() => void>(undefined);
 
-  const setOptions = (value: SelectorOptions) => {
-    saveOptions(value).then(() => _setOptions({ ...value }));
-    generate(value);
-  };
+  const generate = (settings: Settings) => {
+    removeHighlights();
 
-  const generate = (options: SelectorOptions) => {
     setResults([]);
     setLoading(true);
-    setError(undefined);
 
-    generateSelectors(options)
+    generateSelectors(settings)
       .then(setResults)
-      .catch(setError)
+      .catch(showError)
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    getOptions().then(options => {
-      _setOptions({ ...options });
-      generate(options);
-    });
-  }, []);
+    if (!settings.loaded) {
+      return;
+    }
 
-  useEffect(() => {
-    const generator = () => {
-      generate(options);
+    generate(settings);
+
+    const listener = () => {
+      generate(settings);
     };
 
     removeListener && removeListener();
-    chrome.devtools.panels.elements.onSelectionChanged.addListener(generator);
-    setRemover(() => () => chrome.devtools.panels.elements.onSelectionChanged.removeListener(generator));
-  }, [options]);
+    chrome.devtools.panels.elements.onSelectionChanged.addListener(listener);
+    setRemover(() => () => chrome.devtools.panels.elements.onSelectionChanged.removeListener(listener));
+  }, Object.values(settings));
 
   return (
     <>
       <LoadingOverlay visible={loading} overlayBlur={2} />
-      {!!error && <ErrorModal error={error} />}
       <Stack justify="center">
         <Title order={1} align="center">
           Generated Selectors
         </Title>
-        <Options options={options} setOptions={setOptions} />
+        <Options />
         <ResultTable results={results} />
       </Stack>
     </>
   );
 }
 
-loaded().then(result => {
-  createRoot(document.getElementById('root') as HTMLElement).render(
-    <React.StrictMode>
-      <MantineProvider withGlobalStyles theme={theme}>
-        <div style={{ width: '100%', height: '100%' }}>{result ? <Warning /> : <DevTools />}</div>
-      </MantineProvider>
-    </React.StrictMode>
+isSidebarActive().then(result => {
+  if (!result) {
+    return setup(
+      <div style={{ width: '100%', height: '100%' }}>
+        <DevTools />
+      </div>
+    );
+  }
+
+  setup(
+    <>
+      You can't use STargazer from Dev-Tools while the Editor is active, please close it first and then re-open the
+      Dev-Tools
+    </>
   );
 });

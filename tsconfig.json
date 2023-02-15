@@ -2,10 +2,13 @@
   "compilerOptions": {
     "module": "ESNext",
     "target": "ESNext",
-    "lib": ["ESNext", "DOM"],
-    "types": ["chrome-types", "node", "jest"],
+
+    "jsx": "preserve",
     "esModuleInterop": true,
     "moduleResolution": "Node",
-    "jsx": "preserve"
+
+    "lib": ["ESNext", "DOM"],
+    "types": ["chrome-types", "jest"],
+    "typeRoots": ["./src/types", "./node_modules/@types"]
   }
 }

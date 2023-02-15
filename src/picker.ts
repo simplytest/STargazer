@@ -1,4 +1,6 @@
-function startPicking() {
+import { executeScript } from './utils/chrome';
+
+function loadPicker() {
   const old = document.getElementById('stargazer_inspect');
   const maximumZIndex = '2147483647';
 
@@ -24,7 +26,7 @@ function startPicking() {
     const { clientX, clientY } = ev;
 
     overlay.style.display = 'none';
-    window['stargazer_inspected'] = document.elementFromPoint(clientX, clientY);
+    window.stargazer_inspected = document.elementFromPoint(clientX, clientY) as HTMLElement;
 
     chrome.runtime.sendMessage(null, { name: 'Selected' });
     overlay.remove();
@@ -73,7 +75,7 @@ function startPicking() {
   });
 }
 
-function stopPicking() {
+function unloadPicker() {
   const inspect = document.getElementById('stargazer_inspect');
 
   if (!inspect) {
@@ -83,4 +85,10 @@ function stopPicking() {
   inspect.remove();
 }
 
-export { startPicking, stopPicking };
+export async function startPicking() {
+  await executeScript(loadPicker);
+}
+
+export async function stopPicking() {
+  await executeScript(unloadPicker);
+}

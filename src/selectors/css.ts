@@ -1,10 +1,10 @@
 import { Selector, SelectorChain } from '../types/selector';
 
-function constructConditions(select: Selector) {
+function construct(select: Selector) {
   let selector = '';
 
   if ('attribute' in select) {
-    if (select.attribute == 'id') {
+    if (select.attribute === 'id') {
       selector += `#${select.value}`;
     } else if (select.attribute === 'class') {
       selector += `.${select.value}`;
@@ -20,11 +20,11 @@ function constructConditions(select: Selector) {
   return selector;
 }
 
-function generateCSS(chain: SelectorChain): string {
+export function generateCSS(chain: SelectorChain): string {
   let selector = '';
 
   // ? CSS Selectors can't check for text
-  if (chain.indexOf(chain.find(x => 'text' in x)) !== -1) {
+  if (chain.find(x => 'text' in x)) {
     return selector;
   }
 
@@ -37,10 +37,8 @@ function generateCSS(chain: SelectorChain): string {
       selector += select.tag;
     }
 
-    selector += constructConditions(select);
+    selector += construct(select);
   }
 
   return selector;
 }
-
-export { generateCSS };

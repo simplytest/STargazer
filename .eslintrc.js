@@ -35,5 +35,6 @@ module.exports = {
     'react/self-closing-comp': 'error',
     'react/no-unescaped-entities': 'off',
     'react/jsx-closing-tag-location': 'error',
+    '@typescript-eslint/no-explicit-any': 'off',
   },
 };

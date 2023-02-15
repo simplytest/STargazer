@@ -4,7 +4,6 @@ import {
   Divider,
   Group,
   Image,
-  MantineProvider,
   Space,
   Stack,
   Text,
@@ -12,26 +11,22 @@ import {
   Tooltip,
   useMantineTheme,
 } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import { load, loaded } from '../../src/sidebar';
-import { getHotkey, getVersion } from '../../src/utils/extension';
-import theme from '../theme';
+import { useEffect, useState } from 'react';
+import { isSidebarActive, loadSidebar } from '../../src/sidebar';
+import { getHotkey, getVersion } from '../../src/utils/chrome';
+import setup from '../../src/utils/react';
 
 function PopUp() {
-  const [isLoaded, setLoaded] = useState(false);
-  const [hotkey, setHotkey] = useState('');
-  const theme = useMantineTheme();
   const version = getVersion();
+  const theme = useMantineTheme();
+
+  const [hotkey, setHotkey] = useState('');
+  const [sidebarActive, setSidebarActive] = useState(false);
 
   useEffect(() => {
     getHotkey().then(setHotkey);
-    loaded().then(setLoaded);
+    isSidebarActive().then(setSidebarActive);
   }, []);
-
-  const loadSidebar = () => {
-    load(theme.colors.dark[8], theme.colors.dark[3]).then(() => window.close());
-  };
 
   return (
     <Stack align="center" style={{ padding: '10px', width: '300px', height: '500px' }}>
@@ -42,8 +37,11 @@ function PopUp() {
       </Group>
       <Divider orientation="horizontal" w={280} />
       <Space h="xs" />
-      <Button fullWidth onClick={loadSidebar}>
-        {isLoaded ? 'Reload Editor' : 'Open Editor'}
+      <Button
+        fullWidth
+        onClick={() => loadSidebar(theme.colors.dark[8], theme.colors.dark[3]).then(() => window.close())}
+      >
+        {sidebarActive ? 'Reload Editor' : 'Open Editor'}
       </Button>
       <Text fz="sm" italic align="center">
         Or use the DevTools by inspecting an element and then opening the "STargazer" tab besides "Styles"
@@ -63,10 +61,4 @@ function PopUp() {
   );
 }
 
-createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
-      <PopUp />
-    </MantineProvider>
-  </React.StrictMode>
-);
+setup(<PopUp />);

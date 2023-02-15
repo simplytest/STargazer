@@ -6,31 +6,32 @@ import {
   Group,
   Header,
   LoadingOverlay,
-  MantineProvider,
   Stack,
   Text,
   Title,
   useMantineTheme,
 } from '@mantine/core';
 import { IconClick } from '@tabler/icons-react';
-import React, { useEffect, useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import { ErrorModal } from '../../components/ErrorModal';
+import React, { useContext, useEffect, useState } from 'react';
+import { showError } from '../../components/ErrorModal';
 import { Options } from '../../components/Options';
 import { ResultTable } from '../../components/ResultTable';
 import { generateSelectors } from '../../src/generator';
+import { removeHighlights } from '../../src/highlight';
 import { startPicking, stopPicking } from '../../src/picker';
-import { Result, SelectorOptions } from '../../src/types/generator';
-import { inject } from '../../src/utils/chrome';
-import { defaultOptions, getOptions, saveOptions } from '../../src/utils/options';
-import theme from '../theme';
+import { removeSidebar } from '../../src/sidebar';
+import { Result } from '../../src/types/generator';
+import { Settings } from '../../src/types/settings';
+import setup from '../../src/utils/react';
+import { SettingsContext } from '../../src/utils/settings';
 
 function Shell({ children }: { children: React.ReactNode }) {
   const theme = useMantineTheme();
 
-  const close = () => {
-    inject(stopPicking);
-    inject(() => document.getElementById('stargazer_sidebar').remove());
+  const onClose = () => {
+    stopPicking();
+    removeSidebar();
+    removeHighlights();
   };
 
   const Head = () => (
@@ -45,7 +46,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         </Grid.Col>
         <Grid.Col span={2}>
           <Group style={{ width: '100%', height: '100%' }} position="center" noWrap>
-            <CloseButton onClick={close} />
+            <CloseButton onClick={onClose} />
           </Group>
         </Grid.Col>
       </Grid>
@@ -57,53 +58,48 @@ function Shell({ children }: { children: React.ReactNode }) {
 
 function Editor() {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<unknown>();
+  const [inspecting, setInspecting] = useState(false);
   const [results, setResults] = useState<Result[]>([]);
 
-  const [inspecting, setInspecting] = useState(false);
-  const [options, _setOptions] = useState(defaultOptions);
-
+  const { ...settings } = useContext(SettingsContext);
   const [removeListener, setRemover] = useState<() => void>(undefined);
 
   const toggleInspect = () => {
     if (inspecting) {
-      inject(stopPicking);
+      stopPicking();
       setInspecting(false);
-    } else {
-      inject(startPicking);
-      setInspecting(true);
+      return;
     }
+
+    startPicking();
+    setInspecting(true);
   };
 
-  const setOptions = (value: SelectorOptions) => {
-    saveOptions(value).then(() => {
-      _setOptions({ ...value });
-      generate(value);
-    });
-  };
+  const generate = (settings: Settings) => {
+    removeHighlights();
 
-  const generate = (options: SelectorOptions) => {
     setResults([]);
     setLoading(true);
-    setError(undefined);
 
-    generateSelectors(options)
+    generateSelectors(settings)
       .then(setResults)
-      .catch(setError)
+      .catch(showError)
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    getOptions().then(options => _setOptions({ ...options }));
-  }, []);
+    if (!settings.loaded) {
+      return;
+    }
 
-  useEffect(() => {
+    generate(settings);
+
     const listener = (message: { name: string }) => {
       const { name } = message;
 
       if (name === 'Selected') {
         setInspecting(false);
-        generate(options);
+        generate(settings);
       }
 
       return false;
@@ -112,23 +108,22 @@ function Editor() {
     removeListener && removeListener();
     chrome.runtime.onMessage.addListener(listener);
     setRemover(() => () => chrome.runtime.onMessage.removeListener(listener));
-  }, [options]);
+  }, Object.values(settings));
 
   return (
     <>
       <Shell>
         <LoadingOverlay visible={loading} overlayBlur={2} />
-        {!!error && <ErrorModal error={error} />}
         <Stack justify="center">
           <Stack style={{ width: '100%', cursor: 'pointer' }} m={15} align="center" onClick={toggleInspect}>
             <ActionIcon variant="subtle" color={inspecting ? 'orange' : undefined}>
               <IconClick size={32} />
             </ActionIcon>
             <Text fz="sm" italic>
-              Select an Element
+              <b>Click</b> to select an Element
             </Text>
           </Stack>
-          <Options options={options} setOptions={setOptions} />
+          <Options />
           <ResultTable results={results} />
         </Stack>
       </Shell>
@@ -136,12 +131,8 @@ function Editor() {
   );
 }
 
-createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
-      <div style={{ width: '100%', height: '100%' }}>
-        <Editor />
-      </div>
-    </MantineProvider>
-  </React.StrictMode>
+setup(
+  <div style={{ width: '100%', height: '100%' }}>
+    <Editor />
+  </div>
 );

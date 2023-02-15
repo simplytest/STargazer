@@ -1,12 +1,13 @@
+import recursiveParent from './generators/absolute';
 import attributes from './generators/attributes';
 import parent from './generators/parent';
-import recursiveParent from './generators/absolute';
 import { score } from './scorer';
 import { generateCSS } from './selectors/css';
 import { generateXPath } from './selectors/xpath';
-import { GeneratorOptions, Result, SelectorOptions } from './types/generator';
-import { findByCSS, findByXPath, getDom, getInspected, getInspectedParent } from './utils/dom';
-import { inject } from './utils/chrome';
+import { GeneratorOptions, Result } from './types/generator';
+import { Settings } from './types/settings';
+import { findBySelector, getDocument } from './utils/dom';
+import { getInspected, getParent } from './utils/inspected';
 
 function adjustSelectorsWithParent(results: Result[]) {
   for (const result of results) {
@@ -44,32 +45,24 @@ function adjustSelectorsWithParent(results: Result[]) {
   return results;
 }
 
-async function generateSelectors({
-  type,
-  gibberishTolerance,
-  onlyUnique,
-  resultsToDisplay,
-  scoreTolerance,
-}: SelectorOptions) {
+async function generateSelectors({ type, gibberishTolerance, onlyUnique, resultsToDisplay, scoreTolerance }: Settings) {
   const inspected = await getInspected();
-  const dom = await getDom();
+  const document = await getDocument();
 
   if (!inspected || !inspected.element) {
     return [];
   }
 
-  const options: GeneratorOptions = { inspected, dom, gibberishTolerance };
+  const options: GeneratorOptions = { inspected, document, gibberishTolerance };
 
   const generated = [
     await attributes(options), //
-    await parent(options, await getInspectedParent()), //
+    await parent(options, await getParent()), //
     await recursiveParent(options),
   ];
 
   const selectorChains = generated.flat();
-
-  const generator = type == 'css' ? generateCSS : generateXPath;
-  const finder = type == 'css' ? findByCSS : findByXPath;
+  const generator = type === 'css' ? generateCSS : generateXPath;
 
   const selectors: Partial<Result>[] = selectorChains.map(x => ({
     chain: x,
@@ -77,13 +70,13 @@ async function generateSelectors({
   }));
 
   const withoutDuplicates = selectors.filter(
-    (x, i) => selectors.indexOf(selectors.find(y => y.selector == x.selector)) === i
+    (x, i) => selectors.indexOf(selectors.find(y => y.selector === x.selector)) === i
   );
 
   let withOccurrences: Partial<Result>[] = [];
 
   for (const selector of withoutDuplicates) {
-    const occurrences = await inject(finder, selector.selector);
+    const occurrences = await findBySelector(selector.selector);
     withOccurrences.push({ ...selector, occurrences });
   }
 

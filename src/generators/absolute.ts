@@ -1,24 +1,25 @@
 import { GeneratorOptions } from '../types/generator';
-import { select, SelectorChain } from '../types/selector';
-import { getInspectedParentCount, getInspectedParentRecursive } from '../utils/dom';
+import { SelectorChain } from '../types/selector';
+import { getParentAmount, getParentRecursive } from '../utils/inspected';
+import { select } from '../utils/selector';
 import attributes from './attributes';
 
-export default async function ({ dom, gibberishTolerance }: GeneratorOptions): Promise<SelectorChain[]> {
+export default async function ({ document, gibberishTolerance }: GeneratorOptions): Promise<SelectorChain[]> {
   const results = new Map<number, SelectorChain[]>();
-  const parents = await getInspectedParentCount();
+  const parents = await getParentAmount();
 
   const children = new Map<number, SelectorChain[]>();
 
   for (let i = 0; parents - 1 > i; i++) {
-    const [current, index] = await getInspectedParentRecursive(i);
+    const { parent, index } = await getParentRecursive(i);
     const selectors: SelectorChain[] = [];
 
     if (i === 0) {
-      const attributeSelectors = await attributes({ inspected: current, dom, gibberishTolerance });
+      const attributeSelectors = await attributes({ inspected: parent, document, gibberishTolerance });
       selectors.push(...attributeSelectors);
     }
 
-    const tag = current.element.tagName.toLowerCase();
+    const tag = parent.element.tagName.toLowerCase();
     tag && index >= 0 && selectors.push([select({ tag, index })]);
 
     children.set(i, selectors);

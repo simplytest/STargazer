@@ -1,4 +1,4 @@
-import { inject } from './utils/chrome';
+import { executeScript } from './utils/chrome';
 
 function createSidebar(url: string, background: string, handle: string) {
   const old = document.getElementById('stargazer_sidebar');
@@ -82,13 +82,14 @@ function createSidebar(url: string, background: string, handle: string) {
   drag.addEventListener('mouseup', dragStop);
 }
 
-async function load(background: string, handle: string) {
-  await inject(createSidebar, chrome.runtime.getURL('pages/editor/index.html'), background, handle);
+export async function loadSidebar(background: string, handle: string) {
+  await executeScript(createSidebar, chrome.runtime.getURL('pages/editor/index.html'), background, handle);
 }
 
-async function loaded(): Promise<boolean> {
-  const result = await inject(() => !!document.getElementById('stargazer_sidebar'));
-  return result;
+export async function removeSidebar() {
+  await executeScript(() => document.getElementById('stargazer_sidebar').remove());
 }
 
-export { createSidebar, load, loaded };
+export async function isSidebarActive(): Promise<boolean> {
+  return executeScript(() => !!document.getElementById('stargazer_sidebar'));
+}
