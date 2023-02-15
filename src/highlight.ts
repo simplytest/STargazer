@@ -1,4 +1,4 @@
-import { executeScript } from './utils/chrome';
+import { exec } from './utils/chrome';
 import { markBySelector } from './utils/dom';
 
 function highlight() {
@@ -37,18 +37,18 @@ function highlight() {
     if (sidebar) {
       sidebar.parentElement.insertBefore(overlay, sidebar);
     } else {
-      document.appendChild(overlay);
+      document.body.appendChild(overlay);
     }
   });
 }
 
 export async function highlightBySelector(selector: string) {
   await markBySelector(selector);
-  await executeScript(highlight);
+  await exec(highlight);
 }
 
 export async function removeHighlights() {
-  return executeScript(() => {
+  return exec(() => {
     const old = document.getElementsByName('stargazer_highlight');
     old.forEach(element => element.remove());
   });

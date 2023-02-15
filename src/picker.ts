@@ -37,7 +37,7 @@ function loadPicker() {
   if (sidebar) {
     sidebar.parentElement.insertBefore(overlay, sidebar);
   } else {
-    document.appendChild(overlay);
+    document.body.appendChild(overlay);
   }
 
   document.addEventListener('mousemove', e => {
