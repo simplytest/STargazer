@@ -2,6 +2,7 @@ import { MantineThemeOverride } from '@mantine/core';
 
 const theme: MantineThemeOverride = {
   loader: 'dots',
+  focusRing: 'never',
   colorScheme: 'dark',
   primaryColor: 'orange',
   colors: {

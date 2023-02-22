@@ -1,7 +1,22 @@
-import { Accordion, Button, NumberInput, Radio, Switch } from '@mantine/core';
+import { Accordion, Button, createStyles, NumberInput, Radio, Switch } from '@mantine/core';
+import { IconSettings } from '@tabler/icons-react';
 import { useContext } from 'react';
 import { defaultSettings } from '../src/defaults/settings';
 import { SettingsContext } from '../src/utils/settings';
+
+const useStyles = createStyles(theme => ({
+  item: {
+    border: '1px solid transparent',
+    transform: 'scale(1.03)',
+    position: 'relative',
+    zIndex: 0,
+
+    '&[data-active]': {
+      backgroundColor: theme.fn.rgba(theme.colors.dark[3], 0.2),
+      borderColor: theme.colors.dark[2],
+    },
+  },
+}));
 
 function Options() {
   const {
@@ -13,14 +28,15 @@ function Options() {
     setOnlyUnique,
     resultsToDisplay,
     setResultsToDisplay,
-    scoreTolerance,
     setScoreTolerance,
   } = useContext(SettingsContext);
 
+  const { classes } = useStyles();
+
   return (
-    <Accordion variant="separated">
+    <Accordion variant="separated" classNames={classes}>
       <Accordion.Item value="Options">
-        <Accordion.Control>Options</Accordion.Control>
+        <Accordion.Control icon={<IconSettings />}>Options</Accordion.Control>
         <Accordion.Panel>
           <Radio.Group
             mb={20}
@@ -66,16 +82,6 @@ function Options() {
             value={resultsToDisplay}
             onChange={setResultsToDisplay}
             description="Only show first N results"
-          />
-          <NumberInput
-            mb={20}
-            min={-Infinity}
-            max={Infinity}
-            step={1}
-            label="Score Tolerance"
-            value={scoreTolerance}
-            onChange={setScoreTolerance}
-            description="Only show results with scores above N"
           />
           <Button
             fullWidth
