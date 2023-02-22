@@ -17,9 +17,12 @@ export function score(result: Result, gibberishTolerance: number) {
     score += rule(result);
   }
 
-  for (const selector of result.chain) {
+  for (let i = 0; result.chain.length > i; i++) {
+    const selector = result.chain.at(i);
+
     for (const rule of selectorRules) {
-      score += rule(selector, gibberishTolerance);
+      const rating = rule(selector, gibberishTolerance);
+      score += rating * (rating > 0 ? Math.pow(2, -i) : 1);
     }
   }
 
