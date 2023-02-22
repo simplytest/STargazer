@@ -1,9 +1,9 @@
 import { Settings } from '../types/settings';
 
 export const defaultSettings: Settings = {
-  type: 'xpath',
+  type: 'css',
   onlyUnique: true,
-  resultsToDisplay: 5,
+  resultsToDisplay: 3,
   scoreTolerance: -100,
   gibberishTolerance: 0.028,
 };
