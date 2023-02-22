@@ -65,6 +65,8 @@ function Editor() {
   const [removeListener, setRemover] = useState<() => void>(undefined);
 
   const toggleInspect = () => {
+    removeHighlights();
+
     if (inspecting) {
       stopPicking();
       setInspecting(false);
