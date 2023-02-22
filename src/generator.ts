@@ -9,6 +9,25 @@ import { Settings } from './types/settings';
 import { findBySelector, getDocument } from './utils/dom';
 import { getInspected, getParent } from './utils/inspected';
 
+function normalizeParent(results: Result[]) {
+  for (const result of results) {
+    if (result.chain.length !== 1 || result.occurrences !== 1) {
+      continue;
+    }
+
+    const selector = result.chain.at(0);
+    const others = results.filter(x => x.chain.includes(selector));
+
+    for (const other of others) {
+      if (other.chain.length > 1) {
+        other.score -= result.score;
+      }
+    }
+  }
+
+  return results;
+}
+
 async function generateSelectors({ type, gibberishTolerance, onlyUnique, resultsToDisplay, scoreTolerance }: Settings) {
   const inspected = await getInspected();
   const document = await getDocument();
@@ -48,7 +67,8 @@ async function generateSelectors({ type, gibberishTolerance, onlyUnique, results
 
   let rtn: Result[] = withOccurrences.map((x: Result) => ({ ...x, score: score(x, gibberishTolerance) }));
 
-  rtn = rtn.sort((a, b) => b.score - a.score);
+  rtn = normalizeParent(rtn);
+  rtn = rtn = rtn.sort((a, b) => b.score - a.score);
 
   const withTolerance = rtn.filter(x => x.score > scoreTolerance);
 
