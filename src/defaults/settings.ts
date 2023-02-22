@@ -4,6 +4,6 @@ export const defaultSettings: Settings = {
   type: 'css',
   onlyUnique: true,
   resultsToDisplay: 3,
-  scoreTolerance: -50,
+  scoreTolerance: -100,
   gibberishTolerance: 0.0728,
 };
