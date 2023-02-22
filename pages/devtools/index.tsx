@@ -63,7 +63,7 @@ function DevTools() {
 isSidebarActive().then(result => {
   if (!result) {
     return setup(
-      <div style={{ width: '100%', height: '100%' }}>
+      <div style={{ width: '80%', margin: 'auto', height: '100%' }}>
         <DevTools />
       </div>
     );
