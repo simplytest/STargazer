@@ -9,16 +9,13 @@ const html = readFileSync(path.join(__dirname, 'wikipedia.html')).toString();
 const fakeDom = new JSDOM(html);
 
 describe('Wikipedia', () => {
-  const settings = defaultSettings;
-  settings.type = 'css';
-
   beforeAll(() => {
     setup(fakeDom.window.document);
   });
 
   it('Selectors for Search-Input', async () => {
     setInspected(fakeDom.window.document.querySelector('#txtSearch'));
-    const selectors = await generateSelectors(settings);
+    const selectors = await generateSelectors(defaultSettings);
 
     expect(selectors).toHaveLength(3);
     expect(selectors.at(0).selector).toBe('#txtSearch');
@@ -27,7 +24,7 @@ describe('Wikipedia', () => {
 
   it('Selectors for Search-Icon', async () => {
     setInspected(fakeDom.window.document.querySelector('.search-icon'));
-    const selectors = await generateSelectors(settings);
+    const selectors = await generateSelectors(defaultSettings);
 
     expect(selectors).toHaveLength(3);
     expect(selectors.at(0).selector).toBe('.search-icon');
