@@ -11,6 +11,7 @@ const excludeList = [
   /^style$/g,
   /^class$/g,
   /^on[a-z]+/g,
+  /^autocomplete$/g,
 ];
 
 export default async function ({ inspected }: GeneratorOptions): Promise<SelectorChain[]> {
