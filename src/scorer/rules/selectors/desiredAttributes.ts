@@ -2,14 +2,14 @@ import { Selector } from '../../../types/selector';
 
 const desired: [regex: RegExp, score: number][] = [
   // Best
+  [/^id$/g, 50],
   [/^data.+$/g, 30],
-  [/^id$/g, 20],
   // Good
   [/^name$/g, 10],
   // Average
-  [/^class$/g, 2],
   [/^src$/g, 2],
   // Undesired
+  [/^class$/g, -5],
   [/^type$/g, -10],
   [/^alt$/g, -10],
   [/^placeholder$/g, -10],

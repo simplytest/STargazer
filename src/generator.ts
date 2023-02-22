@@ -9,42 +9,6 @@ import { Settings } from './types/settings';
 import { findBySelector, getDocument } from './utils/dom';
 import { getInspected, getParent } from './utils/inspected';
 
-function adjustSelectorsWithParent(results: Result[]) {
-  for (const result of results) {
-    const lastSelector = result.chain.at(-1);
-
-    if (!('attribute' in lastSelector)) {
-      continue;
-    }
-
-    for (const other of results) {
-      const otherLastSelector = other.chain.at(-1);
-
-      if (!('attribute' in otherLastSelector)) {
-        continue;
-      }
-
-      if (otherLastSelector.attribute !== lastSelector.attribute) {
-        continue;
-      }
-
-      if (otherLastSelector.value !== lastSelector.value) {
-        continue;
-      }
-
-      if (result.occurrences < other.occurrences) {
-        other.score -= 100;
-      }
-
-      if (result.chain.length < other.chain.length) {
-        other.score -= 50;
-      }
-    }
-  }
-
-  return results;
-}
-
 async function generateSelectors({ type, gibberishTolerance, onlyUnique, resultsToDisplay, scoreTolerance }: Settings) {
   const inspected = await getInspected();
   const document = await getDocument();
@@ -84,7 +48,6 @@ async function generateSelectors({ type, gibberishTolerance, onlyUnique, results
 
   let rtn: Result[] = withOccurrences.map((x: Result) => ({ ...x, score: score(x, gibberishTolerance) }));
 
-  rtn = adjustSelectorsWithParent(rtn);
   rtn = rtn.sort((a, b) => b.score - a.score);
 
   const withTolerance = rtn.filter(x => x.score > scoreTolerance);

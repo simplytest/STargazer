@@ -7,5 +7,5 @@ export default function (result: Result) {
     return 25;
   }
 
-  return -(Math.pow(chain.length, 8) * Math.pow(2, -8));
+  return -(Math.pow(chain.length, 8) * Math.pow(2, -2));
 }
