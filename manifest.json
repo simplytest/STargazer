@@ -1,7 +1,7 @@
 {
   "name": "STargazer",
   "description": "A 'click-to-build' xpath and css selector generator",
-  "version": "1.0",
+  "version": "1.0.0",
   "manifest_version": 3,
   "icons": {
     "16": "assets/logo16.png",

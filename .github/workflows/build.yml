@@ -1,7 +1,7 @@
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ["Run Tests"]
+    workflows: ["Bump Version"]
     branches: [main]
     types: 
       - completed
