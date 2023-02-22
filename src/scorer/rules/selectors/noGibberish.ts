@@ -2,7 +2,7 @@ import { TextScorer } from 'text-scorer';
 import { Selector } from '../../../types/selector';
 
 const shouldTest = [
-  /^data-*$/, //
+  /^data.+$/, //
   /^class$/,
   /^name$/,
   /^id$/,
