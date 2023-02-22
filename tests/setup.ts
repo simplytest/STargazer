@@ -25,7 +25,10 @@ const mockExec = exec as jest.MockedFunction<typeof exec>;
 mockExec.mockImplementation((fn, args) => Promise.resolve(fn(args)));
 Object.defineProperty(global, 'chrome', { value: { devtools: undefined } });
 
-export default function (dom: Document, inspected: HTMLElement) {
+export default function (dom: Document) {
   Object.defineProperty(global, 'document', { value: dom });
-  Object.defineProperty(global, 'window', { value: { stargazer_inspected: inspected } });
+}
+
+export function setInspected(inspected: HTMLElement) {
+  Object.defineProperty(global, 'window', { value: { stargazer_inspected: inspected }, writable: true });
 }
