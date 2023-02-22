@@ -5,5 +5,5 @@ export default function (selector: Selector) {
     return 0;
   }
 
-  return -50;
+  return -75;
 }
