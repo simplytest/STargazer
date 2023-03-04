@@ -1,8 +1,8 @@
 import { Accordion, Button, createStyles, NumberInput, Radio, Switch } from '@mantine/core';
 import { IconSettings } from '@tabler/icons-react';
 import { useContext } from 'react';
-import { defaultSettings } from '../src/defaults/settings';
-import { SettingsContext } from '../src/utils/settings';
+import { defaultSettings } from '../src/settings/defaults';
+import { SettingsContext } from '../src/settings/settings';
 
 const useStyles = createStyles(theme => ({
   item: {

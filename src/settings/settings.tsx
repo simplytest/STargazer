@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useEffect, useState } from 'react';
-import { defaultSettings } from '../defaults/settings';
+import { defaultSettings } from '../settings/defaults';
 import { Settings } from '../types/settings';
 
 interface SettingsSetter {

@@ -16,14 +16,14 @@ import React, { useContext, useEffect, useState } from 'react';
 import { showError } from '../../components/ErrorModal';
 import { Options } from '../../components/Options';
 import { ResultTable } from '../../components/ResultTable';
-import { generateSelectors } from '../../src/generator';
+import generateSelectors from '../../src/generator';
 import { removeHighlights } from '../../src/highlight';
 import { startPicking, stopPicking } from '../../src/picker';
 import { removeSidebar } from '../../src/sidebar';
 import { Result } from '../../src/types/generator';
 import { Settings } from '../../src/types/settings';
 import setup from '../../src/utils/react';
-import { SettingsContext } from '../../src/utils/settings';
+import { SettingsContext } from '../../src/settings/settings';
 
 function Shell({ children }: { children: React.ReactNode }) {
   const theme = useMantineTheme();

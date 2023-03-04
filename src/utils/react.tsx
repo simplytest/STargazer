@@ -4,7 +4,7 @@ import React from 'react';
 import { ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import theme from '../../pages/theme';
-import { SettingsProvider } from './settings';
+import { SettingsProvider } from '../settings/settings';
 
 export default function setup(children: ReactNode) {
   return createRoot(document.getElementById('root') as HTMLElement).render(
