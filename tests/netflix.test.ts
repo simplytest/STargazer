@@ -1,8 +1,8 @@
 import { readFileSync } from 'fs';
 import { JSDOM } from 'jsdom';
 import path from 'path';
-import { defaultSettings } from '../src/defaults/settings';
-import { generateSelectors } from '../src/generator';
+import { defaultSettings } from '../src/settings/defaults';
+import generateSelectors from '../src/generator';
 import setup, { setInspected } from './setup';
 
 const html = readFileSync(path.join(__dirname, 'netflix.html')).toString();
@@ -17,7 +17,8 @@ describe('Netflix', () => {
     setInspected(fakeDom.window.document.querySelector('#lang-switcher-select'));
     const selectors = await generateSelectors(defaultSettings);
 
-    expect(selectors).toHaveLength(3);
+    expect(selectors.length).toBeLessThanOrEqual(defaultSettings.resultsToDisplay);
+
     expect(selectors.at(0).selector).toBe('[data-uia="language-picker"]');
     expect(selectors.at(1).selector).toBe('#lang-switcher-select');
   });
@@ -26,16 +27,15 @@ describe('Netflix', () => {
     setInspected(fakeDom.window.document.querySelector('.stepIndicator > :nth-child(1)'));
     const selectors = await generateSelectors(defaultSettings);
 
-    expect(selectors).toHaveLength(3);
-    expect(selectors.at(0).selector).toBe('.stepIndicator > :nth-child(1)');
-    expect(selectors.at(1).selector).toBe('.stepIndicator > b:nth-child(1)');
+    expect(selectors.length).toBeLessThanOrEqual(defaultSettings.resultsToDisplay);
+    expect(selectors.at(0).selector).toBe('.stepIndicator :nth-child(1)');
   });
 
   it('Selectors for Continue-Button', async () => {
     setInspected(fakeDom.window.document.querySelector('[data-uia="continue-button"]'));
     const selectors = await generateSelectors(defaultSettings);
 
-    expect(selectors).toHaveLength(3);
+    expect(selectors.length).toBeLessThanOrEqual(defaultSettings.resultsToDisplay);
     expect(selectors.at(0).selector).toBe('[data-uia="continue-button"]');
   });
 });

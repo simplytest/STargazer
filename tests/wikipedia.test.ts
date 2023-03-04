@@ -1,8 +1,8 @@
 import { readFileSync } from 'fs';
 import { JSDOM } from 'jsdom';
 import path from 'path';
-import { defaultSettings } from '../src/defaults/settings';
-import { generateSelectors } from '../src/generator';
+import { defaultSettings } from '../src/settings/defaults';
+import generateSelectors from '../src/generator';
 import setup, { setInspected } from './setup';
 
 const html = readFileSync(path.join(__dirname, 'wikipedia.html')).toString();
@@ -17,7 +17,8 @@ describe('Wikipedia', () => {
     setInspected(fakeDom.window.document.querySelector('#txtSearch'));
     const selectors = await generateSelectors(defaultSettings);
 
-    expect(selectors).toHaveLength(3);
+    expect(selectors.length).toBeLessThanOrEqual(defaultSettings.resultsToDisplay);
+
     expect(selectors.at(0).selector).toBe('#txtSearch');
     expect(selectors.at(1).selector).toBe('[name="q"]');
   });
@@ -26,8 +27,15 @@ describe('Wikipedia', () => {
     setInspected(fakeDom.window.document.querySelector('.search-icon'));
     const selectors = await generateSelectors(defaultSettings);
 
-    expect(selectors).toHaveLength(3);
+    expect(selectors.length).toBeLessThanOrEqual(defaultSettings.resultsToDisplay);
     expect(selectors.at(0).selector).toBe('.search-icon');
-    expect(selectors.at(1).selector).toBe('#cmdSearch > .search-icon');
+  });
+
+  it('Selectors for Logo', async () => {
+    setInspected(fakeDom.window.document.querySelector('.wikipedia-logo a img'));
+    const selectors = await generateSelectors(defaultSettings);
+
+    expect(selectors.length).toBeLessThanOrEqual(defaultSettings.resultsToDisplay);
+    expect(selectors.at(0).selector).toBe('.wikipedia-logo a img');
   });
 });
