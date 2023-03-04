@@ -1,11 +1,12 @@
 import { Result } from '../../../types/generator';
+import scores from '../../scores';
 
 export default function (result: Result) {
   const { occurrences } = result;
 
   if (occurrences === 1) {
-    return 25;
+    return scores.desired;
   }
 
-  return -(occurrences * 100);
+  return scores.awful;
 }

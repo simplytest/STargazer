@@ -3,16 +3,19 @@ import { SelectorChain } from '../types/selector';
 import { select } from '../utils/selector';
 
 const excludeList = [
-  //
   /^js[a-z]+/g,
-  /^height$/g,
-  /^xmlns$/g,
-  /^width$/g,
-  /^style$/g,
-  /^class$/g,
   /^on[a-z]+/g,
+
+  /^width$/g,
+  /^height$/g,
+
+  /^style$/g,
+
+  /^xmlns$/g,
   /^placeholder$/g,
   /^autocomplete$/g,
+
+  /^class$/g,
 ];
 
 export default async function ({ inspected }: GeneratorOptions): Promise<SelectorChain[]> {

@@ -1,19 +1,19 @@
 import { Selector } from '../../../types/selector';
+import scores from '../../scores';
 
-const desired: [regex: RegExp, score: number][] = [
-  // Best
-  [/^data.+$/g, 35],
-  [/^id$/g, 30],
-  // Good
-  [/^name$/g, 10],
-  // Average
-  [/^src$/g, 2],
-  // Undesired
-  [/^class$/g, -5],
-  [/^type$/g, -10],
-  [/^alt$/g, -10],
-  [/^placeholder$/g, -10],
-  [/^type$/g, -15],
+const desired = [
+  {
+    score: scores.awesome,
+    matches: [/^id$/g, /^data.+$/g],
+  },
+  {
+    score: scores.undesired,
+    matches: [/^name$/g],
+  },
+  {
+    score: scores.awful,
+    matches: [/^src$/g, /^href$/g, /^target$/g, /^alt$/g, /^title$/g, /^type$/g, /^placeholder$/g],
+  },
 ];
 
 export default function (selector: Selector) {
@@ -21,11 +21,5 @@ export default function (selector: Selector) {
     return 0;
   }
 
-  const score = desired.find(x => selector.attribute.match(x[0]));
-
-  if (!score) {
-    return 0;
-  }
-
-  return score[1];
+  return desired.find(x => x.matches.some(match => selector.attribute.match(match)))?.score ?? 0;
 }

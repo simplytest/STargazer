@@ -1,9 +1,10 @@
 import { Selector } from '../../../types/selector';
+import scores from '../../scores';
 
 export default function (selector: Selector) {
-  if (!('tag' in selector)) {
+  if (!('index' in selector)) {
     return 0;
   }
 
-  return -75;
+  return scores.bad;
 }

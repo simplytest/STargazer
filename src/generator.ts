@@ -1,34 +1,36 @@
-import recursiveParent from './generators/absolute';
 import attributes from './generators/attributes';
-import parent from './generators/parent';
-import { score } from './scorer';
+import deepParent from './generators/deepParent';
+import { scoreChain, scoreResult } from './scorer';
+import scores from './scorer/scores';
 import { generateCSS } from './selectors/css';
 import { generateXPath } from './selectors/xpath';
 import { GeneratorOptions, Result } from './types/generator';
 import { Settings } from './types/settings';
 import { findBySelector, getDocument } from './utils/dom';
-import { getInspected, getParent } from './utils/inspected';
+import { getInspected } from './utils/inspected';
 
-function normalizeParent(results: Result[]) {
-  for (const result of results) {
-    if (result.chain.length !== 1 || result.occurrences !== 1) {
-      continue;
-    }
+async function generate(generator: typeof attributes, options: GeneratorOptions, settings: Settings) {
+  const generated = await generator(options);
 
-    const selector = result.chain.at(0);
-    const others = results.filter(x => x.chain.includes(selector));
+  const { type, gibberishTolerance } = settings;
+  const selectorGenerator = type === 'css' ? generateCSS : generateXPath;
 
-    for (const other of others) {
-      if (other.chain.length > 1) {
-        other.score -= result.score;
-      }
-    }
-  }
-
-  return results;
+  const selectors = generated.map(x => ({ chain: x, selector: selectorGenerator(x) }));
+  return selectors.map(x => ({ ...x, score: scoreChain(x.chain, gibberishTolerance) })) as Result[];
 }
 
-async function generateSelectors({ type, gibberishTolerance, onlyUnique, resultsToDisplay, scoreTolerance }: Settings) {
+async function organize(results: Result[], { gibberishTolerance }: Settings) {
+  const unique = [...new Set(results)];
+
+  for (const result of unique) {
+    result.occurrences = await findBySelector(result.selector);
+    result.score += scoreResult(result, gibberishTolerance);
+  }
+
+  return unique.sort((a, b) => b.score - a.score);
+}
+
+export default async function (settings: Settings) {
   const inspected = await getInspected();
   const document = await getDocument();
 
@@ -36,47 +38,28 @@ async function generateSelectors({ type, gibberishTolerance, onlyUnique, results
     return [];
   }
 
+  const { gibberishTolerance, onlyUnique, scoreTolerance, resultsToDisplay } = settings;
   const options: GeneratorOptions = { inspected, document, gibberishTolerance };
 
-  const generated = [
-    await attributes(options), //
-    await parent(options, await getParent()), //
-    await recursiveParent(options),
-  ];
+  let rtn = await organize(await generate(attributes, options, settings), settings);
+  const best = rtn[0];
 
-  const selectorChains = generated.flat();
-  const generator = type === 'css' ? generateCSS : generateXPath;
+  if (best && best.score <= scores.average) {
+    const additional = await generate(deepParent, options, settings);
 
-  const selectors: Partial<Result>[] = selectorChains.map(x => ({
-    chain: x,
-    selector: generator(x),
-  }));
-
-  const withoutDuplicates = selectors.filter(
-    (x, i) => selectors.indexOf(selectors.find(y => y.selector === x.selector)) === i
-  );
-
-  let withOccurrences: Partial<Result>[] = [];
-
-  for (const selector of withoutDuplicates) {
-    const occurrences = await findBySelector(selector.selector);
-    withOccurrences.push({ ...selector, occurrences });
+    rtn.push(...additional);
+    rtn = await organize(rtn, settings);
   }
 
-  withOccurrences = withOccurrences.filter(x => (onlyUnique ? x.occurrences === 1 : x.occurrences > 0));
+  if (onlyUnique) {
+    rtn = rtn.filter(x => x.occurrences === 1);
+  }
 
-  let rtn: Result[] = withOccurrences.map((x: Result) => ({ ...x, score: score(x, gibberishTolerance) }));
+  const filtered = rtn.filter(x => x.score >= scoreTolerance);
 
-  rtn = normalizeParent(rtn);
-  rtn = rtn = rtn.sort((a, b) => b.score - a.score);
-
-  const withTolerance = rtn.filter(x => x.score > scoreTolerance);
-
-  if (withTolerance.length > 0) {
-    rtn = withTolerance;
+  if (filtered.length >= resultsToDisplay) {
+    rtn = filtered;
   }
 
   return rtn.slice(0, resultsToDisplay);
 }
-
-export { generateSelectors };
