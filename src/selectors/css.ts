@@ -30,7 +30,7 @@ export function generateCSS(chain: SelectorChain): string {
 
   for (const [index, select] of chain.entries()) {
     if (index !== 0) {
-      selector += ' > ';
+      selector += ' ';
     }
 
     if ('tag' in select) {
