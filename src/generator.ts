@@ -20,7 +20,8 @@ async function generate(generator: typeof attributes, options: GeneratorOptions,
 }
 
 async function organize(results: Result[], { gibberishTolerance }: Settings) {
-  const unique = [...new Set(results)];
+  let unique = results.filter((result, index) => results.findIndex(x => x.selector === result.selector) === index);
+  unique = unique.filter(x => x.score > scores.atrocious);
 
   for (const result of unique) {
     result.occurrences = await findBySelector(result.selector);
