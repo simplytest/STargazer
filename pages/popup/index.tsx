@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react';
 import { isSidebarActive, loadSidebar } from '../../src/sidebar';
 import { getHotkey, getVersion } from '../../src/utils/chrome';
 import setup from '../../src/utils/react';
+import { showError } from '../../components/ErrorModal';
 
 function PopUp() {
   const version = getVersion();
@@ -39,7 +40,15 @@ function PopUp() {
       <Space h="xs" />
       <Button
         fullWidth
-        onClick={() => loadSidebar(theme.colors.dark[8], theme.colors.dark[3]).then(() => window.close())}
+        onClick={() =>
+          loadSidebar(theme.colors.dark[8], theme.colors.dark[3])
+            .then(() => window.close())
+            .catch(error =>
+              showError(
+                `Could not load the editor: ${error}\nPlease beware that the extension can't be loaded on pages like the new tab or the chrome web-store.`
+              )
+            )
+        }
       >
         {sidebarActive ? 'Reload Editor' : 'Open Editor'}
       </Button>
