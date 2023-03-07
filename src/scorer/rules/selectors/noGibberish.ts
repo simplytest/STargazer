@@ -1,10 +1,13 @@
-import { words as englishWords } from 'enwords';
+import { words as enwords } from 'enwords';
 import { TextScorer } from 'text-scorer';
 import { Selector } from '../../../types/selector';
 import scores from '../../scores';
 
 const shouldTest = [/^data.+$/, /^class$/, /^name$/, /^id$/];
 const textScorer = new TextScorer(true, { ignoreCase: true });
+
+// We're using a map to improve random access performance
+const englishWords = new Map((enwords as string[]).map(x => [x, '']));
 
 export default function (selector: Selector, gibberishTolerance: number) {
   if (!('attribute' in selector)) {
@@ -28,7 +31,7 @@ export default function (selector: Selector, gibberishTolerance: number) {
     score += scores.bad;
   }
 
-  if (words.some(word => word.length > 1 && englishWords.includes(word.toLowerCase()))) {
+  if (words.some(word => word.length > 1 && englishWords.has(word.toLowerCase()))) {
     score += scores.awesome;
   }
 
