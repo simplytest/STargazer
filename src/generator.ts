@@ -44,7 +44,7 @@ export default async function (settings: Settings) {
   let rtn = await organize(await generate(attributes, options, settings), settings);
   const best = rtn[0];
 
-  if (best && best.score <= scores.average) {
+  if (!best || best?.score <= scores.average) {
     const additional = await generate(deepParent, options, settings);
 
     rtn.push(...additional);
