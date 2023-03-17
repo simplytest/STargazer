@@ -39,7 +39,7 @@ export default async function (settings: Settings) {
     return [];
   }
 
-  const { scoreTolerance, resultsToDisplay } = settings;
+  const { scoreTolerance, resultsToDisplay, onlyUnique } = settings;
   const options: GeneratorOptions = { inspected, document, settings };
 
   let rtn = await organize(await generate(attributes, options, settings), settings);
@@ -56,6 +56,10 @@ export default async function (settings: Settings) {
 
   if (filtered.length >= resultsToDisplay) {
     rtn = filtered;
+  }
+
+  if (onlyUnique) {
+    rtn = rtn.filter(x => x.occurrences === 1);
   }
 
   return rtn.slice(0, resultsToDisplay);
