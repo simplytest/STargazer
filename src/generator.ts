@@ -12,20 +12,20 @@ import { getInspected } from './utils/inspected';
 async function generate(generator: typeof attributes, options: GeneratorOptions, settings: Settings) {
   const generated = await generator(options);
 
-  const { type, gibberishTolerance } = settings;
+  const { type } = settings;
   const selectorGenerator = type === 'css' ? generateCSS : generateXPath;
 
   const selectors = generated.map(x => ({ chain: x, selector: selectorGenerator(x) }));
-  return selectors.map(x => ({ ...x, score: scoreChain(x.chain, gibberishTolerance) })) as Result[];
+  return selectors.map(x => ({ ...x, score: scoreChain(x.chain, settings) })) as Result[];
 }
 
-async function organize(results: Result[], { gibberishTolerance }: Settings) {
+async function organize(results: Result[], settings: Settings) {
   let unique = results.filter((result, index) => results.findIndex(x => x.selector === result.selector) === index);
   unique = unique.filter(x => x.score > scores.atrocious);
 
   for (const result of unique) {
     result.occurrences = await findBySelector(result.selector);
-    result.score += scoreResult(result, gibberishTolerance);
+    result.score += scoreResult(result, settings);
   }
 
   return unique.sort((a, b) => b.score - a.score);
@@ -39,7 +39,7 @@ export default async function (settings: Settings) {
     return [];
   }
 
-  const { gibberishTolerance, onlyUnique, scoreTolerance, resultsToDisplay } = settings;
+  const { gibberishTolerance, scoreTolerance, resultsToDisplay } = settings;
   const options: GeneratorOptions = { inspected, document, gibberishTolerance };
 
   let rtn = await organize(await generate(attributes, options, settings), settings);
@@ -50,10 +50,6 @@ export default async function (settings: Settings) {
 
     rtn.push(...additional);
     rtn = await organize(rtn, settings);
-  }
-
-  if (onlyUnique) {
-    rtn = rtn.filter(x => x.occurrences === 1);
   }
 
   const filtered = rtn.filter(x => x.score >= scoreTolerance);

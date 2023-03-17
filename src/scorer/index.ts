@@ -1,5 +1,6 @@
 import { Result } from '../types/generator';
 import { SelectorChain } from '../types/selector';
+import { Settings } from '../types/settings';
 import fewOccurrences from './rules/results/fewOccurrences';
 import noStandaloneTag from './rules/results/noStandaloneTag';
 import shortSelector from './rules/results/shortSelector';
@@ -13,14 +14,14 @@ import standaloneTag from './rules/selectors/standaloneTag';
 const resultRules = [fewOccurrences, shortSelector, noStandaloneTag];
 const selectorRules = [desiredAttributes, noEmptyAttributes, standaloneTag, noGibberish, noText, noIndex];
 
-export function scoreChain(chain: SelectorChain, gibberishTolerance: number) {
+export function scoreChain(chain: SelectorChain, settings: Settings) {
   let rtn = 0;
 
   for (let i = 0; chain.length > i; i++) {
     const selector = chain.at(i);
 
     for (const rule of selectorRules) {
-      const score = rule(selector, gibberishTolerance);
+      const score = rule(selector, settings);
       rtn += score * Math.pow(2, -i);
     }
   }
@@ -28,14 +29,14 @@ export function scoreChain(chain: SelectorChain, gibberishTolerance: number) {
   return rtn;
 }
 
-export function scoreResult(result: Result, gibberishTolerance: number) {
+export function scoreResult(result: Result, settings: Settings) {
   let score = 0;
 
   for (const rule of resultRules) {
-    score += rule(result);
+    score += rule(result, settings);
   }
 
-  score += scoreChain(result.chain, gibberishTolerance);
+  score += scoreChain(result.chain, settings);
 
   return score;
 }
