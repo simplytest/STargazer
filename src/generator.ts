@@ -39,8 +39,8 @@ export default async function (settings: Settings) {
     return [];
   }
 
-  const { gibberishTolerance, scoreTolerance, resultsToDisplay } = settings;
-  const options: GeneratorOptions = { inspected, document, gibberishTolerance };
+  const { scoreTolerance, resultsToDisplay } = settings;
+  const options: GeneratorOptions = { inspected, document, settings };
 
   let rtn = await organize(await generate(attributes, options, settings), settings);
   const best = rtn[0];

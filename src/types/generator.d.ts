@@ -1,5 +1,6 @@
 import { Inspected } from './inspected';
 import { SelectorChain } from './selector';
+import { Settings } from './settings';
 
 export interface Result {
   score: number;
@@ -9,7 +10,7 @@ export interface Result {
 }
 
 export interface GeneratorOptions {
+  settings: Settings;
   document: Document;
   inspected?: Inspected;
-  gibberishTolerance: number;
 }

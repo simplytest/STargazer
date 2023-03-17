@@ -6,7 +6,7 @@ import { getParentAmount, getParentRecursive } from '../utils/inspected';
 import { select } from '../utils/selector';
 import attributes from './attributes';
 
-export default async function ({ document, gibberishTolerance }: GeneratorOptions): Promise<SelectorChain[]> {
+export default async function ({ document, settings }: GeneratorOptions): Promise<SelectorChain[]> {
   const MAX_DEPTH = 5;
 
   const results = new Map<number, SelectorChain[]>();
@@ -24,10 +24,10 @@ export default async function ({ document, gibberishTolerance }: GeneratorOption
 
     index >= 0 && selectors.push([select({ index })]);
 
-    const attributeSelectors = await attributes({ inspected: parent, document, gibberishTolerance });
+    const attributeSelectors = await attributes({ inspected: parent, document, settings });
 
     for (const attributeSelector of attributeSelectors) {
-      if (scoreChain(attributeSelector, gibberishTolerance) < scores.average) {
+      if (scoreChain(attributeSelector, settings) < scores.average) {
         continue;
       }
 
