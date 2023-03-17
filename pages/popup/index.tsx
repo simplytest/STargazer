@@ -43,9 +43,9 @@ function PopUp() {
         onClick={() =>
           loadSidebar(theme.colors.dark[8], theme.colors.dark[3])
             .then(() => window.close())
-            .catch(error =>
+            .catch(() =>
               showError(
-                `Could not load the editor: ${error}\nPlease beware that the extension can't be loaded on pages like the new tab or the chrome web-store.`
+                `The extension can't be loaded on pages like the new tab or the chrome web-store. To use the editor navigate to your target application and open it again.`
               )
             )
         }
