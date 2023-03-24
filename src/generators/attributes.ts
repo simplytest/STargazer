@@ -11,6 +11,7 @@ const excludeList = [
 
   /^style$/g,
 
+  /^lang$/g,
   /length/g,
   /^xmlns$/g,
   /^placeholder$/g,
