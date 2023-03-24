@@ -66,7 +66,5 @@ export default async function ({ document, settings }: GeneratorOptions): Promis
     rtn = rtn.slice(0, 25);
   }
 
-  console.log(rtn);
-
   return rtn;
 }
