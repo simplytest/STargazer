@@ -37,7 +37,7 @@ function PopUp() {
         <Badge color="green">v{version}</Badge>
       </Group>
       <Divider orientation="horizontal" w={280} />
-      <Space h="xs" />
+      <Space h={5} />
       <Button
         fullWidth
         onClick={() =>
@@ -55,13 +55,18 @@ function PopUp() {
       <Text fz="sm" italic align="center">
         Or use the DevTools by inspecting an element and then opening the "STargazer" tab besides "Styles"
       </Text>
-      <Space h="xs" />
+      <Space h={5} />
       <Divider orientation="horizontal" w={280} />
       <Tooltip label="Causes the page execution to halt">
-        <Group>
-          <Text>Debugger Hotkey: </Text>
-          <Badge>{hotkey || 'Unset'}</Badge>
-        </Group>
+        <Stack>
+          <Group>
+            <Text>Debugger Hotkey: </Text>
+            <Badge>{hotkey || 'Unset'}</Badge>
+          </Group>
+          <Text fz="sm" italic align="center">
+            (Only works from within devtools)
+          </Text>
+        </Stack>
       </Tooltip>
       <Text fz="sm" italic align="center">
         You can always change the hotkey under: chrome://extensions/shortcuts
