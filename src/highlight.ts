@@ -2,8 +2,6 @@ import { exec } from './utils/chrome';
 import { markBySelector } from './utils/dom';
 
 function highlight() {
-  const old = document.getElementsByName('stargazer_highlight');
-  old.forEach(element => element.remove());
   const maximumZIndex = '2147483647';
 
   if (!window.stargazer_marked) {
@@ -43,13 +41,19 @@ function highlight() {
 }
 
 export async function highlightBySelector(selector: string) {
+  await removeHighlights();
   await markBySelector(selector);
   await exec(highlight);
 }
 
 export async function removeHighlights() {
   return exec(() => {
-    const old = document.getElementsByName('stargazer_highlight');
-    old.forEach(element => element.remove());
+    let old = document.getElementsByName('stargazer_highlight');
+
+    // Stupid workaround for elements not being properly removed.
+    while (old.length > 0) {
+      old.forEach(x => x.remove());
+      old = document.getElementsByName('stargazer_highlight');
+    }
   });
 }
