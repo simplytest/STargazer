@@ -35,17 +35,27 @@ export async function markBySelector(selector: string) {
     try {
       if (selector.startsWith('//')) {
         const result = document.evaluate(selector, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-        const items = [];
+        let items = [];
 
         for (let i = 0; result.snapshotLength > i; i++) {
           items.push(result.snapshotItem(i));
+        }
+
+        if (items.length > 10) {
+          items = items.slice(0, 10);
         }
 
         window.stargazer_marked = items;
         return;
       }
 
-      window.stargazer_marked = [...(document.querySelectorAll(selector) as unknown as HTMLElement[])];
+      let items = [...(document.querySelectorAll(selector) as unknown as HTMLElement[])];
+
+      if (items.length > 10) {
+        items = items.slice(0, 10);
+      }
+
+      window.stargazer_marked = items;
     } catch (error) {
       // Errors are most likely caused by bad selectors, we can ignore them.
     }
