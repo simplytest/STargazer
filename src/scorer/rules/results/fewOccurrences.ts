@@ -9,7 +9,7 @@ export default function (result: Result, { onlyUnique }: Settings) {
     return scores.desired;
   }
 
-  if (onlyUnique && occurrences != 1) {
+  if (!occurrences || (onlyUnique && occurrences != 1)) {
     return scores.unacceptable;
   }
 
