@@ -49,7 +49,7 @@ function TableEntry({ result }: { result: Result }) {
           rightSection={
             <ActionIcon
               onClick={async () => {
-                await clipboard.writeText(result.selector);
+                await clipboard.writeText(value);
               }}
             >
               <IconCopy />
