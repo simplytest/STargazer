@@ -47,12 +47,26 @@ export default async function ({ document, settings }: GeneratorOptions): Promis
 
     for (const parentSelector of parent) {
       for (const childSelector of child) {
-        selectors.push([...parentSelector, ...childSelector]);
+        const selector = [...parentSelector, ...childSelector];
+
+        if (scoreChain(selector, settings) < scores.average) {
+          continue;
+        }
+
+        selectors.push(selector);
       }
     }
 
     results.set(i, selectors);
   }
 
-  return [...results.values()].flat();
+  let rtn = [...results.values()].flat();
+
+  if (rtn.length > 25) {
+    rtn = rtn.slice(0, 25);
+  }
+
+  console.log(rtn);
+
+  return rtn;
 }
