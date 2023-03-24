@@ -20,7 +20,7 @@ export async function getParent(): Promise<InspectedParent> {
 
   const index = await exec(() => {
     const element = window.stargazer_inspected;
-    return [...(element.parentElement.children as unknown as HTMLElement[])].indexOf(element);
+    return [...((element.parentElement?.children as unknown as HTMLElement[]) ?? [])].indexOf(element);
   });
 
   const element = getFromHTML(html, 'Element');
@@ -62,7 +62,7 @@ export async function getParentRecursive(amount: number): Promise<InspectedParen
     return [
       rtn.outerHTML,
       rtn.innerText,
-      [...rtn.parentElement.children].filter(x => x.tagName === rtn.tagName).indexOf(rtn),
+      [...(rtn.parentElement?.children ?? [])].filter(x => x && x.tagName === rtn.tagName).indexOf(rtn),
     ];
   }, amount);
 
