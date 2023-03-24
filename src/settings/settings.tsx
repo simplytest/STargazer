@@ -7,7 +7,6 @@ interface SettingsSetter {
   setOnlyUnique: (v: Settings['onlyUnique']) => void;
   setScoreTolerance: (v: Settings['scoreTolerance']) => void;
   setResultsToDisplay: (v: Settings['resultsToDisplay']) => void;
-  setGibberishTolerance: (v: Settings['gibberishTolerance']) => void;
 }
 
 const update = <C extends keyof Settings>(name: C, set: (v: Settings[C]) => void) => {
@@ -58,7 +57,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         resultsToDisplay,
         setResultsToDisplay: update('resultsToDisplay', setResultsToDisplay),
         gibberishTolerance,
-        setGibberishTolerance: update('gibberishTolerance', setGibberishTolerance),
       }}
     >
       {children}

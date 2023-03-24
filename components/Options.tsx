@@ -19,17 +19,8 @@ const useStyles = createStyles(theme => ({
 }));
 
 function Options() {
-  const {
-    type,
-    setType,
-    gibberishTolerance,
-    setGibberishTolerance,
-    onlyUnique,
-    setOnlyUnique,
-    resultsToDisplay,
-    setResultsToDisplay,
-    setScoreTolerance,
-  } = useContext(SettingsContext);
+  const { type, setType, onlyUnique, setOnlyUnique, resultsToDisplay, setResultsToDisplay, setScoreTolerance } =
+    useContext(SettingsContext);
 
   const { classes } = useStyles();
 
@@ -50,20 +41,6 @@ function Options() {
             <Radio value="xpath" label="XPath" />
             <Radio value="css" label="CSS" />
           </Radio.Group>
-          <NumberInput
-            min={0}
-            max={1}
-            mb={20}
-            step={0.01}
-            noClampOnBlur
-            precision={3}
-            stepHoldDelay={500}
-            stepHoldInterval={0.1}
-            label="Gibberish Tolerance"
-            onChange={setGibberishTolerance}
-            defaultValue={gibberishTolerance}
-            description="(Lower = More Gibberish, Higher = Less Gibberish)"
-          />
           <Switch
             mb={20}
             checked={onlyUnique}
@@ -76,8 +53,9 @@ function Options() {
           <NumberInput
             mb={20}
             min={1}
-            max={Infinity}
             step={1}
+            max={Infinity}
+            maxLength={10}
             label="Results to display"
             value={resultsToDisplay}
             onChange={setResultsToDisplay}
@@ -90,7 +68,6 @@ function Options() {
               setOnlyUnique(defaultSettings.onlyUnique);
               setScoreTolerance(defaultSettings.scoreTolerance);
               setResultsToDisplay(defaultSettings.resultsToDisplay);
-              setGibberishTolerance(defaultSettings.gibberishTolerance);
             }}
           >
             Restore Defaults
