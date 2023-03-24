@@ -11,6 +11,7 @@ const excludeList = [
 
   /^style$/g,
 
+  /length/g,
   /^xmlns$/g,
   /^placeholder$/g,
   /^autocomplete$/g,
