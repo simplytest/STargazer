@@ -62,5 +62,6 @@ export default async function (settings: Settings) {
     rtn = rtn.filter(x => x.occurrences === 1);
   }
 
+  rtn = rtn.filter(x => x.score > scores.unacceptable);
   return rtn.slice(0, resultsToDisplay);
 }
