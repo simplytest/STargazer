@@ -29,6 +29,13 @@
         "mac": "Command+I"
       },
       "description": "Pause execution of current page (only works with devtools open!)"
+    },
+    "start-picking": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+P",
+        "mac": "Command+Shift+P"
+      },
+      "description": "Start picking an element"
     }
   },
   "background": {

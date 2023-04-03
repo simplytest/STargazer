@@ -1,3 +1,4 @@
+import theme from '../pages/theme';
 import { executeScript } from './utils/chrome';
 
 function createSidebar(url: string, background: string, handle: string) {
@@ -82,8 +83,13 @@ function createSidebar(url: string, background: string, handle: string) {
   drag.addEventListener('mouseup', dragStop);
 }
 
-export async function loadSidebar(background: string, handle: string) {
-  await executeScript(createSidebar, chrome.runtime.getURL('pages/editor/index.html'), background, handle);
+export async function loadSidebar() {
+  await executeScript(
+    createSidebar,
+    chrome.runtime.getURL('pages/editor/index.html'),
+    theme.colors.dark[8],
+    theme.colors.dark[3]
+  );
 }
 
 export async function removeSidebar() {

@@ -42,7 +42,7 @@ export async function exec<R, T extends Array<any>>(func: (...args: T) => R, ...
 
 export async function getHotkey(): Promise<string> {
   const commands = await chrome.commands.getAll();
-  return commands.find(x => x.name === 'pause-execution').shortcut;
+  return commands.find(x => x.name === 'start-picking').shortcut;
 }
 
 export function getVersion(): string {

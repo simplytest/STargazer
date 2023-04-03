@@ -77,6 +77,15 @@ function Editor() {
     setInspecting(true);
   };
 
+  chrome.runtime.onMessage.addListener(message => {
+    if (message?.name !== 'start-picking') {
+      return false;
+    }
+
+    setInspecting(true);
+    return false;
+  });
+
   const generate = (settings: Settings) => {
     removeHighlights();
 

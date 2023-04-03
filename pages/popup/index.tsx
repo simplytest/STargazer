@@ -1,25 +1,12 @@
-import {
-  Badge,
-  Button,
-  Divider,
-  Group,
-  Image,
-  Space,
-  Stack,
-  Text,
-  Title,
-  Tooltip,
-  useMantineTheme,
-} from '@mantine/core';
+import { Badge, Button, Divider, Group, Image, Space, Stack, Text, Title, Tooltip } from '@mantine/core';
 import { useEffect, useState } from 'react';
+import { showError } from '../../components/ErrorModal';
 import { isSidebarActive, loadSidebar } from '../../src/sidebar';
 import { getHotkey, getVersion } from '../../src/utils/chrome';
 import setup from '../../src/utils/react';
-import { showError } from '../../components/ErrorModal';
 
 function PopUp() {
   const version = getVersion();
-  const theme = useMantineTheme();
 
   const [hotkey, setHotkey] = useState('');
   const [sidebarActive, setSidebarActive] = useState(false);
@@ -41,7 +28,7 @@ function PopUp() {
       <Button
         fullWidth
         onClick={() =>
-          loadSidebar(theme.colors.dark[8], theme.colors.dark[3])
+          loadSidebar()
             .then(() => window.close())
             .catch(() =>
               showError(
@@ -60,12 +47,9 @@ function PopUp() {
       <Tooltip label="Causes the page execution to halt">
         <Stack>
           <Group>
-            <Text>Debugger Hotkey: </Text>
+            <Text>Start-Picking Hotkey: </Text>
             <Badge>{hotkey || 'Unset'}</Badge>
           </Group>
-          <Text fz="sm" italic align="center">
-            (Only works from within devtools)
-          </Text>
         </Stack>
       </Tooltip>
       <Text fz="sm" italic align="center">
