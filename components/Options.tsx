@@ -12,7 +12,7 @@ const useStyles = createStyles(theme => ({
     zIndex: 0,
 
     '&[data-active]': {
-      backgroundColor: theme.fn.rgba(theme.colors.dark[3], 0.2),
+      backgroundColor: theme.fn.rgba(theme.colors.dark[6], 0.2),
       borderColor: theme.colors.dark[2],
     },
   },

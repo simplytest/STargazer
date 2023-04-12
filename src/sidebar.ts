@@ -88,7 +88,7 @@ export async function loadSidebar() {
     createSidebar,
     chrome.runtime.getURL('pages/editor/index.html'),
     theme.colors.dark[8],
-    theme.colors.dark[3]
+    theme.colors.dark[6]
   );
 }
 

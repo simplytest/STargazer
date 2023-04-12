@@ -10,7 +10,7 @@ const theme: MantineThemeOverride = {
       '#FFFFFF',
       '#C5CBDF',
       '#909998',
-      '#262D48',
+      '#909998',
       '#242845',
       '#242845',
       '#252C45',
