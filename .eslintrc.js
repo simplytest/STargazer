@@ -31,6 +31,7 @@ module.exports = {
   ],
   plugins: ['react', 'prettier', '@typescript-eslint'],
   rules: {
+    'react/display-name': 'off',
     'prettier/prettier': 'error',
     'react/self-closing-comp': 'error',
     'react/no-unescaped-entities': 'off',
