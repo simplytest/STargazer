@@ -16,6 +16,7 @@ export function ErrorModal<C>({ error }: ErrorModalProps<C>) {
     </Group>
   );
 }
+
 export function showError<C>(error: C) {
   openModal({
     title: 'Whoops!',
