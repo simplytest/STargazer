@@ -1,11 +1,13 @@
 import { clipboard } from '@extend-chrome/clipboard';
-import { ActionIcon, Alert, Badge, Center, Table, TextInput } from '@mantine/core';
+import { ActionIcon, Alert, Badge, Center, Group, Table, TextInput } from '@mantine/core';
 import { useHover } from '@mantine/hooks';
-import { IconCopy, IconDatabaseOff } from '@tabler/icons-react';
+import { IconCopy, IconDatabaseOff, IconDeviceFloppy } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { highlightBySelector } from '../src/highlight';
 import { Result } from '../src/types/generator';
 import { findBySelector } from '../src/utils/dom';
+import { openModal } from '@mantine/modals';
+import { FolderView } from './FolderView';
 
 function TableEntry({ result }: { result: Result }) {
   const color = (occurrences: number) => {
@@ -46,14 +48,24 @@ function TableEntry({ result }: { result: Result }) {
             setValue(v.currentTarget.value);
             findBySelector(v.currentTarget.value).then(setOccurrences);
           }}
+          rightSectionWidth={60}
           rightSection={
-            <ActionIcon
-              onClick={async () => {
-                await clipboard.writeText(value);
-              }}
-            >
-              <IconCopy />
-            </ActionIcon>
+            <Group noWrap spacing={0}>
+              <ActionIcon
+                onClick={() =>
+                  openModal({ title: 'Save Selector', modalId: 'saveModal', children: <FolderView toSave={value} /> })
+                }
+              >
+                <IconDeviceFloppy />
+              </ActionIcon>
+              <ActionIcon
+                onClick={async () => {
+                  await clipboard.writeText(value);
+                }}
+              >
+                <IconCopy />
+              </ActionIcon>
+            </Group>
           }
         />
       </td>
