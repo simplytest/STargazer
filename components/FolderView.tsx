@@ -1,12 +1,13 @@
-import { Box, BoxProps, Button, Divider, Group, Modal, NavLink, Space, Stack, TextInput } from '@mantine/core';
+import { Box, BoxProps, Button, Divider, Group, Modal, NavLink, Stack, TextInput } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { closeModal } from '@mantine/modals';
 import { IconFolder, IconFolderPlus, IconTrash } from '@tabler/icons-react';
 import { useContextMenu } from 'mantine-contextmenu';
 import { useEffect, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { defaultStore, getStore, saveStore } from '../src/store';
 import { Page, Store } from '../src/types/store';
 import { executeScript } from '../src/utils/chrome';
-import { closeModal } from '@mantine/modals';
 
 interface PageItemProps {
   page?: Page;
@@ -56,7 +57,7 @@ export function PageItem({
             <Button
               onClick={() => {
                 executeScript(() => window.location.hostname).then(hostname => {
-                  (page || store).children.push({ name: pageName, children: [], url: hostname });
+                  (page || store).children.push({ name: pageName, children: [], url: hostname, id: uuidv4() });
                   saveStore(store).then(() => {
                     setStore({ ...store });
                     close();
@@ -73,11 +74,11 @@ export function PageItem({
         <NavLink icon={<IconFolderPlus />} label="Create" description="Create a new page" onClick={() => open()} />
       ) : (
         <NavLink
+          label={page.name}
           icon={<IconFolder />}
           description={page.url}
-          active={active === page}
           onClick={() => setActive(page)}
-          label={page.name}
+          active={active?.id === page?.id}
           onContextMenu={showContextMenu([
             {
               key: 'new',
@@ -164,6 +165,9 @@ export function FolderView({ toSave, ...props }: BoxProps & { toSave: string }) 
             onChange={e => setName(e.target.value)}
           />
           <Group position="right">
+            <Button color="gray" onClick={() => closeModal('saveModal')}>
+              Cancel
+            </Button>
             <Button
               onClick={() => {
                 active?.children.push({ name, image: '', selector: toSave });
@@ -175,7 +179,6 @@ export function FolderView({ toSave, ...props }: BoxProps & { toSave: string }) 
             >
               Save
             </Button>
-            <Button onClick={() => closeModal('saveModal')}>Cancel</Button>
           </Group>
         </Stack>
       </Box>

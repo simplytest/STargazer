@@ -8,6 +8,7 @@ export interface Page {
   children: (Page | Selector)[];
   name: string;
   url: string;
+  id: string;
 }
 
 export interface Store {
