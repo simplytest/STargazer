@@ -38,11 +38,12 @@ function Options() {
             label="Selector type"
             description="Your preferred selector type (Note: XPath is mightier than CSS)"
           >
-            <Radio value="xpath" label="XPath" />
-            <Radio value="css" label="CSS" />
+            <Radio ml={5} mt={15} value="xpath" label="XPath" />
+            <Radio ml={5} mt={10} value="css" label="CSS" />
           </Radio.Group>
           <Switch
-            mb={20}
+            mt={5}
+            mb={15}
             checked={onlyUnique}
             onChange={v => setOnlyUnique(v.currentTarget.checked)}
             onLabel="ON"
