@@ -31,7 +31,7 @@ export default function (selector: Selector, { gibberishTolerance }: Settings) {
   const words = text.split(' ');
 
   if (words.length > 1 && words.some(x => x.length === 1)) {
-    score += scores.bad;
+    score += scores.atrocious;
   }
 
   if (words.some(word => word.length > 1 && !excludeWords.includes(word) && englishWords.has(word.toLowerCase()))) {
