@@ -8,6 +8,7 @@ export default {
   bad: -50,
   terrible: -75,
   awful: -100,
+  hideous: -250,
   atrocious: -500,
   unacceptable: -Infinity,
 } as const;

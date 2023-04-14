@@ -14,14 +14,14 @@ import standaloneTag from './rules/selectors/standaloneTag';
 const resultRules = [fewOccurrences, shortSelector, noStandaloneTag];
 const selectorRules = [desiredAttributes, noEmptyAttributes, standaloneTag, noGibberish, noText, noIndex];
 
-export function scoreChain(chain: SelectorChain, settings: Settings) {
+export function scoreChain(chain: SelectorChain) {
   let rtn = 0;
 
   for (let i = 0; chain.length > i; i++) {
     const selector = chain.at(i);
 
     for (const rule of selectorRules) {
-      const score = rule(selector, settings);
+      const score = rule(selector);
       rtn += score * Math.pow(2, -i);
     }
   }
@@ -36,7 +36,7 @@ export function scoreResult(result: Result, settings: Settings) {
     score += rule(result, settings);
   }
 
-  score += scoreChain(result.chain, settings);
+  score += scoreChain(result.chain);
 
   return score;
 }

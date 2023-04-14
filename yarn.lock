@@ -5516,11 +5516,6 @@ test-exclude@^6.0.0:
     glob "^7.1.4"
     minimatch "^3.0.4"
 
-text-scorer@^2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/text-scorer/-/text-scorer-2.1.2.tgz#8fb0c5d0e58c86872536521a55c76e929de546ee"
-  integrity sha512-DKxOApCvSVOk5oo5zC9Jha8diRDh0tQrmrxzbSw0U9X9R2sVzQFL7P65bhmvOU9In+zBKb50WHD31R/CzoZ+cg==
-
 text-table@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"

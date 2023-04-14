@@ -27,7 +27,7 @@ export default async function ({ document, settings }: GeneratorOptions): Promis
     const attributeSelectors = await attributes({ inspected: parent, document, settings });
 
     for (const attributeSelector of attributeSelectors) {
-      if (scoreChain(attributeSelector, settings) < scores.average) {
+      if (scoreChain(attributeSelector) < scores.average) {
         continue;
       }
 
@@ -49,7 +49,7 @@ export default async function ({ document, settings }: GeneratorOptions): Promis
       for (const childSelector of child) {
         const selector = [...parentSelector, ...childSelector];
 
-        if (scoreChain(selector, settings) < scores.average) {
+        if (scoreChain(selector) < scores.average) {
           continue;
         }
 

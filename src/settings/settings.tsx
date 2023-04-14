@@ -29,7 +29,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [onlyUnique, setOnlyUnique] = useState(defaultSettings.onlyUnique);
   const [scoreTolerance, setScoreTolerance] = useState(defaultSettings.scoreTolerance);
   const [resultsToDisplay, setResultsToDisplay] = useState(defaultSettings.resultsToDisplay);
-  const [gibberishTolerance, setGibberishTolerance] = useState(defaultSettings.gibberishTolerance);
 
   useEffect(() => {
     setLoaded(false);
@@ -38,7 +37,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     get('onlyUnique', setOnlyUnique);
     get('scoreTolerance', setScoreTolerance);
     get('resultsToDisplay', setResultsToDisplay);
-    get('gibberishTolerance', setGibberishTolerance);
 
     setLoaded(true);
   }, []);
@@ -56,7 +54,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         setScoreTolerance: update('scoreTolerance', setScoreTolerance),
         resultsToDisplay,
         setResultsToDisplay: update('resultsToDisplay', setResultsToDisplay),
-        gibberishTolerance,
       }}
     >
       {children}

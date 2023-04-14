@@ -16,7 +16,7 @@ async function generate(generator: typeof attributes, options: GeneratorOptions,
   const selectorGenerator = type === 'css' ? generateCSS : generateXPath;
 
   const selectors = generated.map(x => ({ chain: x, selector: selectorGenerator(x) }));
-  return selectors.map(x => ({ ...x, score: scoreChain(x.chain, settings) })) as Result[];
+  return selectors.map(x => ({ ...x, score: scoreChain(x.chain) })) as Result[];
 }
 
 async function organize(results: Result[], settings: Settings) {

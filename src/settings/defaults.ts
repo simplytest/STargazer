@@ -5,5 +5,4 @@ export const defaultSettings: Settings = {
   onlyUnique: true,
   resultsToDisplay: 3,
   scoreTolerance: -100,
-  gibberishTolerance: 0.0728,
 };

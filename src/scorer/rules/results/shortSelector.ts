@@ -8,5 +8,5 @@ export default function (result: Result) {
     return scores.good;
   }
 
-  return Math.pow(2, chain.length) * scores.bad;
+  return Math.pow(2, chain.length) * scores.terrible;
 }
