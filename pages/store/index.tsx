@@ -111,6 +111,8 @@ function Store() {
   const [store, setStore] = useState<Store>(defaultStore);
   const [active, setActive] = useState<Page>(undefined);
 
+  const selectors = active?.children?.filter(x => 'selector' in x) || [];
+
   useEffect(() => {
     getStore().then(store => setStore({ ...store }));
   }, []);
@@ -143,58 +145,62 @@ function Store() {
             <Text c="dimmed" mt={-35} mb={20}>
               {active.url}
             </Text>
-            <Table withBorder withColumnBorders>
-              <thead>
-                <tr>
-                  <th>Image</th>
-                  <th>Name</th>
-                  <th>Selector</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {active.children
-                  .filter(x => 'selector' in x)
-                  .map((x: Selector) => (
+            {selectors.length > 0 && (
+              <Table withBorder withColumnBorders>
+                <thead>
+                  <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Selector</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectors.map((x: Selector) => (
                     <SelectorItem item={x} parent={active} setParent={setActive} key={x.name} />
                   ))}
-              </tbody>
-            </Table>
+                </tbody>
+              </Table>
+            )}
           </Stack>
-          <Group mt={15} position="right">
-            <Button
-              leftIcon={<IconPlus />}
-              color="gray"
-              onClick={() => {
-                active.children.push({
-                  image: '',
-                  name: `New Selector (${active.children.length})`,
-                  selector: '',
-                } as Selector);
-                setActive({ ...active });
-              }}
-            >
-              Add Selector
-            </Button>
-            <Button
-              leftIcon={<IconDeviceFloppy />}
-              onClick={() => {
-                saveStore(store).then(() => {
-                  setStore({ ...store });
+          {selectors.length > 0 && (
+            <>
+              <Group mt={15} position="right">
+                <Button
+                  leftIcon={<IconPlus />}
+                  color="gray"
+                  onClick={() => {
+                    active.children.push({
+                      image: '',
+                      name: `New Selector (${active.children.length})`,
+                      selector: '',
+                    } as Selector);
+                    setActive({ ...active });
+                  }}
+                >
+                  Add Selector
+                </Button>
+                <Button
+                  leftIcon={<IconDeviceFloppy />}
+                  onClick={() => {
+                    saveStore(store).then(() => {
+                      setStore({ ...store });
 
-                  notifications.show({
-                    title: 'Saved!',
-                    color: 'green',
-                    icon: <IconCheck />,
-                    message: 'Changes were saved successfully!',
-                  });
-                });
-              }}
-            >
-              Save Changes
-            </Button>
-          </Group>
-          <Divider mt={25} />
+                      notifications.show({
+                        title: 'Saved!',
+                        color: 'green',
+                        icon: <IconCheck />,
+                        message: 'Changes were saved successfully!',
+                      });
+                    });
+                  }}
+                >
+                  Save Changes
+                </Button>
+              </Group>
+              <Divider mt={25} />
+            </>
+          )}
           <Group position="center" mt={50}>
             <Card shadow="sm" padding="lg" radius="md" w={250} withBorder>
               <Card.Section bg="#181A25">
