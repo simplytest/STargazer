@@ -1,24 +1,21 @@
-import { useEffect, useState } from 'react';
-import { defaultStore, getStore, saveStore } from '../../src/store';
-import setup from '../../src/utils/react';
-import { Store, Page, Selector } from '../../src/types/store';
 import {
   ActionIcon,
   AppShell,
+  Button,
+  Card,
   Divider,
   Group,
   NavLink,
   Navbar,
+  Select,
   Stack,
   Table,
+  Text,
   TextInput,
   Title,
-  Text,
-  Button,
-  SimpleGrid,
-  Card,
-  Select,
 } from '@mantine/core';
+import { openModal } from '@mantine/modals';
+import { notifications } from '@mantine/notifications';
 import {
   IconCheck,
   IconDatabase,
@@ -28,19 +25,31 @@ import {
   IconPhotoOff,
   IconPlus,
   IconTrash,
+  IconX,
 } from '@tabler/icons-react';
-import { notifications } from '@mantine/notifications';
+import { useContextMenu } from 'mantine-contextmenu';
+import { useEffect, useState } from 'react';
+import generate, { Language } from '../../src/page-object';
+import { defaultStore, getStore, saveStore } from '../../src/store';
+import { Page, Selector, Store } from '../../src/types/store';
+import setup from '../../src/utils/react';
 
 interface FolderProps {
   page: Page;
+  parent: Page | Store;
+
   ['data-key']: string;
 
   active?: Page;
   setActive: (_: Page) => void;
+
+  store: Store;
+  setStore: (_: Store) => void;
 }
 
-function Folder({ page, active, setActive, 'data-key': key }: FolderProps) {
+function Folder({ page, parent, store, setStore, active, setActive, 'data-key': key }: FolderProps) {
   const children = page?.children || [];
+  const showContextMenu = useContextMenu();
   const subPages = children.filter(x => 'children' in x) as Page[];
 
   return (
@@ -50,11 +59,28 @@ function Folder({ page, active, setActive, 'data-key': key }: FolderProps) {
       description={page.url}
       onClick={() => setActive(page)}
       active={active?.id === page?.id}
+      onContextMenu={showContextMenu([
+        {
+          color: 'red',
+          key: 'delete',
+          title: 'Delete',
+          icon: <IconTrash size={16} />,
+          onClick: () => {
+            parent.children = parent.children.filter(x => x !== page);
+            saveStore(store).then(() => {
+              setStore({ ...store });
+            });
+          },
+        },
+      ])}
     >
       {subPages.length > 0 &&
         subPages.map(x => (
           <Folder
             page={x}
+            parent={page}
+            store={store}
+            setStore={setStore}
             setActive={setActive}
             active={active}
             key={`${key}-${x.name}`}
@@ -109,6 +135,7 @@ function SelectorItem({ item, parent, setParent }: SelectorItemProps) {
 
 function Store() {
   const [store, setStore] = useState<Store>(defaultStore);
+  const [lang, setLang] = useState<string | null>(null);
   const [active, setActive] = useState<Page>(undefined);
 
   const selectors = active?.children?.filter(x => 'selector' in x) || [];
@@ -131,7 +158,16 @@ function Store() {
           </Navbar.Section>
           <Stack spacing={0}>
             {store.children.map(x => (
-              <Folder page={x} active={active} setActive={setActive} data-key={x.name} key={x.name} />
+              <Folder
+                parent={store}
+                store={store}
+                setStore={setStore}
+                page={x}
+                active={active}
+                setActive={setActive}
+                data-key={x.name}
+                key={x.name}
+              />
             ))}
           </Stack>
         </Navbar>
@@ -218,6 +254,8 @@ function Store() {
               </Text>
 
               <Select
+                value={lang}
+                onChange={setLang}
                 label="Language"
                 placeholder="Pick one"
                 data={[
@@ -226,7 +264,25 @@ function Store() {
                 ]}
               />
 
-              <Button variant="light" color="blue" fullWidth mt="md" radius="md">
+              <Button
+                variant="light"
+                color="blue"
+                fullWidth
+                mt="md"
+                radius="md"
+                onClick={() => {
+                  if (!lang) {
+                    notifications.show({
+                      title: 'Error',
+                      color: 'red',
+                      icon: <IconX />,
+                      message: 'No language selected!',
+                    });
+                    return;
+                  }
+                  openModal({ children: generate(lang as Language, active) });
+                }}
+              >
                 Export
               </Button>
             </Card>
