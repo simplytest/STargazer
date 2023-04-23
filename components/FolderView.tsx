@@ -1,4 +1,4 @@
-import { Box, BoxProps, Button, Divider, Group, Modal, NavLink, Stack, TextInput } from '@mantine/core';
+import { Badge, Box, BoxProps, Button, Divider, Group, Modal, NavLink, Stack, TextInput } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { closeModal } from '@mantine/modals';
 import { IconFolder, IconFolderPlus, IconTrash } from '@tabler/icons-react';
@@ -20,19 +20,9 @@ interface PageItemProps {
   setActive: (_: Page) => void;
 
   ['data-key']?: string;
-  ['root-button']?: boolean;
 }
 
-export function PageItem({
-  store,
-  page,
-  parent,
-  setStore,
-  active,
-  setActive,
-  'root-button': root,
-  'data-key': key,
-}: PageItemProps) {
+export function PageItem({ store, page, parent, setStore, active, setActive, 'data-key': key }: PageItemProps) {
   const children = page?.children || [];
   const showContextMenu = useContextMenu();
   const [pageName, setPageName] = useState('');
@@ -70,9 +60,7 @@ export function PageItem({
           </Group>
         </Stack>
       </Modal>
-      {root ? (
-        <NavLink icon={<IconFolderPlus />} label="Create" description="Create a new page" onClick={() => open()} />
-      ) : (
+      {page && (
         <NavLink
           label={page.name}
           icon={<IconFolder />}
@@ -115,6 +103,24 @@ export function PageItem({
             ))}
         </NavLink>
       )}
+      {!page && (
+        <Group position="right" mt={10}>
+          <Badge
+            w={150}
+            variant="light"
+            sx={{ cursor: 'pointer' }}
+            leftSection={
+              <Group position="center">
+                <IconFolderPlus size={14} />
+              </Group>
+            }
+            component="a"
+            onClick={open}
+          >
+            Create Folder
+          </Badge>
+        </Group>
+      )}
     </>
   );
 }
@@ -122,6 +128,7 @@ export function PageItem({
 export function FolderView({ toSave, ...props }: BoxProps & { toSave: string }) {
   const [store, setStore] = useState<Store>(defaultStore);
   const [active, setActive] = useState<Page>(undefined);
+  const [save, setSave] = useState(toSave);
   const [name, setName] = useState('');
 
   useEffect(() => {
@@ -145,18 +152,10 @@ export function FolderView({ toSave, ...props }: BoxProps & { toSave: string }) 
                 parent={store}
               />
             ))}
-            <PageItem
-              root-button
-              store={store}
-              setStore={setStore}
-              active={active}
-              setActive={setActive}
-              key="create-root"
-              parent={store}
-            />
+            <PageItem store={store} setStore={setStore} active={active} setActive={setActive} parent={store} />
           </Stack>
           <Divider />
-          <TextInput name="Selector" disabled value={toSave} />
+          <TextInput name="Selector" onChange={e => setSave(e.target.value)} value={save} />
           <TextInput
             label="Name"
             description="Name for the selector"
@@ -170,7 +169,7 @@ export function FolderView({ toSave, ...props }: BoxProps & { toSave: string }) 
             </Button>
             <Button
               onClick={() => {
-                active?.children.push({ name, image: '', selector: toSave });
+                active?.children.push({ name, image: '', selector: save });
                 saveStore(store).then(() => {
                   setStore({ ...store });
                   closeModal('saveModal');
