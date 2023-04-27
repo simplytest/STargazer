@@ -5,9 +5,9 @@ export const defaultStore = {
 };
 
 export async function getStore() {
-  return ((await chrome.storage.sync.get('store'))?.store ?? defaultStore) as Store;
+  return ((await chrome.storage.local.get('store'))?.store ?? defaultStore) as Store;
 }
 
 export async function saveStore(store: Store) {
-  await chrome.storage.sync.set({ store: store });
+  await chrome.storage.local.set({ store: store });
 }
