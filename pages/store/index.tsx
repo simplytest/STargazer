@@ -5,6 +5,7 @@ import {
   Card,
   Divider,
   Group,
+  Image,
   NavLink,
   Navbar,
   Select,
@@ -33,6 +34,7 @@ import generate, { Language } from '../../src/page-object';
 import { defaultStore, getStore, saveStore } from '../../src/store';
 import { Page, Selector, Store } from '../../src/types/store';
 import setup from '../../src/utils/react';
+import { title } from 'process';
 
 interface FolderProps {
   page: Page;
@@ -110,7 +112,17 @@ function SelectorItem({ item, parent, setParent }: SelectorItemProps) {
   return (
     <tr>
       <td align="center">
-        <IconPhotoOff size={12} />
+        {item.image?.length > 0 ? (
+          <Image
+            maw={80}
+            radius="md"
+            src={item.image}
+            sx={{ cursor: 'pointer' }}
+            onClick={() => openModal({ children: <Image src={item.image} radius="md" /> })}
+          />
+        ) : (
+          <IconPhotoOff size={12} />
+        )}
       </td>
       <td>
         <TextInput value={name} onChange={e => setName(e.target.value)} />
@@ -260,7 +272,9 @@ function Store() {
                 placeholder="Pick one"
                 data={[
                   { value: 'csharp', label: 'C#' },
-                  { value: 'nodejs', label: 'Node.Js' },
+                  { value: 'java', label: 'Java' },
+                  { value: 'javascript', label: 'JavaScript' },
+                  { value: 'typescript', label: 'TypeScript' },
                 ]}
               />
 

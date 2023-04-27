@@ -169,10 +169,12 @@ export function FolderView({ toSave, ...props }: BoxProps & { toSave: string }) 
             </Button>
             <Button
               onClick={() => {
-                active?.children.push({ name, image: '', selector: save });
-                saveStore(store).then(() => {
-                  setStore({ ...store });
-                  closeModal('saveModal');
+                chrome.tabs.captureVisibleTab(undefined, { format: 'jpeg', quality: 30 }).then(image => {
+                  active?.children.push({ name, image: image, selector: save });
+                  saveStore(store).then(() => {
+                    setStore({ ...store });
+                    closeModal('saveModal');
+                  });
                 });
               }}
             >
