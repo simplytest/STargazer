@@ -6,7 +6,7 @@ export default function translate(obj: CodeObject, level = 0, knownClasses: stri
 
   if ('variables' in obj) {
     const name = label(obj.name, knownClasses);
-    rtn.push(indent(level, `class ${name} {`));
+    rtn.push(indent(level, `export class ${name} {`));
     rtn.push(indent(level + 1, `locators = {`));
 
     for (const variable of obj.variables) {
