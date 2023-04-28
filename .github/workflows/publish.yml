@@ -10,7 +10,7 @@ on:
 
 name: Publish Extension
 jobs:
-  deploy:
+  publish:
     runs-on: ubuntu-latest
 
     steps:

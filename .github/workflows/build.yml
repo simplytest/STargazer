@@ -1,14 +1,14 @@
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ["Bump Version"]
+    workflows: ['Bump Version']
     branches: [main]
-    types: 
+    types:
       - completed
 
 name: Build Extension
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
