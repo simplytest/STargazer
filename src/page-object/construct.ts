@@ -2,7 +2,7 @@ import { Class, Namespace } from '../types/code';
 import { Page, Selector } from '../types/store';
 
 export function filter(name: string) {
-  return name.replaceAll(/[^a-zA-Z_]/g, '');
+  return name.trim().replaceAll(/[^a-zA-Z_]/g, '');
 }
 
 export function escape(string: string) {
@@ -15,6 +15,10 @@ export function indent(level: number, code: string) {
 
 export function label(name: string, knownObjects: string[]) {
   name = filter(name);
+
+  if (name.length === 0) {
+    name = 'unknown';
+  }
 
   if (knownObjects.includes(name)) {
     const count = knownObjects.filter(x => x === name).length;
