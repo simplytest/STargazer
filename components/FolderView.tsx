@@ -1,13 +1,84 @@
-import { Badge, Box, BoxProps, Button, Divider, Group, Modal, NavLink, Stack, TextInput } from '@mantine/core';
+import {
+  ActionIcon,
+  Badge,
+  Box,
+  BoxProps,
+  Button,
+  Divider,
+  Group,
+  Modal,
+  NavLink,
+  Stack,
+  Text,
+  TextInput,
+} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { closeModal } from '@mantine/modals';
-import { IconFolder, IconFolderPlus, IconTrash } from '@tabler/icons-react';
-import { useContextMenu } from 'mantine-contextmenu';
+import { closeModal, openConfirmModal } from '@mantine/modals';
+import { notifications } from '@mantine/notifications';
+import { IconFolder, IconFolderPlus, IconTrash, IconX } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { defaultStore, getStore, saveStore } from '../src/store';
 import { Page, Store } from '../src/types/store';
 import { executeScript } from '../src/utils/chrome';
+
+export function createPageModal(page: Page, onConfirm: (name: string) => void) {
+  const [pageName, setPageName] = useState('');
+  const [opened, { open, close }] = useDisclosure(false);
+
+  return {
+    open,
+    close,
+    modal: (
+      <Modal key="createPageModal" opened={opened} title="Create Page" onClose={close} zIndex={99999}>
+        <Stack>
+          <TextInput
+            autoFocus
+            label="Name"
+            maxLength={25}
+            value={pageName}
+            description="Name for the new page"
+            onChange={e => setPageName(e.target.value)}
+            withAsterisk
+          />
+          <Group position="right">
+            <Button color="gray" onClick={close}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                if (!pageName || pageName.trim().length === 0) {
+                  notifications.show({
+                    title: 'Error',
+                    color: 'red',
+                    icon: <IconX />,
+                    message: 'Bad folder name!',
+                  });
+                  return;
+                }
+
+                if (page?.children.find(x => x.name.toLowerCase().trim() === pageName.toLowerCase().trim())) {
+                  notifications.show({
+                    title: 'Error',
+                    color: 'red',
+                    icon: <IconX />,
+                    message: 'Sub-Page with same name already exists!',
+                  });
+                  return;
+                }
+
+                onConfirm(pageName);
+                close();
+              }}
+            >
+              Create
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
+    ),
+  };
+}
 
 interface PageItemProps {
   page?: Page;
@@ -24,69 +95,54 @@ interface PageItemProps {
 
 export function PageItem({ store, page, parent, setStore, active, setActive, 'data-key': key }: PageItemProps) {
   const children = page?.children || [];
-  const showContextMenu = useContextMenu();
-  const [pageName, setPageName] = useState('');
-  const [opened, { open, close }] = useDisclosure(false);
   const subPages = children.filter(x => 'children' in x) as Page[];
+
+  const { open, modal } = createPageModal(page, pageName => {
+    executeScript(() => window.location.hostname).then(hostname => {
+      (page || store).children.push({ name: pageName, children: [], url: hostname, id: uuidv4() });
+      saveStore(store).then(() => {
+        setStore({ ...store });
+      });
+    });
+  });
 
   return (
     <>
-      <Modal opened={opened} title="Create Page" onClose={close} zIndex={99999}>
-        <Stack>
-          <TextInput
-            label="Name"
-            value={pageName}
-            description="Name for the new page"
-            onChange={e => setPageName(e.target.value)}
-            withAsterisk
-          />
-          <Group position="right">
-            <Button color="gray" onClick={close}>
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                executeScript(() => window.location.hostname).then(hostname => {
-                  (page || store).children.push({ name: pageName, children: [], url: hostname, id: uuidv4() });
-                  saveStore(store).then(() => {
-                    setStore({ ...store });
-                    close();
-                  });
-                });
-              }}
-            >
-              Create
-            </Button>
-          </Group>
-        </Stack>
-      </Modal>
+      {modal}
       {page && (
         <NavLink
           label={page.name}
-          icon={<IconFolder />}
+          icon={
+            <Group spacing={2} position="center" noWrap>
+              <IconFolder />
+              <Divider ml={5} orientation="vertical" />
+              <ActionIcon
+                color="red"
+                onClick={() => {
+                  openConfirmModal({
+                    title: 'Are you sure?',
+                    onConfirm: () => {
+                      parent.children = parent.children.filter(x => x !== page);
+                      saveStore(store).then(() => {
+                        setStore({ ...store });
+                      });
+                    },
+                    labels: { confirm: 'Yes', cancel: 'Cancel' },
+                    children: <Text size="sm">This will permanently delete the selected page</Text>,
+                  });
+                }}
+              >
+                <IconTrash size={16} />
+              </ActionIcon>
+              <ActionIcon onClick={open}>
+                <IconFolderPlus size={16} />
+              </ActionIcon>
+              <Divider orientation="vertical" />
+            </Group>
+          }
           description={page.url}
           onClick={() => setActive(page)}
           active={active?.id === page?.id}
-          onContextMenu={showContextMenu([
-            {
-              key: 'new',
-              onClick: open,
-              title: 'New Page',
-              icon: <IconFolderPlus />,
-            },
-            {
-              color: 'red',
-              key: 'delete',
-              title: 'Delete',
-              icon: <IconTrash size={16} />,
-              onClick: () => {
-                parent.children = parent.children.filter(x => x !== page);
-                saveStore(store).then(() => {
-                  setStore({ ...store });
-                });
-              },
-            },
-          ])}
         >
           {subPages.length > 0 &&
             subPages.map(x => (
@@ -157,7 +213,9 @@ export function FolderView({ toSave, ...props }: BoxProps & { toSave: string }) 
           <Divider />
           <TextInput name="Selector" onChange={e => setSave(e.target.value)} value={save} />
           <TextInput
+            autoFocus
             label="Name"
+            maxLength={25}
             description="Name for the selector"
             withAsterisk
             value={name}
@@ -169,11 +227,42 @@ export function FolderView({ toSave, ...props }: BoxProps & { toSave: string }) 
             </Button>
             <Button
               onClick={() => {
+                if (!name || name.trim().length === 0) {
+                  notifications.show({
+                    title: 'Error',
+                    color: 'red',
+                    icon: <IconX />,
+                    message: 'No name given!',
+                  });
+                  return;
+                }
+
+                if (!active) {
+                  notifications.show({
+                    title: 'Error',
+                    color: 'red',
+                    icon: <IconX />,
+                    message: 'No Folder selected!',
+                  });
+                  return;
+                }
+
+                if (active.children.find(x => x.name.toLowerCase().trim() === name.toLowerCase().trim())) {
+                  notifications.show({
+                    title: 'Error',
+                    color: 'red',
+                    icon: <IconX />,
+                    message: 'Selector with same name exists!',
+                  });
+                  return;
+                }
+
                 chrome.tabs.captureVisibleTab(undefined, { format: 'jpeg', quality: 30 }).then(image => {
                   active?.children.push({ name, image: image, selector: save });
                   saveStore(store).then(() => {
                     setStore({ ...store });
                     closeModal('saveModal');
+                    chrome.runtime.sendMessage(null, { name: 'update-store' });
                   });
                 });
               }}
