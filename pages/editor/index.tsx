@@ -2,16 +2,18 @@ import {
   ActionIcon,
   AppShell,
   CloseButton,
+  Footer,
   Grid,
   Group,
   Header,
   LoadingOverlay,
+  NavLink,
   Stack,
   Text,
   Title,
   useMantineTheme,
 } from '@mantine/core';
-import { IconClick } from '@tabler/icons-react';
+import { IconChevronRight, IconClick, IconDatabase } from '@tabler/icons-react';
 import React, { useContext, useEffect, useState } from 'react';
 import { showError } from '../../components/ErrorModal';
 import { Options } from '../../components/Options';
@@ -35,22 +37,34 @@ function Shell({ children }: { children: React.ReactNode }) {
   };
 
   const Head = () => (
-    <Header height={60} p={5} bg={theme.colors.dark[5]}>
-      <Grid>
-        <Grid.Col span={10}>
-          <Group style={{ height: '100%' }} position="left" noWrap>
-            <Title ml={15} align="center">
-              STargazer
-            </Title>
-          </Group>
-        </Grid.Col>
-        <Grid.Col span={2}>
-          <Group style={{ width: '100%', height: '100%' }} position="center" noWrap>
-            <CloseButton onClick={onClose} />
-          </Group>
-        </Grid.Col>
-      </Grid>
-    </Header>
+    <>
+      <Header height={60} p={5} bg={theme.colors.dark[5]}>
+        <Grid>
+          <Grid.Col span={10}>
+            <Group style={{ height: '100%' }} position="left" noWrap>
+              <Title ml={15} align="center">
+                STargazer
+              </Title>
+            </Group>
+          </Grid.Col>
+          <Grid.Col span={2}>
+            <Group style={{ width: '100%', height: '100%' }} position="center" noWrap>
+              <CloseButton onClick={onClose} />
+            </Group>
+          </Grid.Col>
+        </Grid>
+      </Header>
+      <Footer height={60}>
+        <NavLink
+          variant="subtle"
+          label="Goto Storage"
+          icon={<IconDatabase size={12} />}
+          description="Saved Selectors can be found here"
+          rightSection={<IconChevronRight size="0.8rem" stroke={1.5} />}
+          onClick={() => chrome.tabs.create({ url: chrome.runtime.getURL('pages/store/index.html'), active: true })}
+        />
+      </Footer>
+    </>
   );
 
   return <AppShell header={<Head />}>{children}</AppShell>;
