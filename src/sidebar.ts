@@ -1,7 +1,8 @@
+import { IconArrowsMove } from '@tabler/icons';
 import theme from '../pages/theme';
 import { executeScript } from './utils/chrome';
 
-function createSidebar(url: string, background: string, handle: string) {
+function createSidebar(url: string, background: string, handle: string, icon: string) {
   const old = document.getElementById('stargazer_sidebar');
   const maximumZIndex = '2147483647';
 
@@ -14,8 +15,8 @@ function createSidebar(url: string, background: string, handle: string) {
 
   sidebar.style.background = background;
   sidebar.style.position = 'fixed';
-  sidebar.style.height = '100%';
   sidebar.style.width = '400px';
+  sidebar.style.height = '85%';
 
   sidebar.style.top = '0px';
   sidebar.style.right = '0px';
@@ -26,8 +27,19 @@ function createSidebar(url: string, background: string, handle: string) {
   const drag = document.createElement('div');
   drag.style.background = handle;
   drag.style.height = '30px';
-  drag.style.cursor = 'grab';
+  drag.style.cursor = 'move';
   drag.style.width = '100%';
+
+  const dragIcon = document.createElement('div');
+  dragIcon.innerHTML = icon;
+
+  const dragIconSVG = dragIcon.firstChild as unknown as SVGElement;
+  dragIconSVG.style.position = 'relative';
+  dragIconSVG.style.display = 'block';
+  dragIconSVG.style.margin = 'auto';
+  dragIconSVG.style.top = '2px';
+
+  drag.appendChild(dragIcon);
 
   const iframe = document.createElement('iframe');
   iframe.style.border = 'none';
@@ -84,11 +96,14 @@ function createSidebar(url: string, background: string, handle: string) {
 }
 
 export async function loadSidebar() {
+  const icon = (IconArrowsMove as unknown as () => string)();
+
   await executeScript(
     createSidebar,
     chrome.runtime.getURL('pages/editor/index.html'),
     theme.colors.dark[8],
-    theme.colors.dark[6]
+    theme.colors.dark[6],
+    icon
   );
 }
 
