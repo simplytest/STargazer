@@ -57,10 +57,10 @@ function Options() {
             step={1}
             max={Infinity}
             maxLength={10}
-            label="Results to display"
             value={resultsToDisplay}
-            onChange={setResultsToDisplay}
+            label="Results to display"
             description="Only show first N results"
+            onChange={v => v && setResultsToDisplay(v)}
           />
           <Button
             fullWidth
