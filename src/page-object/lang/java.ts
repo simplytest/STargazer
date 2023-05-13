@@ -1,11 +1,11 @@
 import { CodeObject } from '../../types/code';
 import { escape, indent, label } from '../construct';
 
-export default function translate(obj: CodeObject, level = 0, knownGlobals: string[] = []) {
+export default function translate(obj: CodeObject, level = 0, known: string[] = []) {
   const rtn: string[] = [];
 
   if ('variables' in obj) {
-    const name = label(obj.name, knownGlobals);
+    const name = label(obj.name, known);
     rtn.push(indent(level, `public class ${name} {\n`));
 
     // Constructor
@@ -13,8 +13,10 @@ export default function translate(obj: CodeObject, level = 0, knownGlobals: stri
     rtn.push(indent(level + 2, `// Initialize your WebDriver`));
     rtn.push(indent(level + 1, `}\n`));
 
+    const knownVariables: string[] = [];
+
     for (const variable of obj.variables) {
-      rtn.push(...translate(variable, level + 1, knownGlobals));
+      rtn.push(...translate(variable, level + 1, knownVariables));
     }
 
     rtn.push(indent(level, '}'));
@@ -22,14 +24,12 @@ export default function translate(obj: CodeObject, level = 0, knownGlobals: stri
 
   if ('classes' in obj) {
     for (const clazz of obj.classes) {
-      rtn.push(...translate(clazz, level, knownGlobals));
+      rtn.push(...translate(clazz, level, known));
     }
   }
 
-  const knownVariables: string[] = [];
-
   if ('value' in obj) {
-    const name = label(obj.name, knownVariables);
+    const name = label(obj.name, known);
     rtn.push(indent(level, `private String ${name} = "${escape(obj.value)}";`));
   }
 
