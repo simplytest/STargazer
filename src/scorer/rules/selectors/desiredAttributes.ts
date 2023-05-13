@@ -12,7 +12,7 @@ const desired = [
   },
   {
     score: scores.hideous,
-    matches: [/^src$/g, /^href$/g, /^target$/g, /^alt$/g, /^title$/g, /^type$/g, /^placeholder$/g],
+    matches: [/^src$/g, /^srcset$/g, /^href$/g, /^target$/g, /^alt$/g, /^title$/g, /^type$/g, /^placeholder$/g],
   },
 ];
 
