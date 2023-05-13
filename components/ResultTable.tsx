@@ -1,7 +1,7 @@
 import { clipboard } from '@extend-chrome/clipboard';
-import { ActionIcon, Alert, Badge, Center, Group, Table, TextInput } from '@mantine/core';
+import { ActionIcon, Alert, Badge, Center, Group, Stack, Table, TextInput } from '@mantine/core';
 import { useHover } from '@mantine/hooks';
-import { IconCopy, IconDatabaseOff, IconDeviceFloppy } from '@tabler/icons-react';
+import { IconCopy, IconDatabaseOff, IconDeviceFloppy, IconInfoCircle } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { highlightBySelector } from '../src/highlight';
 import { Result } from '../src/types/generator';
@@ -89,9 +89,27 @@ function ResultTable({ results }: { results: Result[] }) {
   ) : (
     <div style={{ width: '100%' }}>
       <Center>
-        <Alert icon={<IconDatabaseOff size={16} />} title="Nothing to see here!" color="yellow">
-          We could not generate any selectors for the given element...
-        </Alert>
+        <Stack>
+          <Alert icon={<IconDatabaseOff size={16} />} title="Nothing to see here!" color="yellow">
+            We could not generate any selectors for the given element...
+          </Alert>
+          <Alert icon={<IconInfoCircle size={16} />} title="Why couldn't we generate a selector?" color="blue">
+            There may be several reasons as to why we couldn't generate a selector.
+            <br />
+            The most common reason is that the Element you're trying to generate a selector for, isn't unique enough for
+            us to generate a good selector. Most of the time this is caused by negligence from the website developers.
+            <br />
+            <i>
+              (This is not always the case! If uncertain, please inspect the element you selected yourself and if you
+              can't find a good selector either, try reaching out to the websites developers, if you can find a good
+              selector however, please raise an issue{' '}
+              <a href="https://github.com/simplytest/STargazer/issues/new" target="_blank" rel="noreferrer">
+                here
+              </a>
+              )
+            </i>
+          </Alert>
+        </Stack>
       </Center>
     </div>
   );
