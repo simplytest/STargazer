@@ -22,17 +22,6 @@ export default function translate(obj: CodeObject, level = 0, known: string[] = 
     rtn.push(indent(level, '}'));
   }
 
-  if ('classes' in obj) {
-    const name = label(obj.name, known);
-    rtn.push(indent(level, `namespace ${name} {`));
-
-    for (const clazz of obj.classes) {
-      rtn.push(...translate(clazz, level + 1, known));
-    }
-
-    rtn.push(indent(level, '}'));
-  }
-
   if ('value' in obj) {
     const name = label(obj.name, known);
     rtn.push(indent(level, `private string ${name} = "${escape(obj.value)}";`));

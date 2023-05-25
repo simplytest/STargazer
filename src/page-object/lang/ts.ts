@@ -19,12 +19,6 @@ export default function translate(obj: CodeObject, level = 0, known: string[] = 
     rtn.push(indent(level, '}'));
   }
 
-  if ('classes' in obj) {
-    for (const clazz of obj.classes) {
-      rtn.push(...translate(clazz, level, known));
-    }
-  }
-
   if ('value' in obj) {
     const name = label(obj.name, known);
     rtn.push(indent(level, `${name}: "${escape(obj.value)}",`));

@@ -8,10 +8,5 @@ export interface Class {
   variables: Variable[];
 }
 
-export interface Namespace {
-  name: string;
-  classes: Class[];
-}
-
-type CodeObject = Class | Namespace | Variable;
-type Translator = (root: Namespace, ...args) => string[];
+type CodeObject = Class | Variable;
+type Translator = (clazz: Class, ...args) => string[];

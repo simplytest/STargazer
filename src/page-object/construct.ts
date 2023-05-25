@@ -1,4 +1,4 @@
-import { Class, Namespace } from '../types/code';
+import { Class } from '../types/code';
 import { Page, Selector } from '../types/store';
 
 export function filter(name: string) {
@@ -29,21 +29,16 @@ export function label(name: string, knownObjects: string[]) {
   return name;
 }
 
-export default function construct(page: Page, namespace?: Namespace) {
+export default function construct(page: Page, classes: Class[] = []) {
   const selectors = page.children.filter(x => 'selector' in x) as Selector[];
   const pages = page.children.filter(x => 'id' in x) as Page[];
 
-  if (!namespace) {
-    const name = selectors.length === 0 ? page.name : 'STargazer';
-    namespace = { name: name, classes: [] };
-  }
-
   for (const sub of pages) {
-    construct(sub, namespace);
+    construct(sub, classes);
   }
 
   if (selectors.length === 0) {
-    return namespace;
+    return classes;
   }
 
   const clazz: Class = { name: page.name, variables: [] };
@@ -52,7 +47,7 @@ export default function construct(page: Page, namespace?: Namespace) {
     clazz.variables.push({ name: selector.name, value: selector.selector });
   }
 
-  namespace.classes.push(clazz);
+  classes.push(clazz);
 
-  return namespace;
+  return classes;
 }
