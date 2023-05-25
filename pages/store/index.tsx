@@ -20,20 +20,20 @@ import { openConfirmModal, openModal } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
 import {
   IconCheck,
+  IconCode,
   IconDatabase,
   IconDeviceFloppy,
+  IconDownload,
   IconFileExport,
   IconFolder,
-  IconFolderPlus,
   IconPhotoOff,
   IconPlus,
   IconTrash,
-  IconX,
 } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { createPageModal } from '../../components/FolderView';
-import generate, { Language } from '../../src/page-object';
+import generate, { Language, download } from '../../src/page-object';
 import { defaultStore, getStore, saveStore } from '../../src/store';
 import { Page, Selector, Store } from '../../src/types/store';
 import setup from '../../src/utils/react';
@@ -263,46 +263,44 @@ function Store() {
                 </Table>
               )}
             </Stack>
-            {realSelectors.length > 0 && (
-              <>
-                <Group mt={15} position="right">
-                  <Button
-                    leftIcon={<IconPlus />}
-                    color="gray"
-                    onClick={() => {
-                      current.children.push({
-                        image: '',
-                        name: `New Selector (${current.children.length})`,
-                        selector: '',
-                      } as Selector);
-                      setCurrent({ ...current });
-                    }}
-                  >
-                    Add Selector
-                  </Button>
-                  <Button
-                    leftIcon={<IconDeviceFloppy />}
-                    onClick={() => {
-                      active.children = JSON.parse(JSON.stringify(current.children));
+            <>
+              <Group mt={15} position="right">
+                <Button
+                  leftIcon={<IconPlus />}
+                  color="gray"
+                  onClick={() => {
+                    current.children.push({
+                      image: '',
+                      name: `New Selector (${current.children.length})`,
+                      selector: '',
+                    } as Selector);
+                    setCurrent({ ...current });
+                  }}
+                >
+                  Add Selector
+                </Button>
+                <Button
+                  leftIcon={<IconDeviceFloppy />}
+                  onClick={() => {
+                    active.children = JSON.parse(JSON.stringify(current.children));
 
-                      saveStore(store).then(() => {
-                        setStore({ ...store });
+                    saveStore(store).then(() => {
+                      setStore({ ...store });
 
-                        notifications.show({
-                          title: 'Saved!',
-                          color: 'green',
-                          icon: <IconCheck />,
-                          message: 'Changes were saved successfully!',
-                        });
+                      notifications.show({
+                        title: 'Saved!',
+                        color: 'green',
+                        icon: <IconCheck />,
+                        message: 'Changes were saved successfully!',
                       });
-                    }}
-                  >
-                    Save Changes
-                  </Button>
-                </Group>
-                <Divider mt={25} />
-              </>
-            )}
+                    });
+                  }}
+                >
+                  Save Changes
+                </Button>
+              </Group>
+              <Divider mt={25} />
+            </>
             {active?.children.length > 0 && (
               <Group position="center" mt={50}>
                 <Card shadow="sm" padding="lg" radius="md" w={250} withBorder>
@@ -333,27 +331,32 @@ function Store() {
                     ]}
                   />
 
-                  <Button
-                    variant="light"
-                    color="blue"
-                    fullWidth
-                    mt="md"
-                    radius="md"
-                    onClick={() => {
-                      if (!lang) {
-                        notifications.show({
-                          title: 'Error',
-                          color: 'red',
-                          icon: <IconX />,
-                          message: 'No language selected!',
-                        });
-                        return;
-                      }
-                      openModal({ children: generate(lang as Language, active) });
-                    }}
-                  >
-                    Export
-                  </Button>
+                  {lang && (
+                    <>
+                      <Button
+                        variant="light"
+                        color="blue"
+                        fullWidth
+                        mt="md"
+                        radius="md"
+                        leftIcon={<IconCode />}
+                        onClick={() => openModal({ children: generate(lang as Language, active) })}
+                      >
+                        Show Code
+                      </Button>
+                      <Button
+                        variant="light"
+                        color="blue"
+                        fullWidth
+                        mt="md"
+                        radius="md"
+                        leftIcon={<IconDownload />}
+                        onClick={() => download(lang as Language, active)}
+                      >
+                        Download
+                      </Button>
+                    </>
+                  )}
                 </Card>
               </Group>
             )}
