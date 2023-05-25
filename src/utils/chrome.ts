@@ -14,13 +14,13 @@ export async function executeScript<R, T extends Array<any>>(func: (...args: T) 
   const tab = tabs[0]?.id;
 
   return new Promise<R>((resolve, reject) => {
-    chrome.scripting.executeScript(
+    chrome.scripting.executeScript<T[], R>(
       {
         target: { tabId: tab },
         args: [...args],
         func: func,
       },
-      results => (results ? resolve(results[0].result) : reject(chrome.runtime['lastError'].message))
+      results => (results ? resolve(results.at(0).result as R) : reject(chrome.runtime['lastError'].message))
     );
   });
 }
