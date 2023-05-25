@@ -118,6 +118,8 @@ interface SelectorItemProps {
   setParent: (_: Page) => void;
 }
 
+// TODO
+// GPT for Selector Names
 
 function SelectorItem({ item, parent, setParent }: SelectorItemProps) {
   const { width } = useViewportSize();
@@ -173,7 +175,6 @@ function Store() {
   const [current, setCurrent] = useState<Page>(undefined);
 
   const selectors = current?.children?.filter(x => 'selector' in x) || [];
-  const realSelectors = active?.children?.filter(x => 'selector' in x) || [];
 
   const { open, modal } = createPageModal(active, pageName => {
     active.children.push({ name: pageName, children: [], url: '<unknown>', id: uuidv4() });
@@ -185,6 +186,29 @@ function Store() {
   useEffect(() => {
     getStore().then(store => setStore({ ...store }));
   }, []);
+
+  useEffect(() => {
+    if (!current || !active) {
+      return;
+    }
+
+    const search = (page: Page) => {
+      if (page.id === current.id) {
+        setActive(page);
+        return;
+      }
+
+      for (const child of page.children) {
+        if ('children' in child) {
+          search(child);
+        }
+      }
+    };
+
+    for (const child of store.children) {
+      search(child);
+    }
+  }, [store]);
 
   useEffect(() => {
     if (!active) {
