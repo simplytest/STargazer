@@ -15,6 +15,7 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
+import { useViewportSize } from '@mantine/hooks';
 import { openConfirmModal, openModal } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
 import {
@@ -117,7 +118,9 @@ interface SelectorItemProps {
   setParent: (_: Page) => void;
 }
 
+
 function SelectorItem({ item, parent, setParent }: SelectorItemProps) {
+  const { width } = useViewportSize();
   const [name, setName] = useState(item.name);
   const [selector, setSelector] = useState(item.selector);
 
@@ -135,7 +138,7 @@ function SelectorItem({ item, parent, setParent }: SelectorItemProps) {
             radius="md"
             src={item.image}
             sx={{ cursor: 'pointer' }}
-            onClick={() => openModal({ children: <Image src={item.image} radius="md" />, size: 'xl' })}
+            onClick={() => openModal({ children: <Image src={item.image} radius="md" />, size: width * 0.75 })}
           />
         ) : (
           <IconPhotoOff size={12} />
