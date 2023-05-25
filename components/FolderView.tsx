@@ -15,7 +15,7 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { closeModal, openConfirmModal } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
-import { IconFolder, IconFolderPlus, IconTrash, IconX } from '@tabler/icons-react';
+import { IconFolder, IconPlus, IconTrash, IconX } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { defaultStore, getStore, saveStore } from '../src/store';
@@ -91,9 +91,19 @@ interface PageItemProps {
   setActive: (_: Page) => void;
 
   ['data-key']?: string;
+  topLevel?: boolean;
 }
 
-export function PageItem({ store, page, parent, setStore, active, setActive, 'data-key': key }: PageItemProps) {
+export function PageItem({
+  store,
+  page,
+  parent,
+  setStore,
+  active,
+  setActive,
+  'data-key': key,
+  topLevel,
+}: PageItemProps) {
   const children = page?.children || [];
   const subPages = children.filter(x => 'children' in x) as Page[];
 
@@ -135,14 +145,14 @@ export function PageItem({ store, page, parent, setStore, active, setActive, 'da
                 <IconTrash size={16} />
               </ActionIcon>
               <ActionIcon onClick={open}>
-                <IconFolderPlus size={16} />
+                <IconPlus size={16} />
               </ActionIcon>
               <Divider orientation="vertical" />
             </Group>
           }
-          description={page.url}
           onClick={() => setActive(page)}
           active={active?.id === page?.id}
+          description={topLevel && page.url}
         >
           {subPages.length > 0 &&
             subPages.map(x => (
@@ -167,7 +177,7 @@ export function PageItem({ store, page, parent, setStore, active, setActive, 'da
             sx={{ cursor: 'pointer' }}
             leftSection={
               <Group position="center">
-                <IconFolderPlus size={14} />
+                <IconPlus size={14} />
               </Group>
             }
             component="a"
@@ -198,6 +208,7 @@ export function FolderView({ toSave, ...props }: BoxProps & { toSave: string }) 
           <Stack spacing={0}>
             {store.children.map(x => (
               <PageItem
+                topLevel
                 page={x}
                 store={store}
                 setStore={setStore}
@@ -257,7 +268,7 @@ export function FolderView({ toSave, ...props }: BoxProps & { toSave: string }) 
                   return;
                 }
 
-                chrome.tabs.captureVisibleTab(undefined, { format: 'jpeg', quality: 30 }).then(image => {
+                chrome.tabs.captureVisibleTab(undefined, { format: 'jpeg', quality: 60 }).then(image => {
                   active?.children.push({ name, image: image, selector: save });
                   saveStore(store).then(() => {
                     setStore({ ...store });

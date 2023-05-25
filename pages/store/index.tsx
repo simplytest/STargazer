@@ -50,9 +50,10 @@ interface FolderProps {
   setStore: (_: Store) => void;
 
   open: () => void;
+  topLevel?: boolean;
 }
 
-function Folder({ page, parent, store, setStore, active, setActive, 'data-key': key, open }: FolderProps) {
+function Folder({ page, parent, store, setStore, active, setActive, 'data-key': key, open, topLevel }: FolderProps) {
   const children = page?.children || [];
   const subPages = children.filter(x => 'children' in x) as Page[];
 
@@ -82,14 +83,14 @@ function Folder({ page, parent, store, setStore, active, setActive, 'data-key': 
             <IconTrash size={16} />
           </ActionIcon>
           <ActionIcon onClick={open}>
-            <IconFolderPlus size={16} />
+            <IconPlus size={16} />
           </ActionIcon>
           <Divider orientation="vertical" />
         </Group>
       }
-      description={page.url}
       onClick={() => setActive(page)}
       active={active?.id === page?.id}
+      description={topLevel && page.url}
     >
       {subPages.length > 0 &&
         subPages.map(x => (
@@ -217,6 +218,7 @@ function Store() {
             <Stack spacing={0}>
               {store.children.map(x => (
                 <Folder
+                  topLevel
                   open={open}
                   parent={store}
                   store={store}
