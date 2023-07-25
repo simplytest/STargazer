@@ -4,6 +4,7 @@
     "target": "ESNext",
     "jsx": "preserve",
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "moduleResolution": "Node",
     "lib": [
       "ESNext",

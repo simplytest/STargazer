@@ -1,8 +1,14 @@
-build
+# Build related files
+
 dist
+build
+
+# User-Configuration and Cache Files
 
 .parcel-cache
-node_modules
 .vscode
 
+# npm / yarn related files
+
+node_modules
 yarn-error.log

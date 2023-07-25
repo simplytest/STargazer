@@ -1,41 +1,32 @@
-// eslint-disable-next-line no-undef
 module.exports = {
-  env: {
-    webextensions: true,
-    browser: true,
-    es2021: true,
-    amd: true,
-  },
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
+    env: {
+        browser: true,
+        es2021: true,
     },
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-  },
-  settings: {
-    'import/resolver': {
-      node: {
-        paths: ['src'],
-        extensions: ['.js', '.jsx', '.ts', '.tsx'],
-      },
+    extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:react/recommended"],
+    overrides: [
+        {
+            env: {
+                node: true,
+            },
+            files: [".eslintrc.{js,cjs}"],
+            parserOptions: {
+                sourceType: "script",
+            },
+        },
+    ],
+    parser: "@typescript-eslint/parser",
+    parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
     },
-  },
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:react/recommended',
-    'plugin:react/jsx-runtime',
-    'plugin:prettier/recommended', // Make sure this is always the last element in the array.
-  ],
-  plugins: ['react', 'prettier', '@typescript-eslint'],
-  rules: {
-    'react/display-name': 'off',
-    'prettier/prettier': 'error',
-    'react/self-closing-comp': 'error',
-    'react/no-unescaped-entities': 'off',
-    'react/jsx-closing-tag-location': 'error',
-    '@typescript-eslint/no-explicit-any': 'off',
-  },
+    plugins: ["@typescript-eslint", "react"],
+    rules: {
+        "@typescript-eslint/no-explicit-any": "off",
+        "linebreak-style": ["error", "unix"],
+        "brace-style": ["error", "allman"],
+        quotes: ["error", "double"],
+        semi: ["error", "always"],
+        indent: ["error", 4],
+    },
 };
