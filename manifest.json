@@ -3,33 +3,7 @@
   "description": "A 'click-to-build' xpath and css selector generator",
   "version": "1.2.9",
   "manifest_version": 3,
-  "icons": {
-    "16": "assets/logo16.png",
-    "32": "assets/logo32.png",
-    "48": "assets/logo48.png",
-    "128": "assets/logo128.png"
-  },
-  "permissions": [
-    "storage",
-    "scripting",
-    "activeTab",
-    "clipboardWrite"
-  ],
-  "host_permissions": [
-    "*://*/*"
-  ],
-  "action": {
-    "default_title": "Open Menu",
-    "default_popup": "/pages/popup/index.html"
-  },
   "commands": {
-    "pause-execution": {
-      "suggested_key": {
-        "default": "Ctrl+I",
-        "mac": "Command+I"
-      },
-      "description": "Pause execution of current page (only works with devtools open!)"
-    },
     "start-picking": {
       "suggested_key": {
         "default": "Ctrl+Shift+P",
@@ -39,8 +13,14 @@
     }
   },
   "background": {
-    "service_worker": "/src/background.js"
+    "service_worker": "/src/service_worker.js"
   },
+  "permissions": [
+    "storage",
+    "scripting",
+    "activeTab",
+    "clipboardWrite"
+  ],
   "devtools_page": "/pages/devtools/bootstrap.html",
   "web_accessible_resources": [
     {
@@ -50,6 +30,26 @@
       "matches": [
         "<all_urls>"
       ]
+    },
+    {
+      "resources": [
+        "/model/model.json"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
-  ]
+  ],
+  "host_permissions": [
+    "*://*/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "icons": {
+    "16": "assets/logo/16x16.png",
+    "32": "assets/logo/32x32.png",
+    "48": "assets/logo/48x48.png",
+    "128": "assets/logo/128x128.png"
+  }
 }
