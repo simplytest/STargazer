@@ -1,4 +1,4 @@
-import { scripting } from "./scripting";
+import { scripting } from "./extension/scripting";
 import theme from "../shared/theme";
 
 import { IconArrowsMove } from "@tabler/icons-react";
@@ -13,6 +13,9 @@ export class sidebar
 {
     static readonly MAXIMUM_ZINDEX = "2147483647";
     static readonly ID = "stargazer_sidebar";
+    
+    static readonly background = theme.colors.dark[7];
+    static readonly color = theme.colors.dark[6];
 
     private root: HTMLDivElement;
     private initial_pos = [0, 0];
@@ -20,13 +23,13 @@ export class sidebar
 
     static async open() 
     {
-        const url = chrome.runtime.getURL("pages/editor/index.html");
-        const icon = renderToString(<IconArrowsMove />);
+        const url = chrome.runtime.getURL("pages/sidebar/index.html");
+        const icon = renderToString(<IconArrowsMove color={theme.colors.dark[0]} />);
 
         const style: style_t = {
             background: theme.colors.dark[8],
             handle: theme.colors.dark[6],
-            icon: icon,
+            icon,
         };
 
         await scripting.export();
@@ -75,17 +78,21 @@ export class sidebar
         const root = document.createElement("div");
 
         root.style.zIndex = sidebar.MAXIMUM_ZINDEX;
+        root.style.overflow = "hidden";
         root.id = sidebar.ID;
 
         root.style.border = `1px solid ${style.background}`;
         root.style.background = style.background;
+
+        root.style.flexDirection = "column";
+        root.style.display = "flex";
 
         root.style.position = "fixed";
         root.style.right = "0px";
         root.style.top = "0px";
 
         root.style.width = "400px";
-        root.style.height = "85%";
+        root.style.height = "85vh";
 
         return root;
     }
@@ -119,10 +126,12 @@ export class sidebar
     {
         const iframe = document.createElement("iframe");
 
-        iframe.style.height = "100%";
-        iframe.style.width = "100%";
-
         iframe.style.border = "none";
+        iframe.style.flexGrow = "1";
+
+        iframe.style.padding ="0";
+        iframe.style.margin = "0";
+
         iframe.src = url;
 
         return iframe;
@@ -165,7 +174,7 @@ export class sidebar
 
     private create(url: string, style: style_t) 
     {
-    // Destroy old instance if existing
+        // Destroy old instance if existing
 
         sidebar.destroy();
 
