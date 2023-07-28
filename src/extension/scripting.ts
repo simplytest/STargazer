@@ -15,7 +15,7 @@ class Scripting
             {
                 if (!Array.isArray(results))
                 {
-                    reject(chrome.runtime["lastError"].message);
+                    reject(chrome.runtime.lastError.message);
                 }
 
                 resolve(results.at(0).result);
@@ -38,7 +38,7 @@ class Scripting
             {
                 if (!Array.isArray(results))
                 {
-                    reject(chrome.runtime["lastError"].message);
+                    reject(chrome.runtime.lastError.message);
                 }
 
                 resolve();
