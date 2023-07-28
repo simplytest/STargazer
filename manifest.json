@@ -4,6 +4,13 @@
   "version": "1.2.9",
   "manifest_version": 3,
   "commands": {
+    "open-sidebar": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Command+Shift+S"
+      },
+      "description": "Open sidebar"
+    },
     "start-picking": {
       "suggested_key": {
         "default": "Ctrl+Shift+P",
@@ -11,6 +18,9 @@
       },
       "description": "Start picking an element"
     }
+  },
+  "action": {
+    "default_title": "Open Sidebar"
   },
   "background": {
     "service_worker": "/src/service_worker.js"
@@ -25,7 +35,7 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "/pages/editor/index.html"
+        "/pages/sidebar/index.html"
       ],
       "matches": [
         "<all_urls>"
@@ -34,6 +44,14 @@
     {
       "resources": [
         "/model/model.json"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    },
+    {
+      "resources": [
+        "/assets/logo.png"
       ],
       "matches": [
         "<all_urls>"
@@ -47,9 +65,9 @@
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
   "icons": {
-    "16": "assets/logo/16x16.png",
-    "32": "assets/logo/32x32.png",
-    "48": "assets/logo/48x48.png",
-    "128": "assets/logo/128x128.png"
+    "16": "assets/icons/16x16.png",
+    "32": "assets/icons/32x32.png",
+    "48": "assets/icons/48x48.png",
+    "128": "assets/icons/128x128.png"
   }
 }
