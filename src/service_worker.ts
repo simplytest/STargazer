@@ -1,5 +1,11 @@
 import { commands } from "./extension/commands";
-import { sidebar } from "./sidebar";
+import { sidebar } from "./client/sidebar";
+import { picker } from "./client/picker";
+
+commands.register("start-picking", async () => 
+{
+    picker.start();
+});
 
 commands.register("open-sidebar", async () => 
 {
