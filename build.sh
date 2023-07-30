@@ -13,7 +13,7 @@ parcel build "${@:1}" --no-scope-hoist   \
                         pages/*/*.ts     \
                         pages/*/*.tsx    \
                         src/*.ts         \
-                        src/scripts/*.ts \
+                        src/client/*.ts  \
                         assets/*.png     \
                         assets/icons/*
 
