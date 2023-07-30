@@ -33,7 +33,7 @@ class Scripting
             chrome.scripting.executeScript({
                 target: { tabId: tab },
                 injectImmediately: true,
-                files: ["/src/scripts/export.js"]
+                files: ["/src/client/export.js"]
             }, results => 
             {
                 if (!Array.isArray(results))
