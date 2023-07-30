@@ -1,5 +1,5 @@
-import { scripting } from "./extension/scripting";
-import theme from "../shared/theme";
+import { scripting } from "../extension/scripting";
+import theme from "../../shared/theme";
 
 import { IconArrowsMove } from "@tabler/icons-react";
 import { renderToString } from "react-dom/server";
@@ -34,15 +34,12 @@ export class sidebar
 
         await scripting.export();
 
-        await scripting.execute(
-            async (url: string, style: style_t) => 
-            {
-                const instance = new sidebar();
-                instance.create(url, style);
-            },
-            url,
-            style
-        );
+        await scripting.execute(async (url: string, style: style_t) => 
+        {
+            const instance = new sidebar();
+            instance.create(url, style);
+        }, 
+        url, style);
     }
 
     static async close() 
@@ -190,13 +187,13 @@ export class sidebar
 
         document.body.appendChild(this.root);
 
-        window.removeEventListener("mousemove", (ev) => this.mouse_move(ev));
-        window.addEventListener("mousemove", (ev) => this.mouse_move(ev));
+        window.removeEventListener("mousemove", e => this.mouse_move(e));
+        window.addEventListener("mousemove", e => this.mouse_move(e));
 
-        handle.removeEventListener("mousedown", (ev) => this.drag_start(ev));
-        handle.addEventListener("mousedown", (ev) => this.drag_start(ev));
+        handle.removeEventListener("mousedown", e => this.drag_start(e));
+        handle.addEventListener("mousedown", e => this.drag_start(e));
 
-        handle.removeEventListener("mouseup", (ev) => this.drag_end(ev));
-        handle.addEventListener("mouseup", (ev) => this.drag_end(ev));
+        handle.removeEventListener("mouseup", e => this.drag_end(e));
+        handle.addEventListener("mouseup", e => this.drag_end(e));
     }
 }
