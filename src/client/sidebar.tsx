@@ -4,6 +4,7 @@ import theme from "../../shared/theme";
 import { IconArrowsMove } from "@tabler/icons-react";
 import { renderToString } from "react-dom/server";
 import React from "react";
+import { MAXIMUM_ZINDEX } from "./constants";
 
 type html_t = string;
 type color_t = string;
@@ -11,9 +12,8 @@ type style_t = { background: color_t; handle: color_t; icon: html_t };
 
 export class sidebar 
 {
-    static readonly MAXIMUM_ZINDEX = "2147483647";
     static readonly ID = "stargazer_sidebar";
-    
+
     static readonly background = theme.colors.dark[7];
     static readonly color = theme.colors.dark[6];
 
@@ -74,7 +74,7 @@ export class sidebar
     {
         const root = document.createElement("div");
 
-        root.style.zIndex = sidebar.MAXIMUM_ZINDEX;
+        root.style.zIndex = MAXIMUM_ZINDEX;
         root.style.overflow = "hidden";
         root.id = sidebar.ID;
 
