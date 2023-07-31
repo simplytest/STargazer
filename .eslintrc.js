@@ -23,6 +23,7 @@ module.exports = {
     plugins: ["@typescript-eslint", "react"],
     rules: {
         "@typescript-eslint/no-explicit-any": "off",
+        "object-curly-spacing": ["error", "always"],
         "linebreak-style": ["error", "unix"],
         "brace-style": ["error", "allman"],
         quotes: ["error", "double"],

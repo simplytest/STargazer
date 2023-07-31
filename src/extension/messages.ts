@@ -25,7 +25,7 @@ class Messages
     {
         return new Promise<Result>((resolve) => 
         {
-            chrome.runtime.sendMessage({message, id} as message<T>, response => 
+            chrome.runtime.sendMessage({ message, id } as message<T>, response => 
             {
                 resolve(response);
             });
