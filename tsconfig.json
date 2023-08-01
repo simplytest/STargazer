@@ -1,22 +1,10 @@
 {
   "compilerOptions": {
+    "jsx": "react-jsx",
     "module": "ESNext",
     "target": "ESNext",
-    "jsx": "preserve",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "moduleResolution": "Node",
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
-    "types": [
-      "chrome",
-      "jest",
-    ],
-    "typeRoots": [
-      "./src/types",
-      "./node_modules/@types"
-    ]
   }
 }
