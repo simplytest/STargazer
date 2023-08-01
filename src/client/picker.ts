@@ -1,12 +1,25 @@
 import theme from "../../shared/theme";
+import { messages } from "../extension/messages";
 import { scripting } from "../extension/scripting";
-import { INSPECTED_ID, MAXIMUM_ZINDEX } from "./constants";
+import { MAXIMUM_ZINDEX } from "./constants";
+import { sidebar } from "./sidebar";
 
 type color_t = string;
 type style_t = { background: color_t };
 
+export class PickingFinished 
+{
+    public html: string;
+
+    constructor(html: string)
+    {
+        this.html = html;
+    }
+}
+
 export class picker
 {
+    static readonly INSPECTED_ID = "stargazer_inspected";
     static readonly SIGNAL_ID = "stargazer_abortsignal";
     static readonly ALERT_ID = "stargazer_alert";
     static readonly ID = "stargazer_picker";
@@ -19,7 +32,7 @@ export class picker
         await scripting.export();
 
         const style: style_t = {
-            background: `${theme.colors.green[0]}80`,
+            background: `${theme.colors.blue[0]}80`,
         };
 
         await scripting.execute(style => 
@@ -59,17 +72,19 @@ export class picker
     private static alert(message: string)
     {
         const root = document.createElement("div");
-
         root.id = picker.ALERT_ID;
+        
+        root.style.top = "10vh";
         root.style.position = "fixed";
         root.style.borderRadius = "15px";
         root.style.zIndex = MAXIMUM_ZINDEX;
         root.style.transition = "all 300ms ease";
-        root.style.transform = "translate(calc(50vw - 50%), calc(50vh - 50%))";
-
+        root.style.transform = "translate(calc(50vw - 50%), 0)";
+        
         root.style.padding = "10px";
         root.style.background = "#FFFFFF";
         root.style.border = "1px solid #000000";
+        root.style.boxShadow = "5px 5px 20px rgba(0, 0, 0, 0.5)";
 
         root.style.display = "flex";
         root.style.alignItems = "center";
@@ -171,7 +186,9 @@ export class picker
             return;
         }
 
-        window[INSPECTED_ID] = target;
+        window[picker.INSPECTED_ID] = target;
+        messages.send(new PickingFinished(document.body.outerHTML));
+
         picker.destroy();
     }
 
@@ -206,11 +223,13 @@ export class picker
             }
 
             style.pointerEvents = passthrough ? "all" : "none";
+            event.preventDefault();
         }
 
         if (key === "p" && passthrough)
         {
             this.mouse_down(new MouseEvent("mousedown", this.last_event));
+            event.preventDefault();
         }
     }
 
@@ -223,7 +242,16 @@ export class picker
         // Then we setup the new instance
         
         const overlay = this.create_overlay(style);
-        this.overlay = document.body.appendChild(overlay);
+        const sidebar_instance = document.getElementById(sidebar.ID);
+
+        if (sidebar_instance)
+        {
+            this.overlay = document.body.insertBefore(overlay, sidebar_instance);
+        }
+        else
+        {
+            this.overlay = document.body.appendChild(overlay);
+        }
 
         this.overlay.addEventListener("mousedown", e => this.mouse_down(e));
 
