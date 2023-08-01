@@ -3,7 +3,7 @@ module.exports = {
         browser: true,
         es2021: true,
     },
-    extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:react/recommended"],
+    extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:react/recommended", "plugin:react/jsx-runtime"],
     overrides: [
         {
             env: {
@@ -22,12 +22,14 @@ module.exports = {
     },
     plugins: ["@typescript-eslint", "react"],
     rules: {
-        "@typescript-eslint/no-explicit-any": "off",
-        "object-curly-spacing": ["error", "always"],
-        "linebreak-style": ["error", "unix"],
-        "brace-style": ["error", "allman"],
-        quotes: ["error", "double"],
-        semi: ["error", "always"],
-        indent: ["error", 4],
+        "object-curly-spacing":                 ["error", "always"],
+        "brace-style":                          ["error", "allman"],
+        quotes:                                 ["error", "double"],
+        semi:                                   ["error", "always"],
+        "linebreak-style":                      ["error", "unix"],
+        indent:                                 ["error", 4],
+        "@typescript-eslint/no-explicit-any":   "off",
+        "no-else-return":                       1,
+        "space-unary-ops":                      2,
     },
 };
