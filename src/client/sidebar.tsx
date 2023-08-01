@@ -1,9 +1,9 @@
-import { scripting } from "../extension/scripting";
 import theme from "../../shared/theme";
+import { scripting } from "../extension/scripting";
 
 import { IconArrowsMove } from "@tabler/icons-react";
 import { renderToString } from "react-dom/server";
-import React from "react";
+import { Listener, storage } from "../extension/storage";
 import { MAXIMUM_ZINDEX } from "./constants";
 
 type html_t = string;
@@ -12,10 +12,9 @@ type style_t = { background: color_t; handle: color_t; icon: html_t };
 
 export class sidebar 
 {
+    static readonly LISTENER_ID = "stargazer_sidebar_listener";
+    static readonly HANDLE_ID = "stargazer_sidebar_handle";
     static readonly ID = "stargazer_sidebar";
-
-    static readonly background = theme.colors.dark[7];
-    static readonly color = theme.colors.dark[6];
 
     private root: HTMLDivElement;
     private initial_pos = [0, 0];
@@ -24,11 +23,11 @@ export class sidebar
     static async open() 
     {
         const url = chrome.runtime.getURL("pages/sidebar/index.html");
-        const icon = renderToString(<IconArrowsMove color={theme.colors.dark[0]} />);
+        const icon = renderToString(<IconArrowsMove color="gray" />);
 
         const style: style_t = {
-            background: theme.colors.dark[8],
-            handle: theme.colors.dark[6],
+            background: await sidebar.background(),
+            handle: await  sidebar.color(),
             icon,
         };
 
@@ -58,16 +57,38 @@ export class sidebar
         });
     }
 
+    static async background()
+    {
+        const variant = await storage.get("theme") || "light";
+
+        if (variant === "light")
+        {
+            return theme.colors.gray[7];
+        }
+
+        return theme.colors.dark[4];
+    }
+
+    static async color()
+    {
+        const variant = await storage.get("theme") || "light";
+        return theme.colors[variant === "dark" ? "dark" : "gray"][4];
+    }
+
     private static destroy() 
     {
         const instance = document.getElementById(sidebar.ID);
+        const listener: Listener<string> = window[sidebar.LISTENER_ID];
 
-        if (!instance) 
+        if (instance) 
         {
-            return;
+            instance.remove();
         }
 
-        instance.remove();
+        if (listener)
+        {
+            listener.destroy();
+        }
     }
 
     private static create_root(style: style_t) 
@@ -97,8 +118,9 @@ export class sidebar
     private static create_handle(style: style_t) 
     {
         const handle = document.createElement("div");
-
+        
         handle.style.background = style.handle;
+        handle.id = sidebar.HANDLE_ID;
         handle.style.cursor = "move";
 
         handle.style.height = "30px";
@@ -195,5 +217,11 @@ export class sidebar
 
         handle.removeEventListener("mouseup", e => this.drag_end(e));
         handle.addEventListener("mouseup", e => this.drag_end(e));
+
+        window[sidebar.LISTENER_ID] = storage.watch("theme", () => 
+        {
+            sidebar.background().then(bg => this.root.style.background = bg);
+            sidebar.color().then(col => document.getElementById(sidebar.HANDLE_ID).style.background = col);
+        });
     }
 }
