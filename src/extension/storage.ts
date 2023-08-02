@@ -4,7 +4,7 @@ export class Listener<T>
 
     constructor(key: string, callback: (value: T) => void)
     {
-        this.listener = (changes: {[key: string]: chrome.storage.StorageChange}) => 
+        this.listener = (changes: {[key: string]: chrome.storage.StorageChange}) =>
         {
             if (!changes[key])
             {
@@ -27,7 +27,7 @@ class Storage
 {
     async get<T = string>(key: string)
     {
-        const result = await chrome.storage.local.get(key); 
+        const result = await chrome.storage.local.get(key);
         return result[key] as T;
     }
 
@@ -38,7 +38,7 @@ class Storage
 
     watch<T = string>(key: string, callback: (new_value: T) => void)
     {
-        return new Listener<T>(key, callback); 
+        return new Listener<T>(key, callback);
     }
 }
 
