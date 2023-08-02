@@ -1,17 +1,17 @@
-class Scripting  
+class Scripting
 {
-    async execute<Result, Args extends Array<any>>(func: (...args: Args) => Result, ...args: Args)  
+    async execute<Result, Args extends Array<any>>(func: (...args: Args) => Result, ...args: Args)
     {
         const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
         const tab = tabs[0]?.id;
 
-        return new Promise((resolve, reject) => 
+        return new Promise((resolve, reject) =>
         {
             chrome.scripting.executeScript<Args[], Result>({
                 target: { tabId: tab },
-                args: [...args],
-                func: func,
-            }, results => 
+                args  : [...args],
+                func  : func,
+            }, results =>
             {
                 if (!Array.isArray(results))
                 {
@@ -28,13 +28,13 @@ class Scripting
         const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
         const tab = tabs[0]?.id;
 
-        return new Promise<void>((resolve, reject) => 
+        return new Promise<void>((resolve, reject) =>
         {
             chrome.scripting.executeScript({
-                target: { tabId: tab },
+                target           : { tabId: tab },
                 injectImmediately: true,
-                files: ["/src/client/export.js"]
-            }, results => 
+                files            : ["/src/client/export.js"]
+            }, results =>
             {
                 if (!Array.isArray(results))
                 {
@@ -48,14 +48,14 @@ class Scripting
 
     async execute_devtools<Result>(script: string)
     {
-        return new Promise((resolve, reject) => 
+        return new Promise((resolve, reject) =>
         {
-            chrome.devtools.inspectedWindow.eval(script, {}, (result, error) => 
+            chrome.devtools.inspectedWindow.eval(script, {}, (result, error) =>
             {
                 if (error.isError || error.isException)
                 {
                     reject(error.description);
-                }   
+                }
 
                 resolve(result as Result);
             });
