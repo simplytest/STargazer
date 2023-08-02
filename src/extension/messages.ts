@@ -1,11 +1,11 @@
 function name_of<T>(obj: T): string
 {
-    if (typeof obj === "function"  && "name" in obj)
+    if (typeof obj === "function" && "name" in obj)
     {
         return obj.name as string;
     }
 
-    if (typeof obj === "object"  && "constructor" in obj)
+    if (typeof obj === "object" && "constructor" in obj)
     {
         return obj.constructor.name;
     }
@@ -28,9 +28,9 @@ class Messages
 
     async send<T, Result>(message: T, type: any = message, id = name_of(type)): Promise<Result>
     {
-        return new Promise<Result>((resolve) => 
+        return new Promise<Result>((resolve) =>
         {
-            chrome.runtime.sendMessage({ message, id } as message<T>, response => 
+            chrome.runtime.sendMessage({ message, id } as message<T>, response =>
             {
                 resolve(response);
             });
@@ -39,7 +39,7 @@ class Messages
 
     async register<T, A extends Array<any>>(type: new(...args: A) => T, callback: (message: T, sender: chrome.runtime.MessageSender) => any, id = name_of(type))
     {
-        chrome.runtime.onMessage.addListener((message: message<T>, sender, respond) => 
+        chrome.runtime.onMessage.addListener((message: message<T>, sender, respond) =>
         {
             if (message.id !== id)
             {
@@ -56,7 +56,7 @@ class Messages
             {
                 respond(response);
             }
-        
+
             return true;
         });
     }
