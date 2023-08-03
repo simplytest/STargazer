@@ -15,6 +15,11 @@ export async function score(chains: chain_t[])
 {
     const scores: {score: number, chain: chain_t}[] = await messages.send(new request_score(chains));
 
+
+    /*
+    # When stringified, "-Infinity" becomes "null".
+    # Thus we restore it here.
+    */
     for (const item of scores)
     {
         if (item.score !== null)
