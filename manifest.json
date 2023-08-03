@@ -1,7 +1,7 @@
 {
   "name": "STargazer",
   "description": "A 'click-to-build' xpath and css selector generator",
-  "version": "1.2.9",
+  "version": "2.0.0",
   "manifest_version": 3,
   "commands": {
     "open-sidebar": {
