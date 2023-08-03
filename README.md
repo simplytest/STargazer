@@ -1,34 +1,32 @@
-<hr>
+<div align="center">
+<img src="assets/logo.png" width=200>
 
-<div align="center"> 
-
-
-<img src="./assets/logo.png" width=150 height=150 />
-<br/>
-<br/>
+### STargazer <i>2</i>
 
 </div>
 
-<p align="center"> 
-    Easily Generate XPath & CSS Selectors
-</p>
+# 👋 Introduction
+STargazer is a chrome extension that can generate selectors for a given element.
+
+# 🔭 Features
+
+* 🧠 <kbd>XPath</kbd> and <kbd>CSS</kbd> supported
+
+* 📚 Save Selectors
+  * 🖼️ With Preview Image
+
+* 🤖 Automatic Page-Object File Generation
+  * Supports multiple Languages (e.g. <kbd>C#</kbd>, <kbd>TypeScript</kbd>, <kbd>Java</kbd>, ...)
+
+* 🌙 Dark and ☀️ Light-Theme
+
+# 📦 Installation
+
+STargazer can be downloaded from the [Chrome Web-Store](https://chrome.google.com/webstore/detail/stargazer/mkphjcfplanogllpfpfefcpfbdpchkjh).
+
+Alternatively, you can also install the nightly builds from [Github Actions](https://github.com/simplytest/STargazer/actions), see also: 
+- [How to load an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked)
 
 ---
 
-<br/>
-
-<div align="center"> 
-
-## Supported Generators
-
-</div>
-
-- Attributes
-  > Generates Selectors based on the Nodes attributes, certain attributes are ignored.
-  > Classes are also enumerated and a Markov-Chain search is performed to determine which classes are gibberish.
-
-- Parent
-  > Utilizes the "Attributes" Generator in conjunction with the parent node.
-
-- Absolute
-  > Generates an absolute selector
+> Made by [SimplyTest](https://simplytest.de/)
