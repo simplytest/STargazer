@@ -20,6 +20,13 @@ STargazer is a chrome extension that can generate selectors for a given element.
 
 * 🌙 Dark and ☀️ Light-Theme
 
+# 🖼️ Screenshots
+
+| ☀️ Light                                | 🌙 Dark                               |
+| -------------------------------------- | ------------------------------------ |
+| ![light](assets/screenshots/light.png) | ![dark](assets/screenshots/dark.png) |
+
+
 # 📦 Installation
 
 STargazer can be downloaded from the [Chrome Web-Store](https://chrome.google.com/webstore/detail/stargazer/mkphjcfplanogllpfpfefcpfbdpchkjh).
