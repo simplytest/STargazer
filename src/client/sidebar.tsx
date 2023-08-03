@@ -3,13 +3,20 @@ import { scripting } from "../extension/scripting";
 
 import { IconArrowsMove } from "@tabler/icons-react";
 import { renderToString } from "react-dom/server";
+import { notifications } from "../extension/notifications";
 import { Listener, storage } from "../extension/storage";
 import { MAXIMUM_ZINDEX } from "./constants";
-import { notifications } from "../extension/notifications";
 
 type html_t = string;
 type color_t = string;
-type style_t = { background: color_t; handle: color_t; icon: { html: html_t, color: color_t } };
+
+type style_t = {
+    handle_bar: color_t;
+    background: color_t;
+    foreground: color_t;
+
+    icon_arrow: html_t;
+};
 
 export class sidebar
 {
@@ -25,12 +32,14 @@ export class sidebar
     static async open()
     {
         const url = chrome.runtime.getURL("pages/sidebar/index.html");
-        const icon = renderToString(<IconArrowsMove />);
+
+        const icon_arrow = renderToString(<IconArrowsMove />);
 
         const style: style_t = {
-            icon      : { color: await sidebar.foreground(), html: icon },
+            foreground: await sidebar.foreground(),
             background: await sidebar.background(),
-            handle    : await sidebar.color(),
+            handle_bar: await sidebar.color(),
+            icon_arrow,
         };
 
         try
@@ -143,26 +152,43 @@ export class sidebar
     {
         const handle = document.createElement("div");
 
-        handle.style.background = style.handle;
+        handle.style.background = style.handle_bar;
         handle.id = sidebar.HANDLE_ID;
         handle.style.cursor = "move";
 
         handle.style.height = "30px";
         handle.style.width = "100%";
 
-        const icon = document.createElement("div");
-        icon.style.color = style.icon.color;
-        icon.innerHTML = style.icon.html;
-        icon.id = sidebar.ICON_ID;
+        const icon_arrow = document.createElement("div");
+        icon_arrow.style.color = style.foreground;
+        icon_arrow.innerHTML = style.icon_arrow;
+        icon_arrow.id = sidebar.ICON_ID;
 
-        const svg = icon.firstChild as SVGElement;
+        const svg = icon_arrow.firstChild as SVGElement;
 
         svg.style.position = "relative";
         svg.style.display = "block";
         svg.style.margin = "auto";
         svg.style.top = "2px";
 
-        handle.appendChild(icon);
+        handle.appendChild(icon_arrow);
+
+        const close_button = document.createElement("button");
+        close_button.onclick = () => sidebar.destroy();
+
+        close_button.style.background = "#FF5E58";
+        close_button.style.position = "absolute";
+
+        close_button.style.borderRadius = "100%";
+        close_button.style.border = "none";
+
+        close_button.style.height = "16px";
+        close_button.style.width = "16px";
+
+        close_button.style.left = "8px";
+        close_button.style.top = "8px";
+
+        handle.appendChild(close_button);
 
         return handle;
     }
