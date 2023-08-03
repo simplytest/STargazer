@@ -1,4 +1,3 @@
-import manifest from "../../manifest.json";
 import preval from "preval.macro";
 
 const BUILD_TIME = preval`
@@ -18,12 +17,19 @@ class Meta
 {
     version()
     {
+        const manifest = chrome.runtime.getManifest();
         return manifest.version;
     }
 
     build()
     {
         return BUILD_TIME as string;
+    }
+
+    developer()
+    {
+        const manifest = chrome.runtime.getManifest();
+        return !("update_url" in manifest);
     }
 }
 
