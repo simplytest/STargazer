@@ -1,15 +1,21 @@
 import theme from "../../shared/theme";
 import { messages } from "../extension/messages";
 import { scripting } from "../extension/scripting";
-import { generator } from "../generator";
+import { generator, result_t } from "../generator";
 import { MAXIMUM_ZINDEX } from "./constants";
 import { sidebar } from "./sidebar";
 
 type color_t = string;
 type style_t = { background: color_t };
 
-export class PickingFinished
+export class picking_done
 {
+    public results: result_t[];
+
+    constructor(results: result_t[])
+    {
+        this.results = results;
+    }
 }
 
 export class picker
@@ -182,7 +188,7 @@ export class picker
         }
 
         window[picker.INSPECTED_ID] = target;
-        messages.send(new PickingFinished(document.body.outerHTML));
+        generator.generate().then(results => messages.send(new picking_done(results)));
 
         picker.destroy();
     }
