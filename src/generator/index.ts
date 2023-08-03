@@ -128,7 +128,7 @@ class Generator
     {
         const scored = await score(selectors);
 
-        const type = await storage.get("selector-type");
+        const type = await storage.get("selector-type") ?? "xpath";
         const transformed = scored.map(x => ({ ...x, selector: transformer.get(type)(x.chain) }));
 
         const unique = transformed.filter((x, i) => transformed.findIndex(y => y.selector === x.selector) === i);
