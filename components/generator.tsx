@@ -1,8 +1,11 @@
-import { ActionIcon, Badge, Button, Card, Divider, Group, ScrollArea, Stack, Text, TextInput, Transition } from "@mantine/core";
-import { IconCheck, IconClick, IconCopy, IconDeviceFloppy } from "@tabler/icons-react";
-import { CSSProperties, useEffect, useState } from "react";
-import { picker } from "../src/client/picker";
 import { clipboard } from "@extend-chrome/clipboard";
+import { ActionIcon, Alert, Badge, Button, Card, Divider, Group, ScrollArea, Stack, Text, TextInput, Transition } from "@mantine/core";
+import { IconCheck, IconClick, IconCopy, IconDeviceFloppy, IconMoodEmpty, IconMoodTongueWink } from "@tabler/icons-react";
+import { CSSProperties, useEffect, useState } from "react";
+import { picking_done, picker } from "../src/client/picker";
+import { messages } from "../src/extension/messages";
+import { result_t } from "../src/generator";
+import useStorage from "../src/hooks/storage";
 
 function CopyButton({ value }: {value: string})
 {
@@ -22,10 +25,13 @@ function CopyButton({ value }: {value: string})
     </Button>;
 }
 
-function Selector({ selector: _selector, occurrences }: {selector: string, occurrences: number})
+function Selector({ result }: {result: result_t})
 {
     const [mounted, set_mounted] = useState(false);
-    const [selector, set_selector] = useState(_selector);
+    const [selector, set_selector] = useState(result.selector);
+
+    const [show_raw] = useStorage("show-raw", false);
+    const [show_scores] = useStorage("show-scores", false);
 
     useEffect(() =>
     {
@@ -39,9 +45,17 @@ function Selector({ selector: _selector, occurrences }: {selector: string, occur
                     <TextInput value={selector} onChange={e => set_selector(e.target.value)} />
                 </Card.Section>
                 <Stack>
-                    <Badge fullWidth color="lime" size="md" variant="light">
-                        {occurrences} {occurrences > 1 ? "Occurrences" : "Occurrence"}
+                    <Badge fullWidth color={result.occurrences === 1 ? "lime" : "red"} size="md" variant="light">
+                        {result.occurrences} {result.occurrences > 1 ? "Occurrences" : "Occurrence"}
                     </Badge>
+                    {show_scores &&
+                    <Badge fullWidth color="gray" size="md" variant="light">
+                        Score: {result.score}
+                    </Badge>
+                    }
+                    {show_raw &&
+                     <TextInput value={JSON.stringify(result.chain)} />
+                    }
                     <Group position="right" align="center" noWrap>
                         <CopyButton value={selector} />
                         <Button radius="xl" leftIcon={<IconDeviceFloppy />}>
@@ -56,6 +70,19 @@ function Selector({ selector: _selector, occurrences }: {selector: string, occur
 
 export default function Generator({ style }: {style?: CSSProperties})
 {
+    const [results, set_results] = useStorage<result_t[]>("last-results", null);
+    const [to_show] = useStorage("result-to-show", 3);
+    const [error, set_error] = useState(false);
+
+    useEffect(() =>
+    {
+        messages.register(picking_done, msg =>
+        {
+            set_results(msg.results);
+            set_error(msg.results.length === 0);
+        });
+    }, []);
+
     return <Stack align="center" m="lg" style={style}>
         <ActionIcon mt={15} variant="transparent" color="orange" radius="xl" size="xl" onClick={() => picker.start()}>
             <IconClick />
@@ -65,5 +92,29 @@ export default function Generator({ style }: {style?: CSSProperties})
 
         <Divider style={{ width: "80%" }} my="sm" />
 
+        {
+            error &&
+                    <Alert color="red" title="Nothing found!" icon={<IconMoodEmpty />}>
+                        We could not find any selectors. <br />
+                        This can have several reasons, the most common is that the element you&lsquo;re trying to generate a selector for doesn&lsquo;t have unique properties.<br />
+                        If you&lsquo;re certain that <i>good and unique</i> selector exists for this element, feel free to open an issue <a href="https://github.com/simplytest/STargazer/issues/new" target="_blank" rel="noreferrer">here</a>!
+                    </Alert>
+        }
+
+        {
+            (!error && results === null) &&
+                <Alert color="lime" title="Welcome!" icon={<IconMoodTongueWink />}>
+                    Welcome to STargazer!<br />
+                    To begin, simply click the Mouse-Icon above and then select an element on the web-page just like you&lsquo;d do with the developer tools.
+                </Alert>
+        }
+
+        <ScrollArea.Autosize style={{ width: "80%" }} mah={520} type="hover">
+            <Stack align="center" m="xs">
+                {
+                    results?.slice(0, to_show).map(x => <Selector key={x.selector} result={x} />)
+                }
+            </Stack>
+        </ScrollArea.Autosize>
     </Stack>;
 }
