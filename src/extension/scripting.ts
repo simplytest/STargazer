@@ -50,9 +50,9 @@ class Scripting
     {
         return new Promise((resolve, reject) =>
         {
-            chrome.devtools.inspectedWindow.eval(script, {}, (result, error) =>
+            chrome.devtools.inspectedWindow.eval(script, { useContentScriptContext: true }, (result, error) =>
             {
-                if (error.isError || error.isException)
+                if (error && (error.isError || error.isException))
                 {
                     reject(error.description);
                 }
@@ -60,11 +60,6 @@ class Scripting
                 resolve(result as Result);
             });
         });
-    }
-
-    has_devtools()
-    {
-        return !!chrome?.devtools?.inspectedWindow;
     }
 }
 
