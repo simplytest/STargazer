@@ -1,4 +1,4 @@
-import { Box, Center, Divider, Group, NumberInput, SegmentedControl, Stack, Switch, Text, useMantineColorScheme } from "@mantine/core";
+import { Box, Center, Divider, Group, NumberInput, SegmentedControl, Stack, Switch, Text, Tooltip, useMantineColorScheme } from "@mantine/core";
 import { IconBrain, IconBug, IconInfoCircle, IconMoon, IconPalette, IconSun, TablerIconsProps } from "@tabler/icons-react";
 import { CSSProperties, Fragment, ReactNode } from "react";
 import { meta } from "../src/extension/meta";
@@ -22,17 +22,22 @@ function Section({ Icon, text }: {Icon: (props: TablerIconsProps) => JSX.Element
 
 type OptionProps<P extends object> = Omit<P, "w"> &
 {
+    tooltip?: ReactNode;
     "no-fixed"?: boolean;
     "option-label": string;
     Control: (props: P) => ReactNode;
 }
 
-function Option<P extends object>({ "option-label": option_label, Control, "no-fixed": no_fixed, ...data }: OptionProps<P>)
+function Option<P extends object>({ "option-label": option_label, Control, "no-fixed": no_fixed, tooltip, ...data }: OptionProps<P>)
 {
-    return <Group position="apart" noWrap>
-        <Text>{option_label}</Text>
-        <Control {...data as P} {...(no_fixed ? {} : { w: 150 })} />
-    </Group>;
+    const Wrapping = tooltip ? Tooltip : Fragment;
+
+    return <Wrapping label={tooltip} multiline>
+        <Group position="apart" noWrap>
+            <Text>{option_label}</Text>
+            <Control {...data as P} {...(no_fixed ? {} : { w: 150 })} />
+        </Group>
+    </Wrapping>;
 }
 
 
@@ -40,6 +45,7 @@ export default function Settings({ style }: {style?: CSSProperties})
 {
     const { colorScheme: theme, toggleColorScheme: set_theme } = useMantineColorScheme();
 
+    const [top_n, set_top_n] = useStorage("top-n", 15);
     const [type, set_type] = useStorage("selector-type", "xpath");
     const [to_show, set_to_show] = useStorage("result-to-show", 3);
 
@@ -65,6 +71,12 @@ export default function Settings({ style }: {style?: CSSProperties})
             { label: "XPath", value: "xpath" },
         ]} value={type} onChange={change_type} />
         <Option Control={NumberInput} option-label="Results to Show" min={1} precision={0} stepHoldDelay={500} stepHoldInterval={100} variant="filled" value={to_show} onChange={set_to_show} />
+        <Option Control={NumberInput} option-label="Mutate Top" tooltip={
+            <Text>
+                Higher values can yield better results but are more expensive to compute.<br />
+                We recommend 100 for good results, 15 for faster results
+            </Text>
+        } min={15} precision={0} stepHoldDelay={500} stepHoldInterval={100} variant="filled" value={top_n} onChange={set_top_n} />
 
         <Section text="Information" Icon={IconInfoCircle} />
         <Option Control={Text<"div">} option-label="Version" align="right">{meta.version()}</Option>
