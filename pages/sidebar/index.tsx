@@ -9,7 +9,7 @@ import { useState } from "react";
 function SideBar()
 {
     const theme = useMantineTheme();
-    const background = theme.colors[theme.colorScheme === "dark" ? "dark" : "gray"][4];
+    const background = theme.colors[theme.colorScheme === "dark" ? "dark" : "gray"][3];
 
     const [tab, set_tab] = useState("generator");
 

@@ -103,7 +103,7 @@ export class sidebar
     static async color()
     {
         const variant = await storage.get("theme") || "light";
-        return theme.colors[variant === "dark" ? "dark" : "gray"][4];
+        return theme.colors[variant === "dark" ? "dark" : "gray"][3];
     }
 
     private static destroy()
