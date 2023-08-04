@@ -1,8 +1,10 @@
 import { clipboard } from "@extend-chrome/clipboard";
 import { ActionIcon, Alert, Badge, Button, Card, Divider, Group, ScrollArea, Stack, Text, TextInput, Transition } from "@mantine/core";
+import { useDebouncedValue } from "@mantine/hooks";
 import { IconCheck, IconClick, IconCopy, IconDeviceFloppy, IconMoodEmpty, IconMoodTongueWink } from "@tabler/icons-react";
-import { CSSProperties, useEffect, useState } from "react";
-import { picking_done, picker } from "../src/client/picker";
+import { CSSProperties, useEffect, useRef, useState } from "react";
+import { highlighter } from "../src/client/highlight";
+import { picker, picking_done } from "../src/client/picker";
 import { messages } from "../src/extension/messages";
 import { result_t } from "../src/generator";
 import useStorage from "../src/hooks/storage";
@@ -33,6 +35,19 @@ function Selector({ result }: {result: result_t})
     const [show_raw] = useStorage("show-raw", false);
     const [show_scores] = useStorage("show-scores", false);
 
+    const ref = useRef<HTMLInputElement>();
+    const [debounced_selector] = useDebouncedValue(selector, 100);
+
+    useEffect(() =>
+    {
+        if (document.activeElement !== ref.current)
+        {
+            return;
+        }
+
+        highlighter.start(selector);
+    }, [debounced_selector]);
+
     useEffect(() =>
     {
         set_mounted(true);
@@ -42,7 +57,7 @@ function Selector({ result }: {result: result_t})
         {styles =>
             <Card shadow="md" padding="lg" radius="md" style={{ ...styles, width: "100%" }} withBorder>
                 <Card.Section p={15}>
-                    <TextInput value={selector} onChange={e => set_selector(e.target.value)} />
+                    <TextInput value={selector} onChange={e => set_selector(e.currentTarget.value)} ref={ref} />
                 </Card.Section>
                 <Stack>
                     <Badge fullWidth color={result.occurrences === 1 ? "lime" : "red"} size="md" variant="light">
