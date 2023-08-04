@@ -1,3 +1,4 @@
+import { storage } from "../../extension/storage";
 import { score } from "../messages";
 import { chain_t, join, select } from "../selector";
 import by_attributes from "./attribute";
@@ -21,7 +22,6 @@ function index_of(parent: Element, element: Element)
     return [...parent.children].indexOf(element);
 }
 
-const TOP_N = 15;
 const MAX_DEPTH = 5;
 
 async function build_recursive(parents: HTMLElement[], rtn: Map<number, chain_t[]>, index = 1)
@@ -30,6 +30,8 @@ async function build_recursive(parents: HTMLElement[], rtn: Map<number, chain_t[
     {
         return;
     }
+
+    const top_n = await storage.get<number>("top-n") ?? 15;
 
     const results = [];
     const element = parents.at(index);
@@ -43,8 +45,21 @@ async function build_recursive(parents: HTMLElement[], rtn: Map<number, chain_t[
     const current = by_attributes(element);
 
     current.push([select({ tag })]);
-    previous.push([select({ index: child_index })]);
-    previous.push([select({ tag: child_tag, index: child_index })]);
+
+    if (index + 1 < parents.length)
+    {
+        const parent = parents.at(index + 1);
+        const self_index = index_of(parent, element);
+
+        current.push([{ index: self_index }]);
+        current.push([{ tag, index: self_index }]);
+    }
+
+    if (index === 1)
+    {
+        previous.push([select({ index: child_index })]);
+        previous.push([select({ tag: child_tag, index: child_index })]);
+    }
 
     for (const selector of current)
     {
@@ -62,7 +77,7 @@ async function build_recursive(parents: HTMLElement[], rtn: Map<number, chain_t[
     const scored = await score(results);
     const sorted = scored.sort((a, b) => b.score - a.score);
 
-    const top = sorted.slice(0, TOP_N);
+    const top = sorted.slice(0, top_n);
     rtn.set(index, top.map(x => x.chain));
 
     await build_recursive(parents, rtn, index + 1);
