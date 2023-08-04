@@ -3,6 +3,7 @@ import { messages } from "../extension/messages";
 import { scripting } from "../extension/scripting";
 import { generator, result_t } from "../generator";
 import { MAXIMUM_ZINDEX } from "./constants";
+import { highlighter } from "./highlight";
 import { sidebar } from "./sidebar";
 
 type color_t = string;
@@ -70,6 +71,32 @@ export class picker
         return picker.is_sticky(element.parentElement);
     }
 
+    public static position_over(root: HTMLElement, target: Element)
+    {
+        const style = root.style;
+        const dim = target.getBoundingClientRect();
+
+        style.width = `${dim.width}px`;
+        style.height = `${dim.height}px`;
+        style.lineHeight = `${dim.height}px`;
+
+        let { top, left } = dim;
+
+        if (picker.is_sticky(target))
+        {
+            style.position = "fixed";
+        }
+        else
+        {
+            top += window.scrollY;
+            left += window.scrollX;
+            style.position = "absolute";
+        }
+
+        style.top = `${top}px`;
+        style.left = `${left}px`;
+    }
+
     private static alert(message: string)
     {
         const root = document.createElement("div");
@@ -135,9 +162,6 @@ export class picker
             return;
         }
 
-        const style = this.overlay.style;
-        const dim = target.getBoundingClientRect();
-
         this.overlay.textContent = target.tagName.toLowerCase();
 
         if (target.id)
@@ -145,26 +169,7 @@ export class picker
             this.overlay.textContent += ` #${target.id}`;
         }
 
-        style.width = `${dim.width}px`;
-        style.height = `${dim.height}px`;
-        style.lineHeight = `${dim.height}px`;
-
-        let { top, left } = dim;
-
-        if (picker.is_sticky(target))
-        {
-            style.position = "fixed";
-        }
-        else
-        {
-            top += window.scrollY;
-            left += window.scrollX;
-            style.position = "absolute";
-        }
-
-        style.top = `${top}px`;
-        style.left = `${left}px`;
-
+        picker.position_over(this.overlay, target);
         this.last_event = event;
     }
 
@@ -239,6 +244,7 @@ export class picker
         // We first delete the old instance
 
         picker.destroy();
+        highlighter.destroy();
 
         // Then we setup the new instance
 
