@@ -12,6 +12,8 @@ STargazer is a chrome extension that can generate selectors for a given element.
 
 * 🧠 <kbd>XPath</kbd> and <kbd>CSS</kbd> supported
 
+* 🔃 Sync with Dev-Tools inspected Element
+
 * 📚 Save Selectors
   * 🖼️ With Preview Image
 
