@@ -20,7 +20,7 @@ function CopyButton({ value }: {value: string})
         });
     };
 
-    return <Button radius="xl" color="green" leftIcon={copied ? <IconCheck /> : <IconCopy />} onClick={copy}>
+    return <Button fullWidth radius="xl" color="green" leftIcon={copied ? <IconCheck /> : <IconCopy />} onClick={copy}>
         {copied ? "Copied" : "Copy"}
     </Button>;
 }
@@ -40,7 +40,7 @@ function Selector({ result }: {result: result_t})
 
     return <Transition mounted={mounted} transition="pop">
         {styles =>
-            <Card shadow="md" padding="lg" radius="md" style={{ ...styles, width: "95%" }} withBorder>
+            <Card shadow="md" padding="lg" radius="md" style={{ ...styles, width: "100%" }} withBorder>
                 <Card.Section p={15}>
                     <TextInput value={selector} onChange={e => set_selector(e.target.value)} />
                 </Card.Section>
@@ -58,7 +58,7 @@ function Selector({ result }: {result: result_t})
                     }
                     <Group position="right" align="center" noWrap>
                         <CopyButton value={selector} />
-                        <Button radius="xl" leftIcon={<IconDeviceFloppy />}>
+                        <Button fullWidth radius="xl" leftIcon={<IconDeviceFloppy />}>
                             Save
                         </Button>
                     </Group>
@@ -109,7 +109,7 @@ export default function Generator({ style }: {style?: CSSProperties})
                 </Alert>
         }
 
-        <ScrollArea.Autosize style={{ width: "80%" }} mah={520} type="hover">
+        <ScrollArea.Autosize style={{ width: "100%" }} mah={520} type="hover">
             <Stack align="center" m="xs">
                 {
                     results?.slice(0, to_show).map(x => <Selector key={x.selector} result={x} />)
