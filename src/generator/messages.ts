@@ -11,15 +11,28 @@ export class request_score
     }
 }
 
+export class failed_to_score
+{
+}
+
 export async function score(chains: chain_t[])
 {
-    const scores: {score: number, chain: chain_t}[] = await messages.send(new request_score(chains));
+    let scores: {score: number, chain: chain_t}[];
 
+    try
+    {
+        scores = await messages.send(new request_score(chains));
+    }
+    catch (e)
+    {
+        messages.send(failed_to_score);
+    }
 
     /*
     # When stringified, "-Infinity" becomes "null".
     # Thus we restore it here.
     */
+
     for (const item of scores)
     {
         if (item.score !== null)

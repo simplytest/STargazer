@@ -1,13 +1,14 @@
 import { clipboard } from "@extend-chrome/clipboard";
 import { ActionIcon, Alert, Badge, Button, Card, Divider, Group, ScrollArea, Stack, Text, TextInput, Transition } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
-import { IconCheck, IconClick, IconCopy, IconDeviceFloppy, IconMoodEmpty, IconMoodTongueWink } from "@tabler/icons-react";
+import { IconBomb, IconCheck, IconClick, IconCopy, IconDeviceFloppy, IconMoodEmpty, IconMoodTongueWink } from "@tabler/icons-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { highlighter } from "../src/client/highlight";
 import { picker, picking_done } from "../src/client/picker";
 import { messages } from "../src/extension/messages";
 import { result_t } from "../src/generator";
 import useStorage from "../src/hooks/storage";
+import { failed_to_score } from "../src/generator/messages";
 
 function CopyButton({ value }: {value: string})
 {
@@ -86,15 +87,21 @@ function Selector({ result }: {result: result_t})
 export default function Generator({ style }: {style?: CSSProperties})
 {
     const [results, set_results] = useStorage<result_t[]>("last-results", null);
+    const [error, set_error] = useState<false | "empty" | "too-big">(false);
     const [to_show] = useStorage("result-to-show", 3);
-    const [error, set_error] = useState(false);
 
     useEffect(() =>
     {
         messages.register(picking_done, msg =>
         {
             set_results(msg.results);
-            set_error(msg.results.length === 0);
+            set_error(msg.results.length === 0 ? "empty" : false);
+        });
+
+        messages.register(failed_to_score, () =>
+        {
+            set_results([]);
+            set_error("too-big");
         });
     }, []);
 
@@ -108,11 +115,19 @@ export default function Generator({ style }: {style?: CSSProperties})
         <Divider style={{ width: "80%" }} my="sm" />
 
         {
-            error &&
+            error === "empty" &&
                     <Alert color="red" title="Nothing found!" icon={<IconMoodEmpty />}>
                         We could not find any selectors. <br />
                         This can have several reasons, the most common is that the element you&lsquo;re trying to generate a selector for doesn&lsquo;t have unique properties.<br />
                         If you&lsquo;re certain that <i>good and unique</i> selector exists for this element, feel free to open an issue <a href="https://github.com/simplytest/STargazer/issues/new" target="_blank" rel="noreferrer">here</a>!
+                    </Alert>
+        }
+
+        {
+            error === "too-big" &&
+                    <Alert color="red" title="Too many selectors!" icon={<IconBomb />}>
+                        We encountered an error while crunching all the selectors! <br />
+                        This error can occur when the &quot;Mutate Top&quot; setting is set to a high value, please lower it and try again.
                     </Alert>
         }
 
