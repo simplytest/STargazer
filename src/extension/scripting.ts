@@ -1,5 +1,26 @@
 class Scripting
 {
+    async can_access()
+    {
+        let rtn = false;
+
+        try
+        {
+            await this.execute(() =>
+            {
+
+            });
+
+            rtn = true;
+        }
+        catch (error)
+        {
+            rtn = false;
+        }
+
+        return rtn;
+    }
+
     async execute<Result, Args extends Array<any>>(func: (...args: Args) => Result, ...args: Args)
     {
         const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
