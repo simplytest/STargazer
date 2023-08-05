@@ -5,7 +5,7 @@ import { NavLink, Text } from "@mantine/core";
 import { useContextMenu } from "mantine-contextmenu";
 import { modals } from "@mantine/modals";
 
-interface FoldersProps
+export interface FoldersProps
 {
     selected: string;
     set_selected: (value: string) => void;
@@ -23,6 +23,7 @@ export default function Folders({ selected, set_selected }: FoldersProps)
             icon={<IconFolder />}
             active={selected === folder.id}
             onClick={() => set_selected(folder.id)}
+            style={{ borderRadius: "5px" }}
             onContextMenu={context_menu([
                 {
                     key    : "Delete",
