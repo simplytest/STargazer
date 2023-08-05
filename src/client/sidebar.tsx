@@ -178,6 +178,7 @@ export class sidebar
 
         close_button.style.background = "#FF5E58";
         close_button.style.position = "absolute";
+        close_button.style.cursor = "pointer";
 
         close_button.style.borderRadius = "100%";
         close_button.style.border = "none";
