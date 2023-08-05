@@ -9,6 +9,7 @@ import { messages } from "../src/extension/messages";
 import { result_t } from "../src/generator";
 import useStorage from "../src/hooks/storage";
 import { failed_to_score } from "../src/generator/messages";
+import { modals } from "@mantine/modals";
 
 function CopyButton({ value }: {value: string})
 {
@@ -54,6 +55,17 @@ function Selector({ result }: {result: result_t})
         set_mounted(true);
     }, []);
 
+    const save = () =>
+    {
+        modals.openContextModal({
+            modal     : "save_selector",
+            title     : "Save Selector",
+            innerProps: {
+                selector,
+            }
+        });
+    };
+
     return <Transition mounted={mounted} transition="pop">
         {styles =>
             <Card shadow="md" padding="lg" radius="md" style={{ ...styles, width: "100%" }} withBorder>
@@ -74,7 +86,7 @@ function Selector({ result }: {result: result_t})
                     }
                     <Group position="right" align="center" noWrap>
                         <CopyButton value={selector} />
-                        <Button fullWidth radius="xl" leftIcon={<IconDeviceFloppy />}>
+                        <Button fullWidth radius="xl" leftIcon={<IconDeviceFloppy />} onClick={save}>
                             Save
                         </Button>
                     </Group>
