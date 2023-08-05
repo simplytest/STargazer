@@ -3,6 +3,10 @@ import { ReactNode, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import theme from "../shared/theme";
 import useStorage from "./hooks/storage";
+import { ModalsProvider } from "@mantine/modals";
+import SaveModal from "../components/save_modal";
+import CreateFolderModal from "../components/create_folder";
+import { ContextMenuProvider } from "mantine-contextmenu";
 
 function Root({ children }: {children: ReactNode})
 {
@@ -12,7 +16,11 @@ function Root({ children }: {children: ReactNode})
     return <StrictMode>
         <ColorSchemeProvider colorScheme={user_theme} toggleColorScheme={toggle_theme}>
             <MantineProvider theme={{ ...theme, colorScheme: user_theme }} withGlobalStyles withNormalizeCSS>
-                {children}
+                <ContextMenuProvider>
+                    <ModalsProvider modals={{ save_selector: SaveModal, create_folder: CreateFolderModal }}>
+                        {children}
+                    </ModalsProvider>
+                </ContextMenuProvider>
             </MantineProvider>
         </ColorSchemeProvider>
     </StrictMode>;
