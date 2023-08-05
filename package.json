@@ -49,6 +49,7 @@
     "parcel": "^2.9.3",
     "preval.macro": "^5.0.0",
     "process": "^0.11.10",
+    "react-zoom-image-hover": "^1.0.0",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1"
   }

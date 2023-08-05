@@ -5007,6 +5007,11 @@ react-transition-group@4.4.2:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
+react-zoom-image-hover@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-zoom-image-hover/-/react-zoom-image-hover-1.0.0.tgz#be16cdf191bc8819f04d895c3c3cbc546a50d6b0"
+  integrity sha512-S82F+FSDUlMYPpvMgkJknDYqZtUE16hW06Gp2n+8+oLXAbU883ytiRGPU5Fsrk+PYLuh22z78eBDa9UhKIWXyg==
+
 react@^18.2.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"
