@@ -4,6 +4,7 @@ import { IconFolderPlus } from "@tabler/icons-react";
 import { useState } from "react";
 import { vault } from "../src/vault";
 import Folders from "./folders";
+import useStorage from "../src/hooks/storage";
 
 interface SaveModalProps
 {
@@ -16,13 +17,13 @@ export default function SaveModal({ context, id, innerProps }: ContextModalProps
     const [description, set_description] = useState("");
 
     const [selector, set_selector] = useState(innerProps.selector);
-    const [selected, set_selected] = useState<string | undefined>(undefined);
+    const [selected, set_selected] = useStorage<string | undefined>("selected-folder", undefined);
 
     const valid = selector.trim().length > 0 && name.trim().length > 0 && !!selected;
 
     const save = () =>
     {
-        vault.save(selected, { selector, description, name: name });
+        vault.save_with_screenshot(selected, { selector, description, name: name });
         context.closeModal(id);
     };
 
