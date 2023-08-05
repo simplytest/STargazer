@@ -71,7 +71,7 @@ function Entry({ folder, entry }: {folder: string, entry: entry_t})
 
     useEffect(() =>
     {
-        if (name?.trim().length === 0 || selector?.trim().length === 0)
+        if (!name || !selector || name?.trim().length === 0 || selector?.trim().length === 0)
         {
             return;
         }
@@ -166,7 +166,7 @@ function Vault()
                             )}
                         </tbody>
                     </Table>
-                    <ActionIcon size="md" radius="xl" variant="outline" onClick={() => vault.save(folder.id, { name: "", selector: "" })}>
+                    <ActionIcon size="md" radius="xl" variant="outline" onClick={() => vault.save(folder.id, { name: "Name", selector: "Selector" })}>
                         <IconPlus size={12} />
                     </ActionIcon>
                 </>
