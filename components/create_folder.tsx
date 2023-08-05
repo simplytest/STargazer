@@ -13,7 +13,7 @@ export default function CreateFolderModal({ context, id, innerProps }: ContextMo
     {
         if (innerProps.edit)
         {
-            vault.edit(innerProps.id, { name });
+            vault.edit(innerProps.id, "folder", { name });
         }
         else
         {
@@ -49,7 +49,7 @@ export default function CreateFolderModal({ context, id, innerProps }: ContextMo
     }, []);
 
 
-    return <Stack w={320} m="xs" align="stretch">
+    return <Stack m="xs" align="stretch">
         <TextInput value={name} label="Name" onChange={e => set_name(e.currentTarget.value)} withAsterisk error={!valid} />
 
         <Group style={{ width: "100%" }} position="right" noWrap>

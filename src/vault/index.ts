@@ -9,7 +9,7 @@ export interface entry_t
     name: string;
     description: string;
 
-    image: string;
+    image?: string;
     selector: string;
 }
 
@@ -35,23 +35,34 @@ export class vault
         await storage.set("vault", vault);
     }
 
-    public static async edit(id: string, folder: Partial<folder_t>, overwrite = false)
+    public static async edit(id: string, type: "folder" | "entry", value: Partial<folder_t> | Partial<entry_t>)
     {
         const vault = await storage.get<vault_t>("vault") ?? { folders: [] };
-        const index = vault.folders.findIndex(x => x.id === id);
 
-        if (index === -1)
+        if (type === "folder")
         {
-            return;
-        }
+            const index = vault.folders.findIndex(x => x.id === id);
 
-        if (overwrite)
-        {
-            vault.folders[index] = folder as folder_t;
+            if (index === -1)
+            {
+                return;
+            }
+
+            vault.folders[index] = { ...vault.folders[index], ...value };
         }
         else
         {
-            vault.folders[index] = { ...vault.folders[index], ...folder };
+            for (const folder of vault.folders)
+            {
+                const index = folder.children.findIndex(x => x.id === id);
+
+                if (index === -1)
+                {
+                    continue;
+                }
+
+                folder.children[index] = { ...folder.children[index], ...value };
+            }
         }
 
         await storage.set("vault", vault);
@@ -67,16 +78,23 @@ export class vault
             return;
         }
 
-        await highlighter.start(selector);
-
-        const screenshot = await chrome.tabs.captureVisibleTab({ format: "jpeg", quality: 60 });
-        folder.children.push({ selector, name, description, id: uuid(), image: screenshot });
-
-        await highlighter.stop();
+        const rtn = { selector, name, description, id: uuid() };
+        folder.children.push(rtn);
 
         await storage.set("vault", vault);
+        return rtn;
     }
 
+    public static async save_with_screenshot(id: string, entry: Partial<entry_t>)
+    {
+        const new_entry = await this.save(id, entry);
+
+        await highlighter.start(entry.selector, "Target Element");
+        const screenshot = await chrome.tabs.captureVisibleTab({ format: "jpeg", quality: 60 });
+        await highlighter.stop();
+
+        await this.edit(new_entry.id, "entry", { image: screenshot });
+    }
 
     public static async delete(id: string)
     {
