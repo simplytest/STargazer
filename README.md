@@ -24,9 +24,10 @@ STargazer is a chrome extension that can generate selectors for a given element.
 
 # 🖼️ Screenshots
 
-| ☀️ Light                                | 🌙 Dark                               |
-| -------------------------------------- | ------------------------------------ |
-| ![light](assets/screenshots/light.png) | ![dark](assets/screenshots/dark.png) |
+| ☀️ Light                                      | 🌙 Dark                                     |
+| -------------------------------------------- | ------------------------------------------ |
+| ![light](assets/screenshots/light.png)       | ![dark](assets/screenshots/dark.png)       |
+| ![light](assets/screenshots/vault-light.png) | ![dark](assets/screenshots/vault-dark.png) |
 
 
 # 📦 Installation
