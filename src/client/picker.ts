@@ -71,7 +71,7 @@ export class picker
         return picker.is_sticky(element.parentElement);
     }
 
-    public static position_over(root: HTMLElement, target: Element)
+    public static position_over(root: HTMLElement, target: Element, border?: number)
     {
         const style = root.style;
         const dim = target.getBoundingClientRect();
@@ -91,6 +91,12 @@ export class picker
             top += window.scrollY;
             left += window.scrollX;
             style.position = "absolute";
+        }
+
+        if (border)
+        {
+            top -= border;
+            left -= border;
         }
 
         style.top = `${top}px`;
