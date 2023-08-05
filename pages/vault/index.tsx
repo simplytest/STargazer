@@ -71,7 +71,7 @@ function Entry({ folder, entry }: {folder: string, entry: entry_t})
 
     useEffect(() =>
     {
-        if (name.trim().length === 0 || selector.trim().length === 0)
+        if (name?.trim().length === 0 || selector?.trim().length === 0)
         {
             return;
         }
@@ -105,10 +105,10 @@ function Entry({ folder, entry }: {folder: string, entry: entry_t})
             />
         </td>
         <td>
-            <TextInput value={name} onChange={e => set_name(e.currentTarget.value)} withAsterisk error={name.trim().length === 0} />
+            <TextInput value={name} onChange={e => set_name(e.currentTarget.value)} withAsterisk error={name?.trim().length === 0} />
         </td>
         <td>
-            <TextInput value={selector} onChange={e => set_selector(e.currentTarget.value)} withAsterisk error={selector.trim().length === 0} />
+            <TextInput value={selector} onChange={e => set_selector(e.currentTarget.value)} withAsterisk error={selector?.trim().length === 0} />
         </td>
         <td>
             <TextInput value={description} onChange={e => set_description(e.currentTarget.value)} />
@@ -166,7 +166,7 @@ function Vault()
                             )}
                         </tbody>
                     </Table>
-                    <ActionIcon size="md" radius="xl" variant="outline" onClick={() => vault.save(folder.id, {})}>
+                    <ActionIcon size="md" radius="xl" variant="outline" onClick={() => vault.save(folder.id, { name: "", selector: "" })}>
                         <IconPlus size={12} />
                     </ActionIcon>
                 </>
