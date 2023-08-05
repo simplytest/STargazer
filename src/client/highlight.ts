@@ -10,8 +10,9 @@ type style_t = { background: color_t };
 export class highlighter
 {
     static readonly ID = "stargazer_highlight";
+    static readonly BORDER = 5;
 
-    static async start(selector: string)
+    static async start(selector: string, text = "")
     {
         await scripting.export();
 
@@ -19,12 +20,12 @@ export class highlighter
             background: `${theme.colors.orange[0]}80`,
         };
 
-        await scripting.execute((style, selector) =>
+        await scripting.execute((style, selector, text) =>
         {
             const instance = new highlighter();
-            instance.create(style, selector);
+            instance.create(style, selector, text);
         },
-        style, selector);
+        style, selector, text);
     }
 
     static async stop()
@@ -43,6 +44,12 @@ export class highlighter
         overlay.style.position = "absolute";
         overlay.style.zIndex = MAXIMUM_ZINDEX;
         overlay.style.backgroundColor = style.background;
+        overlay.style.border = `${highlighter.BORDER}px dotted red`;
+
+        overlay.style.display = "flex";
+        overlay.style.color = "#00000060";
+        overlay.style.alignItems = "center";
+        overlay.style.justifyContent = "center";
 
         return overlay;
     }
@@ -64,7 +71,7 @@ export class highlighter
         [...document.querySelectorAll(selector)].forEach(x => elements.push(x));
     }
 
-    private create(style: style_t, selector: string)
+    private create(style: style_t, selector: string, text: string)
     {
         // We first delete the old instance
 
@@ -98,7 +105,9 @@ export class highlighter
         for (let i = 0; Math.min(10, targets.length) > i; i++)
         {
             const overlay = this.create_overlay(style);
-            picker.position_over(append(overlay), targets[i]);
+            overlay.textContent = text;
+
+            picker.position_over(append(overlay), targets[i], highlighter.BORDER);
         }
     }
 
