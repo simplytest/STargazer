@@ -1,9 +1,10 @@
 import { Box, Center, Divider, Group, NumberInput, SegmentedControl, Stack, Switch, Text, Tooltip, useMantineColorScheme } from "@mantine/core";
 import { IconBrain, IconBug, IconInfoCircle, IconMoon, IconPalette, IconSun, TablerIconsProps } from "@tabler/icons-react";
-import { CSSProperties, Fragment, ReactNode } from "react";
+import { CSSProperties, Fragment, ReactNode, useEffect, useState } from "react";
 import { meta } from "../src/extension/meta";
 import useStorage from "../src/hooks/storage";
 import { worker } from "../src/client/worker";
+import { scripting } from "../src/extension/scripting";
 
 function IconText({ Icon, text, center }: {Icon: (props: TablerIconsProps) => JSX.Element, text: string, center?: boolean})
 {
@@ -52,6 +53,13 @@ export default function Settings({ style }: {style?: CSSProperties})
     const [show_raw, set_show_raw] = useStorage("show-raw", false);
     const [show_scores, set_show_scores] = useStorage("show-scores", false);
 
+    const [access, set_access] = useState(false);
+
+    useEffect(() =>
+    {
+        scripting.can_access().then(set_access);
+    }, []);
+
     const change_type = (value: string) =>
     {
         set_type(value);
@@ -69,7 +77,7 @@ export default function Settings({ style }: {style?: CSSProperties})
         <Option Control={SegmentedControl} option-label="Selector Type" data={[
             { label: "CSS", value: "css" },
             { label: "XPath", value: "xpath" },
-        ]} value={type} onChange={change_type} />
+        ]} value={type} onChange={change_type} disabled={!access} />
         <Option Control={NumberInput} option-label="Results to Show" min={1} precision={0} stepHoldDelay={500} stepHoldInterval={100} variant="filled" value={to_show} onChange={set_to_show} />
         <Option Control={NumberInput} option-label="Mutate Top" tooltip={
             <Text>
