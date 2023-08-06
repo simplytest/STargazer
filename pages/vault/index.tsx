@@ -1,4 +1,4 @@
-import { ActionIcon, AppShell, Button, Center, Group, Header, Image, Navbar, Stack, Table, Text, TextInput } from "@mantine/core";
+import { ActionIcon, AppShell, Button, Center, Group, Header, Image, Navbar, Stack, Table, Text, TextInput, Transition } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { IconBrandGithub, IconCopy, IconPlus, IconSettings, IconTrashX } from "@tabler/icons-react";
@@ -139,7 +139,7 @@ function Vault()
 
     useEffect(() =>
     {
-        set_folder(instance.folders.find(x => x.id === selected));
+        setTimeout(() => set_folder(instance.folders.find(x => x.id === selected)), 100);
     }, [selected, instance]);
 
     return <AppShell
@@ -147,31 +147,33 @@ function Vault()
         header={<ShellHeader />}
         navbar={<ShellNavbar selected={selected} set_selected={set_selected} />}
     >
-        <Stack justify="center" align="center" style={{ width: "100%" }}>
-            {folder &&
-                <>
-                    <Table verticalSpacing="xs">
-                        <thead>
-                            <tr>
-                                <th>Preview</th>
-                                <th>Name</th>
-                                <th>Selector</th>
-                                <th>Description</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {folder.children.map(entry =>
-                                <Entry key={entry.id} folder={folder.id} entry={entry} />
-                            )}
-                        </tbody>
-                    </Table>
-                    <ActionIcon size="md" radius="xl" variant="outline" onClick={() => vault.save(folder.id, { name: "Name", selector: "Selector" })}>
-                        <IconPlus size={12} />
-                    </ActionIcon>
-                </>
-            }
-        </Stack>
+        {folder &&
+            <Stack justify="center" align="center" style={{ width: "100%" }}>
+                <Table verticalSpacing="xs">
+                    <thead>
+                        <tr>
+                            <th>Preview</th>
+                            <th>Name</th>
+                            <th>Selector</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <Transition transition="fade" mounted={selected === folder?.id}>
+                        {style =>
+                            <tbody style={style}>
+                                {folder.children.map(entry =>
+                                    <Entry key={entry.id} folder={folder.id} entry={entry} />
+                                )}
+                            </tbody>
+                        }
+                    </Transition>
+                </Table>
+                <ActionIcon size="md" radius="xl" variant="outline" onClick={() => vault.save(folder.id, { name: "Name", selector: "Selector" })}>
+                    <IconPlus size={12} />
+                </ActionIcon>
+            </Stack>
+        }
     </AppShell>;
 }
 
