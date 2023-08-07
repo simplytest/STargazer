@@ -23,20 +23,21 @@ function Section({ Icon, text }: {Icon: (props: TablerIconsProps) => JSX.Element
 
 type OptionProps<P extends object> = Omit<P, "w"> &
 {
+    width?: number;
     tooltip?: ReactNode;
     "no-fixed"?: boolean;
     "option-label": string;
     Control: (props: P) => ReactNode;
 }
 
-function Option<P extends object>({ "option-label": option_label, Control, "no-fixed": no_fixed, tooltip, ...data }: OptionProps<P>)
+export function Option<P extends object>({ "option-label": option_label, Control, "no-fixed": no_fixed, tooltip, width, ...data }: OptionProps<P>)
 {
     const Wrapping = tooltip ? Tooltip : Fragment;
 
     return <Wrapping label={tooltip} multiline>
         <Group position="apart" noWrap>
             <Text>{option_label}</Text>
-            <Control {...data as P} {...(no_fixed ? {} : { w: 150 })} />
+            <Control {...data as P} {...(no_fixed ? {} : { w: width ?? 150 })} />
         </Group>
     </Wrapping>;
 }
