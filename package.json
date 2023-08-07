@@ -9,8 +9,8 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "bash build.sh",
-    "dev": "bash build.sh --no-optimize --no-cache"
+    "dev": "bash build.sh --no-optimize --no-cache",
+    "build": "bash build.sh --no-optimize --no-cache"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
