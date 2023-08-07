@@ -1,10 +1,12 @@
-import { Box, Center, Divider, Group, NumberInput, SegmentedControl, Stack, Switch, Text, Tooltip, useMantineColorScheme } from "@mantine/core";
-import { IconBrain, IconBug, IconInfoCircle, IconMoon, IconPalette, IconSun, TablerIconsProps } from "@tabler/icons-react";
+import { Box, Button, Center, Divider, Group, NumberInput, SegmentedControl, Stack, Switch, Text, Tooltip, useMantineColorScheme } from "@mantine/core";
+import { IconBrain, IconBug, IconCheck, IconDatabaseExport, IconInfoCircle, IconMoon, IconPalette, IconSun, TablerIconsProps } from "@tabler/icons-react";
 import { CSSProperties, Fragment, ReactNode, useEffect, useState } from "react";
-import { meta } from "../src/extension/meta";
-import useStorage from "../src/hooks/storage";
 import { worker } from "../src/client/worker";
+import { meta } from "../src/extension/meta";
 import { scripting } from "../src/extension/scripting";
+import useStorage from "../src/hooks/storage";
+import { vault_t } from "../src/vault";
+import CopyButton from "./copy_button";
 
 function IconText({ Icon, text, center }: {Icon: (props: TablerIconsProps) => JSX.Element, text: string, center?: boolean})
 {
@@ -55,6 +57,7 @@ export default function Settings({ style }: {style?: CSSProperties})
     const [show_scores, set_show_scores] = useStorage("show-scores", false);
 
     const [access, set_access] = useState(false);
+    const [vault_instance] = useStorage<vault_t>("vault", { folders: [] });
 
     useEffect(() =>
     {
@@ -96,6 +99,13 @@ export default function Settings({ style }: {style?: CSSProperties})
             <Section text="Developer Options" Icon={IconBug} />
             <Option Control={Switch} option-label="Show Raw" no-fixed checked={show_raw} onChange={e => set_show_raw(e.currentTarget.checked)} />
             <Option Control={Switch} option-label="Show Scores" no-fixed checked={show_scores} onChange={e => set_show_scores(e.currentTarget.checked)} />
+            <CopyButton value={JSON.stringify(vault_instance)}>
+                {({ copied, copy }) =>
+                    <Button fullWidth leftIcon={copied ? <IconCheck /> : <IconDatabaseExport />} onClick={copy}>
+                        Export Vault
+                    </Button>
+                }
+            </CopyButton>
         </>
         }
     </Stack>;
