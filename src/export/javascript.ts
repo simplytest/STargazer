@@ -1,4 +1,4 @@
-import { escape, format, options_t } from ".";
+import { escape, format, options_t, sanitize } from ".";
 import { entry_t } from "../vault";
 
 function selenium({ folder }: options_t)
@@ -42,6 +42,7 @@ function playwright({ folder }: options_t)
 export default function to_javascript(options: options_t)
 {
     const { framework } = options;
+    options = sanitize(options);
 
     if (framework === "playwright")
     {

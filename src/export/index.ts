@@ -13,6 +13,35 @@ export function escape(str: string)
     return str.replaceAll("\"", "\\\"");
 }
 
+export function sanitize(options: options_t)
+{
+    const sanitize = (str: string) => str.replaceAll(/[^a-zA-Z0-9_]/g, "_");
+
+    const rtn: options_t = JSON.parse(JSON.stringify(options));
+    const { name, children } = rtn.folder;
+
+    rtn.folder.name = sanitize(name);
+    const existing = [];
+
+    for (const child of children)
+    {
+        let sanitized = sanitize(child.name);
+
+        const original = sanitized;
+        let num = 0;
+
+        while (existing.includes(sanitized))
+        {
+            sanitized = `${original}_${num++}`;
+        }
+
+        child.name = sanitized;
+        existing.push(sanitized);
+    }
+
+    return rtn;
+}
+
 export function format(code: string)
 {
     const indent = (n: number) => " ".repeat(n * 2);
