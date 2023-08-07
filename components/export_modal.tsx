@@ -10,6 +10,7 @@ import { folder_t } from "../src/vault";
 import { Option } from "./settings";
 import { framework_t } from "../src/export";
 import to_javascript from "../src/export/javascript";
+import to_typescript from "../src/export/typescript";
 
 interface ExportModalProps
 {
@@ -18,12 +19,14 @@ interface ExportModalProps
 
 const props = new Map<string, PrismProps>([
     ["javascript", { language: "javascript" } as PrismProps],
+    ["typescript", { language: "typescript" } as PrismProps],
     ["csharp", { language: "clike" } as PrismProps],
     ["java", { language: "clike" } as PrismProps],
 ]);
 
 const transformer = new Map([
     ["javascript", to_javascript],
+    ["typescript", to_typescript],
     ["csharp", to_csharp],
     ["java", to_java],
 ]);
@@ -53,6 +56,7 @@ export default function ExportModal({ innerProps }: ContextModalProps<ExportModa
             { label: "C#", value: "csharp" },
             { label: "Java", value: "java" },
             { label: "JavaScript", value: "javascript" },
+            { label: "TypeScript", value: "typescript" },
         ]} value={language} onChange={set_language} icon={<IconCode size="1rem" />} variant="filled" width={200} />
     </Stack>;
 }
