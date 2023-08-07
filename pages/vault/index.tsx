@@ -143,6 +143,7 @@ function Vault()
         navbar={<ShellNavbar selected={selected} set_selected={set_selected} />}
     >
         {folder &&
+        <>
             <Stack justify="center" align="center" style={{ width: "100%" }}>
                 <Table verticalSpacing="xs">
                     <thead>
@@ -168,6 +169,19 @@ function Vault()
                     <IconPlus size={12} />
                 </ActionIcon>
             </Stack>
+            <Group m="xl" position="right">
+                <Button
+                    leftIcon={<IconTableExport />}
+                    onClick={() => modals.openContextModal({
+                        size      : "xl",
+                        modal     : "export",
+                        innerProps: { folder }
+                    })}
+                >
+                    Export Page-Object
+                </Button>
+            </Group>
+        </>
         }
     </AppShell>;
 }
