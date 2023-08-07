@@ -1,33 +1,15 @@
-import { clipboard } from "@extend-chrome/clipboard";
 import { ActionIcon, Alert, Badge, Button, Card, Divider, Group, ScrollArea, Stack, Text, TextInput, Transition } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
+import { modals } from "@mantine/modals";
 import { IconBomb, IconCheck, IconClick, IconCopy, IconDeviceFloppy, IconMoodEmpty, IconMoodTongueWink } from "@tabler/icons-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { highlighter } from "../src/client/highlight";
 import { picker, picking_done, suggest_name } from "../src/client/picker";
 import { messages } from "../src/extension/messages";
 import { result_t } from "../src/generator";
-import useStorage from "../src/hooks/storage";
 import { failed_to_score } from "../src/generator/messages";
-import { modals } from "@mantine/modals";
-
-function CopyButton({ value }: {value: string})
-{
-    const [copied, set_copied] = useState(false);
-
-    const copy = () =>
-    {
-        clipboard.writeText(value).then(() =>
-        {
-            set_copied(true);
-            setTimeout(() => set_copied(false), 1000);
-        });
-    };
-
-    return <Button fullWidth radius="xl" color="green" leftIcon={copied ? <IconCheck /> : <IconCopy />} onClick={copy}>
-        {copied ? "Copied" : "Copy"}
-    </Button>;
-}
+import useStorage from "../src/hooks/storage";
+import CopyButton from "./copy_button";
 
 function Selector({ result, suggested_name }: {result: result_t, suggested_name: string})
 {
@@ -86,7 +68,13 @@ function Selector({ result, suggested_name }: {result: result_t, suggested_name:
                      <TextInput value={JSON.stringify(result.chain)} />
                     }
                     <Group position="right" align="center" noWrap>
-                        <CopyButton value={selector} />
+                        <CopyButton value={selector}>
+                            {({ copied, copy }) =>
+                                <Button fullWidth radius="xl" color="green" leftIcon={copied ? <IconCheck /> : <IconCopy />} onClick={copy}>
+                                    {copied ? "Copied" : "Copy"}
+                                </Button>
+                            }
+                        </CopyButton>
                         <Button fullWidth radius="xl" leftIcon={<IconDeviceFloppy />} onClick={save}>
                             Save
                         </Button>
