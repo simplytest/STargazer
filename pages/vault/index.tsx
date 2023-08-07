@@ -1,7 +1,7 @@
 import { ActionIcon, AppShell, Button, Center, Group, Header, Image, Navbar, Stack, Table, Text, TextInput, Transition } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
-import { IconBrandGithub, IconCopy, IconPlus, IconSettings, IconTrashX } from "@tabler/icons-react";
+import { IconBrandGithub, IconCopy, IconPlus, IconSettings, IconTableExport, IconTrashX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { default as Zoom } from "react-zoom-image-hover";
 import Folders, { FoldersProps } from "../../components/folders";
@@ -9,6 +9,7 @@ import Settings from "../../components/settings";
 import useStorage from "../../src/hooks/storage";
 import create_root from "../../src/react";
 import { entry_t, folder_t, vault, vault_t } from "../../src/vault";
+import { name_regex } from "../../src/validation";
 
 function ShellHeader()
 {
@@ -91,15 +92,9 @@ function Entry({ folder, entry }: {folder: string, entry: entry_t})
                 onClick={() =>
                 {
                     modals.open({
-                        title       : "Image Preview",
-                        overlayProps: {
-                            opacity: 0.55,
-                            blur   : 3,
-                        },
-                        withOverlay    : true,
-                        size           : "auto",
-                        transitionProps: { transition: "pop" },
-                        children       : <Zoom src={entry.image} width={600} height={800} zoomScale={3} />
+                        title   : "Image Preview",
+                        size    : "auto",
+                        children: <Zoom src={entry.image} width={600} height={800} zoomScale={3} />
                     });
                 }}
             />

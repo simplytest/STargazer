@@ -7,6 +7,7 @@ import { ModalsProvider } from "@mantine/modals";
 import SaveModal from "../components/save_modal";
 import CreateFolderModal from "../components/create_folder";
 import { ContextMenuProvider } from "mantine-contextmenu";
+import ExportModal from "../components/export_modal";
 
 function Root({ children }: {children: ReactNode})
 {
@@ -16,11 +17,21 @@ function Root({ children }: {children: ReactNode})
     return <StrictMode>
         <ColorSchemeProvider colorScheme={user_theme} toggleColorScheme={toggle_theme}>
             <MantineProvider theme={{ ...theme, colorScheme: user_theme }} withGlobalStyles withNormalizeCSS>
-                <ContextMenuProvider>
-                    <ModalsProvider modals={{ save_selector: SaveModal, create_folder: CreateFolderModal }}>
+                <ModalsProvider
+                    modals={{ save_selector: SaveModal, create_folder: CreateFolderModal, export: ExportModal }}
+                    modalProps={{
+                        overlayProps: {
+                            opacity: 0.55,
+                            blur   : 3,
+                        },
+                        withOverlay    : true,
+                        transitionProps: { transition: "pop" },
+                    }}
+                >
+                    <ContextMenuProvider>
                         {children}
-                    </ModalsProvider>
-                </ContextMenuProvider>
+                    </ContextMenuProvider>
+                </ModalsProvider>
             </MantineProvider>
         </ColorSchemeProvider>
     </StrictMode>;
