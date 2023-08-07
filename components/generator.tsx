@@ -4,7 +4,7 @@ import { useDebouncedValue } from "@mantine/hooks";
 import { IconBomb, IconCheck, IconClick, IconCopy, IconDeviceFloppy, IconMoodEmpty, IconMoodTongueWink } from "@tabler/icons-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { highlighter } from "../src/client/highlight";
-import { picker, picking_done } from "../src/client/picker";
+import { picker, picking_done, suggest_name } from "../src/client/picker";
 import { messages } from "../src/extension/messages";
 import { result_t } from "../src/generator";
 import useStorage from "../src/hooks/storage";
@@ -29,7 +29,7 @@ function CopyButton({ value }: {value: string})
     </Button>;
 }
 
-function Selector({ result }: {result: result_t})
+function Selector({ result, suggested_name }: {result: result_t, suggested_name: string})
 {
     const [mounted, set_mounted] = useState(false);
     const [selector, set_selector] = useState(result.selector);
@@ -62,6 +62,7 @@ function Selector({ result }: {result: result_t})
             title     : "Save Selector",
             innerProps: {
                 selector,
+                suggested_name,
             }
         });
     };
@@ -99,6 +100,7 @@ function Selector({ result }: {result: result_t})
 export default function Generator({ style }: {style?: CSSProperties})
 {
     const [results, set_results] = useStorage<result_t[]>("last-results", null);
+    const [suggested_name, set_suggested_name] = useState<string>(undefined);
     const [error, set_error] = useState<false | "empty" | "too-big">(false);
     const [to_show] = useStorage("result-to-show", 3);
 
@@ -114,6 +116,11 @@ export default function Generator({ style }: {style?: CSSProperties})
         {
             set_results([]);
             set_error("too-big");
+        });
+
+        messages.register(suggest_name, msg =>
+        {
+            set_suggested_name(msg.name);
         });
     }, []);
 
@@ -154,7 +161,7 @@ export default function Generator({ style }: {style?: CSSProperties})
         <ScrollArea.Autosize style={{ width: "100%" }} mah={520} type="hover">
             <Stack align="center" m="xs">
                 {
-                    results?.slice(0, to_show).map(x => <Selector key={x.selector} result={x} />)
+                    results?.slice(0, to_show).map(x => <Selector key={x.selector} result={x} suggested_name={suggested_name} />)
                 }
             </Stack>
         </ScrollArea.Autosize>

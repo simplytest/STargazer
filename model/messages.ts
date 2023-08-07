@@ -19,40 +19,43 @@ const allowed_attributes = [
     "id",
 ];
 
-export default async function suffix(element: HTMLElement)
+export class model
 {
-    let input = `${element.tagName.toLowerCase()}`;
-
-    for (const attribute of element.getAttributeNames())
+    public static async predict_type(element: HTMLElement): Promise<string>
     {
-        if (!allowed_attributes.includes(attribute))
+        let input = `${element.tagName.toLowerCase()}`;
+
+        for (const attribute of element.getAttributeNames())
         {
-            continue;
+            if (!allowed_attributes.includes(attribute))
+            {
+                continue;
+            }
+
+            input += ` ${attribute}="${element.getAttribute(attribute)}"`;
         }
 
-        input += ` ${attribute}="${element.getAttribute(attribute)}"`;
-    }
+        input = input.toLowerCase();
+        input = input.replaceAll(/[=]/g, " ").replaceAll(/["]/g, "");
 
-    input = input.toLowerCase();
-    input = input.replaceAll(/[=]/g, " ").replaceAll(/["]/g, "");
+        const split = input.split(" ");
+        const tokens = [];
 
-    const split = input.split(" ");
-    const tokens = [];
-
-    for (const char of split)
-    {
-        if (dict[char] === undefined)
+        for (const char of split)
         {
-            continue;
+            if (dict[char] === undefined)
+            {
+                continue;
+            }
+
+            tokens.push(dict[char]);
         }
 
-        tokens.push(dict[char]);
-    }
+        while (tokens.length < 250)
+        {
+            tokens.push(0);
+        }
 
-    while (tokens.length < 250)
-    {
-        tokens.push(0);
+        return await messages.send(new request_suffix(tokens));
     }
-
-    return await messages.send(new request_suffix(tokens));
 }

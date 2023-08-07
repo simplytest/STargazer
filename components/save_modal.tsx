@@ -10,12 +10,13 @@ import { name_regex } from "../src/validation";
 interface SaveModalProps
 {
     selector: string;
+    suggested_name?: string;
 }
 
 export default function SaveModal({ context, id, innerProps }: ContextModalProps<SaveModalProps>)
 {
-    const [name, set_name] = useState("");
     const [description, set_description] = useState("");
+    const [name, set_name] = useState(innerProps.suggested_name ?? "");
 
     const [selector, set_selector] = useState(innerProps.selector);
     const [selected, set_selected] = useStorage<string | undefined>("selected-folder", undefined);

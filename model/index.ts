@@ -11,9 +11,14 @@ class Model
 
     suggest_suffix(input: number[])
     {
+        if (!this.model)
+        {
+            return null;
+        }
+
         const rtn = this.model.predict(tensor2d([input], [1, 250])) as Tensor<Rank>;
         const index: number = topk(rtn).indices.arraySync() as number;
-        return index == 0 ? "button" : "select";
+        return index == 0 ? "Button" : "Select";
     }
 }
 

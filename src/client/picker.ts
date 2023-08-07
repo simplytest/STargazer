@@ -4,6 +4,7 @@ import { scripting } from "../extension/scripting";
 import { generator, result_t } from "../generator";
 import { MAXIMUM_ZINDEX } from "./constants";
 import { highlighter } from "./highlight";
+import { meta } from "./meta";
 import { sidebar } from "./sidebar";
 
 type color_t = string;
@@ -16,6 +17,16 @@ export class picking_done
     constructor(results: result_t[])
     {
         this.results = results;
+    }
+}
+
+export class suggest_name
+{
+    public name: string;
+
+    constructor(name: string)
+    {
+        this.name = name;
     }
 }
 
@@ -199,7 +210,16 @@ export class picker
         }
 
         window[picker.INSPECTED_ID] = target;
-        generator.generate().then(results => messages.send(new picking_done(results)));
+
+        generator.generate().then(results =>
+        {
+            messages.send(new picking_done(results));
+        });
+
+        meta.predict_name(target as HTMLElement).then(name =>
+        {
+            messages.send(new suggest_name(name));
+        });
 
         picker.destroy();
     }
