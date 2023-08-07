@@ -71,7 +71,7 @@ function Entry({ folder, entry }: {folder: string, entry: entry_t})
 
     useEffect(() =>
     {
-        if (!name || !selector || name?.trim().length === 0 || selector?.trim().length === 0)
+        if (!name || !selector || !name?.match(name_regex) || selector?.trim().length === 0)
         {
             return;
         }
@@ -105,7 +105,7 @@ function Entry({ folder, entry }: {folder: string, entry: entry_t})
             />
         </td>
         <td>
-            <TextInput value={name} onChange={e => set_name(e.currentTarget.value)} withAsterisk error={name?.trim().length === 0} />
+            <TextInput value={name} onChange={e => set_name(e.currentTarget.value)} withAsterisk error={!name?.match(name_regex)} />
         </td>
         <td>
             <TextInput value={selector} onChange={e => set_selector(e.currentTarget.value)} withAsterisk error={selector?.trim().length === 0} />

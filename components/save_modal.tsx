@@ -5,6 +5,7 @@ import { useState } from "react";
 import { vault } from "../src/vault";
 import Folders from "./folders";
 import useStorage from "../src/hooks/storage";
+import { name_regex } from "../src/validation";
 
 interface SaveModalProps
 {
@@ -19,7 +20,7 @@ export default function SaveModal({ context, id, innerProps }: ContextModalProps
     const [selector, set_selector] = useState(innerProps.selector);
     const [selected, set_selected] = useStorage<string | undefined>("selected-folder", undefined);
 
-    const valid = selector.trim().length > 0 && name.trim().length > 0 && !!selected;
+    const valid = name.match(name_regex) && selector.trim().length > 0 && !!selected;
 
     const save = () =>
     {
@@ -55,7 +56,7 @@ export default function SaveModal({ context, id, innerProps }: ContextModalProps
         <Divider />
 
         <TextInput value={selector} label="Selector" onChange={e => set_selector(e.currentTarget.value)} withAsterisk error={selector.trim().length === 0} />
-        <TextInput value={name} label="Name" onChange={e => set_name(e.currentTarget.value)} withAsterisk error={name.trim().length === 0} />
+        <TextInput value={name} label="Name" onChange={e => set_name(e.currentTarget.value)} withAsterisk error={!name.match(name_regex)} />
         <TextInput value={description} label="Description" placeholder="Description..." onChange={e => set_description(e.currentTarget.value)} />
 
         <Group style={{ width: "100%" }} position="right" noWrap>

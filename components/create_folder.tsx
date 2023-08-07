@@ -1,13 +1,14 @@
 import { Button, Group, Stack, TextInput } from "@mantine/core";
-import { useEffect, useState } from "react";
-import { vault, vault_t } from "../src/vault";
 import { ContextModalProps } from "@mantine/modals";
+import { useEffect, useState } from "react";
 import { storage } from "../src/extension/storage";
+import { name_regex } from "../src/validation";
+import { vault, vault_t } from "../src/vault";
 
 export default function CreateFolderModal({ context, id, innerProps }: ContextModalProps<{edit?: boolean, id?: string}>)
 {
     const [name, set_name] = useState("");
-    const valid = name.trim().length > 0;
+    const valid = name.match(name_regex);
 
     const create = () =>
     {

@@ -1,6 +1,7 @@
 import { v4 as uuid } from "uuid";
 import { highlighter } from "../client/highlight";
 import { storage } from "../extension/storage";
+import { name_regex } from "../validation";
 
 export interface entry_t
 {
@@ -29,6 +30,12 @@ export class vault
 {
     public static async create(name: string)
     {
+        if (!name.match(name_regex))
+        {
+            console.error("[Create] Name is invalid");
+            return;
+        }
+
         const vault = await storage.get<vault_t>("vault") ?? { folders: [] };
         vault.folders.push({ id: uuid(), name, children: [] });
 
@@ -37,6 +44,12 @@ export class vault
 
     public static async edit(id: string, type: "folder" | "entry", value: Partial<folder_t> | Partial<entry_t>)
     {
+        if (value.name && !value.name.match(name_regex))
+        {
+            console.error("[Edit] Name is invalid");
+            return;
+        }
+
         const vault = await storage.get<vault_t>("vault") ?? { folders: [] };
 
         if (type === "folder")
@@ -70,6 +83,12 @@ export class vault
 
     public static async save(id: string, { selector, name, description }: Partial<entry_t>)
     {
+        if (!name.match(name_regex))
+        {
+            console.error("[Save] Name is invalid");
+            return;
+        }
+
         const vault = await storage.get<vault_t>("vault") ?? { folders: [] };
         const folder = vault.folders.find(x => x.id === id);
 
@@ -87,6 +106,13 @@ export class vault
 
     public static async save_with_screenshot(id: string, entry: Partial<entry_t>)
     {
+        if (!entry.name.match(name_regex))
+        {
+            console.error("[Save] Name is invalid");
+            return;
+        }
+
+
         const new_entry = await this.save(id, entry);
 
         await highlighter.start(entry.selector, "Target Element");
