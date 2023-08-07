@@ -1,3 +1,5 @@
+import { model } from "../model";
+import { request_suffix } from "../model/messages";
 import { picker } from "./client/picker";
 import { sidebar } from "./client/sidebar";
 import { commands } from "./extension/commands";
@@ -28,4 +30,9 @@ chrome.action.onClicked.addListener(async () =>
 messages.register(request_score, msg =>
 {
     return msg.chains.map(x => ({ score: score(x), chain: x }));
+});
+
+messages.register(request_suffix, msg =>
+{
+    return model.suggest_suffix(msg.input);
 });
