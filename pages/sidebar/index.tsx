@@ -20,7 +20,7 @@ function SideBar()
 
     const open_vault = () =>
     {
-        const vault = chrome.runtime.getURL("/pages/vault/index.html");
+        const vault = chrome.runtime.getURL("pages/vault/index.html");
         window.open(vault);
     };
 
