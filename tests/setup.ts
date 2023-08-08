@@ -1,34 +1,43 @@
-import { JSDOM } from 'jsdom';
-import { exec } from '../src/utils/chrome';
-import { getFromHTML } from '../src/utils/html';
+import { picker } from "../src/client/picker";
+import { storage } from "../src/extension/storage";
+import { score } from "../src/generator/messages";
+import { score as backend_score } from "../src/generator/scorer";
+import { chain_t } from "../src/generator/selector";
 
-jest.mock('../src/utils/chrome');
-jest.mock('../src/utils/html');
+jest.mock("../src/generator/messages");
+jest.mock("../src/extension/storage");
 
-const mockGetFromHtml = getFromHTML as jest.MockedFunction<typeof getFromHTML>;
-mockGetFromHtml.mockImplementation((html, type: unknown) => {
-  let rtn: unknown = undefined;
-
-  switch (type) {
-    case 'Document':
-      rtn = new JSDOM(html).window.document;
-      break;
-    case 'Element':
-      rtn = new JSDOM(html).window.document.body.firstElementChild;
-      break;
-  }
-
-  return rtn as Document;
+const score_mocked = score as jest.MockedFunction<typeof score>;
+score_mocked.mockImplementation(async (chains: chain_t[]) =>
+{
+    return chains.map(x => ({ score: backend_score(x), chain: x }));
 });
 
-const mockExec = exec as jest.MockedFunction<typeof exec>;
-mockExec.mockImplementation((fn, args) => Promise.resolve(fn(args)));
-Object.defineProperty(global, 'chrome', { value: { devtools: undefined } });
+const get_mocked = storage.get as jest.MockedFunction<(key: string) => Promise<any>>;
+get_mocked.mockImplementation(async (key: string) =>
+{
+    switch (key)
+    {
+    case "selector-type":
+        return "css";
+    case "top-n":
+        return 100;
+    default:
+        return undefined;
+    }
+});
 
-export default function (dom: Document) {
-  Object.defineProperty(global, 'document', { value: dom });
+export function set_inspected(inspected: HTMLElement)
+{
+    Object.defineProperty(global, "window", {
+        value: {
+            [picker.INSPECTED_ID]: inspected
+        },
+        writable: true
+    });
 }
 
-export function setInspected(inspected: HTMLElement) {
-  Object.defineProperty(global, 'window', { value: { stargazer_inspected: inspected }, writable: true });
+export function setup(dom: Document)
+{
+    Object.defineProperty(global, "document", { value: dom });
 }
