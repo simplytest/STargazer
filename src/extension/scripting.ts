@@ -34,7 +34,7 @@ class Scripting
                 func  : func,
             }, results =>
             {
-                if (!Array.isArray(results))
+                if (!results || !Array.isArray(results))
                 {
                     reject(chrome.runtime.lastError.message);
                 }
@@ -57,7 +57,7 @@ class Scripting
                 files            : ["/src/client/export.js"]
             }, results =>
             {
-                if (!Array.isArray(results))
+                if (!results || !Array.isArray(results))
                 {
                     reject(chrome.runtime.lastError.message);
                 }
