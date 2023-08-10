@@ -28,13 +28,7 @@ class Messages
 
     async send<T, Result>(message: T, type: any = message, id = name_of(type)): Promise<Result>
     {
-        return new Promise<Result>((resolve) =>
-        {
-            chrome.runtime.sendMessage({ message, id } as message<T>, response =>
-            {
-                resolve(response);
-            });
-        });
+        return await chrome.runtime.sendMessage({ message, id } as message<T>);
     }
 
     async register<T, A extends Array<any>>(type: new(...args: A) => T, callback: (message: T, sender: chrome.runtime.MessageSender) => any, id = name_of(type))
@@ -43,7 +37,7 @@ class Messages
         {
             if (message.id !== id)
             {
-                return true;
+                return false;
             }
 
             const response = callback(message.message, sender);
