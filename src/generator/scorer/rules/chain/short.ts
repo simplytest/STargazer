@@ -5,7 +5,7 @@ export default function (chain: chain_t)
 {
     if (chain.length === 1)
     {
-        return scores.better;
+        return scores.neutral;
     }
 
     return Math.pow(2, chain.length) * scores.worse;
