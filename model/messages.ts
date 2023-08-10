@@ -11,6 +11,10 @@ export class request_suffix
     }
 }
 
+export class model_available
+{
+}
+
 const allowed_attributes = [
     "class",
     "type",
@@ -57,5 +61,10 @@ export class model
         }
 
         return await messages.send(new request_suffix(tokens));
+    }
+
+    public static async available(): Promise<boolean>
+    {
+        return await messages.send(model_available);
     }
 }

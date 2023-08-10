@@ -1,5 +1,5 @@
 import { model } from "../model";
-import { request_suffix } from "../model/messages";
+import { model_available, request_suffix } from "../model/messages";
 import { picker } from "./client/picker";
 import { sidebar } from "./client/sidebar";
 import { commands } from "./extension/commands";
@@ -32,7 +32,19 @@ messages.register(request_score, msg =>
     return msg.chains.map(x => ({ score: score(x), chain: x }));
 });
 
-messages.register(request_suffix, msg =>
+messages.register(model_available, async () =>
 {
-    return model.suggest_suffix(msg.input);
+    return !!(await model.get());
+});
+
+messages.register(request_suffix, async (msg) =>
+{
+    const instance = await model.get();
+
+    if (!instance)
+    {
+        return false;
+    }
+
+    return instance.suggest_suffix(msg.input);
 });

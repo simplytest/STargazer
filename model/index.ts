@@ -1,25 +1,60 @@
 import { LayersModel, Rank, Tensor, loadLayersModel, tensor2d, topk } from "@tensorflow/tfjs";
 
-class Model
+export class model
 {
+    private static model?: Promise<model> = undefined;
     private model: LayersModel;
 
-    constructor()
+    private constructor()
     {
-        loadLayersModel(chrome.runtime.getURL("model/model.json")).then(model => this.model = model);
+        // # We initialize through `get`
+    }
+
+    static async load()
+    {
+        const rtn = new model();
+
+        try
+        {
+            rtn.model = await loadLayersModel(chrome.runtime.getURL("model/model.json"));
+        }
+        catch (error)
+        {
+            console.error("Failed to load model", error);
+            model.model = null;
+        }
+
+        return rtn;
+    }
+
+    static async get()
+    {
+        if (model.model === undefined)
+        {
+            model.model = model.load();
+        }
+
+        return model.model;
     }
 
     suggest_suffix(input: number[])
     {
-        if (!this.model)
+        let rtn: Tensor<Rank> | undefined;
+
+        try
         {
-            return null;
+            rtn = this.model.predict(tensor2d([input], [1, 250])) as Tensor<Rank>;
+        }
+        catch (error)
+        {
+            console.error("Failed to predict", error);
+            model.model = null;
+            return undefined;
         }
 
-        const rtn = this.model.predict(tensor2d([input], [1, 250])) as Tensor<Rank>;
         const index: number = topk(rtn).indices.arraySync() as number;
         return index == 0 ? "Button" : "Select";
     }
 }
 
-export const model = new Model();
+model.get();
