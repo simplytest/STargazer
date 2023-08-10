@@ -29,6 +29,7 @@
     "storage",
     "scripting",
     "activeTab",
+    "contextMenus",
     "notifications",
     "clipboardWrite"
   ],
