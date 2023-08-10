@@ -3,7 +3,7 @@ on:
   workflow_run:
     workflows: ["Run Tests"]
     branches: [main]
-    types: 
+    types:
       - completed
 
 name: Bump Version
@@ -16,6 +16,7 @@ jobs:
         uses: actions/checkout@v3.3.0
 
       - name: 🆙 Bump Version
+        if: ${{ !contains(github.event.head_commit.message, '[skip bump]') }}
         run: |
           VERSION=$(cat manifest.json | awk 'match($0, "\"version\": \"([^\"]+)\"", m) {print m[1]}')
           BUMPED=$(echo $VERSION | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
@@ -24,4 +25,4 @@ jobs:
       - uses: EndBug/add-and-commit@v9
         with:
           push: true
-          add: 'manifest.json'
+          add: "manifest.json"
