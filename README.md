@@ -18,16 +18,18 @@ STargazer is a chrome extension that can generate selectors for a given element.
   * 🖼️ With Preview Image
 
 * 🤖 Automatic Page-Object File Generation
+  * Supports <kbd>Selenium</kbd> and <kbd>Playwright</kbd>
   * Supports multiple Languages (e.g. <kbd>C#</kbd>, <kbd>TypeScript</kbd>, <kbd>Java</kbd>, ...)
 
-* 🌙 Dark and ☀️ Light-Theme
+* 🌙 Dark and ☀️ Light-Theme 
 
 # 🖼️ Screenshots
 
-| ☀️ Light                                      | 🌙 Dark                                     |
-| -------------------------------------------- | ------------------------------------------ |
-| ![light](assets/screenshots/light.png)       | ![dark](assets/screenshots/dark.png)       |
-| ![light](assets/screenshots/vault-light.png) | ![dark](assets/screenshots/vault-dark.png) |
+| ☀️ Light                                             | 🌙 Dark                                            |
+| --------------------------------------------------- | ------------------------------------------------- |
+| ![light](assets/screenshots/light.png)              | ![dark](assets/screenshots/dark.png)              |
+| ![light](assets/screenshots/vault-light.png)        | ![dark](assets/screenshots/vault-dark.png)        |
+| ![light](assets/screenshots/vault-export-light.png) | ![dark](assets/screenshots/vault-export-dark.png) |
 
 
 # 📦 Installation
