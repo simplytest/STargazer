@@ -1,7 +1,7 @@
 import { ActionIcon, Alert, Badge, Button, Card, Divider, Group, ScrollArea, Stack, Text, TextInput, Transition } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
-import { IconBomb, IconCheck, IconClick, IconCopy, IconDeviceFloppy, IconMoodEmpty, IconMoodTongueWink } from "@tabler/icons-react";
+import { IconBomb, IconCheck, IconClick, IconCopy, IconDeviceFloppy, IconMoodEmpty, IconMoodTongueWink, IconSkull } from "@tabler/icons-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { highlighter } from "../src/client/highlight";
 import { picker, picking_done, suggest_name } from "../src/client/picker";
@@ -10,6 +10,7 @@ import { result_t } from "../src/generator";
 import { failed_to_score } from "../src/generator/messages";
 import useStorage from "../src/hooks/storage";
 import CopyButton from "./copy_button";
+import { model } from "../model/messages";
 
 function Selector({ result, suggested_name }: {result: result_t, suggested_name: string})
 {
@@ -88,12 +89,16 @@ function Selector({ result, suggested_name }: {result: result_t, suggested_name:
 export default function Generator({ style }: {style?: CSSProperties})
 {
     const [results, set_results] = useStorage<result_t[]>("last-results", null);
+    const [to_show] = useStorage("result-to-show", 3);
+
     const [suggested_name, set_suggested_name] = useState<string>(undefined);
     const [error, set_error] = useState<false | "empty" | "too-big">(false);
-    const [to_show] = useStorage("result-to-show", 3);
+    const [model_available, set_model_available] = useState(true);
 
     useEffect(() =>
     {
+        model.available().then(set_model_available);
+
         messages.register(picking_done, msg =>
         {
             set_results(msg.results);
@@ -146,8 +151,15 @@ export default function Generator({ style }: {style?: CSSProperties})
                 </Alert>
         }
 
-        <ScrollArea.Autosize style={{ width: "100%" }} mah={520} type="hover">
+        <ScrollArea.Autosize style={{ width: "100%" }} mah={550} type="hover">
             <Stack align="center" m="xs">
+                {
+                    !model_available &&
+                    <Alert color="red" title="Model unavailable" icon={<IconSkull />}>
+                        The Name Suggestion Model is unavailable. <br />
+                        For more information check the error log at &quot;chrome://extensions&quot;
+                    </Alert>
+                }
                 {
                     results?.slice(0, to_show).map(x => <Selector key={x.selector} result={x} suggested_name={suggested_name} />)
                 }
