@@ -45,45 +45,54 @@ class Generator
     {
         const rtn: result_t[] = [];
 
-        const intersection = (a: result_t, b: result_t) =>
+        const overlap = (current: result_t, other: result_t) =>
         {
-            const has_intersection = (a: selector_t, b: selector_t) =>
+            const intersect = (first: selector_t, second: selector_t) =>
             {
-                const a_entires = Object.entries(a);
-                const b_entires = Object.entries(b);
-
-                for (const entry of a_entires)
+                if ("key" in first && "key" in second)
                 {
-                    if (entry[0] === "tag")
+                    if (first.key !== second.key)
                     {
-                        continue;
+                        return false;
                     }
 
-                    for (const other of b_entires)
+                    if (first.value !== second.value)
                     {
-                        if (JSON.stringify(entry) !== JSON.stringify(other))
-                        {
-                            continue;
-                        }
-
-                        return true;
+                        return false;
                     }
+
+                    return true;
                 }
 
                 return false;
             };
 
-            for (const selector of a.chain)
-            {
-                for (const other of b.chain)
-                {
-                    if (!has_intersection(selector, other))
-                    {
-                        continue;
-                    }
+            return current.chain.some(x => other.chain.some(y => intersect(x, y)));
+        };
 
-                    return true;
-                }
+        const is_bad = (current: result_t, other: result_t) =>
+        {
+            if (current.occurrences > other.occurrences)
+            {
+                return true;
+            }
+
+            if (current.score < other.score)
+            {
+                return true;
+            }
+
+            if (current.chain.length > other.chain.length)
+            {
+                return true;
+            }
+
+            const current_selector_length = current.chain.map(x => Object.keys(x).length).reduce((sum, x) => sum + x, 0);
+            const other_selector_length = other.chain.map(x => Object.keys(x).length).reduce((sum, x) => sum + x, 0);
+
+            if (current_selector_length > other_selector_length)
+            {
+                return true;
             }
 
             return false;
@@ -91,31 +100,26 @@ class Generator
 
         for (const current of results)
         {
-            const existing = rtn.find(x => intersection(x, current));
+            const intersections = rtn.filter(x => overlap(current, x));
 
-            if (!existing)
+            if (intersections.length === 0)
             {
                 rtn.push(current);
                 continue;
             }
 
-            if (existing.score > current.score)
+            for (const other of intersections)
             {
-                rtn.push(current);
-                continue;
-            }
+                if (is_bad(current, other))
+                {
+                    current.score = scores.unusable;
+                    break;
+                }
 
-            if (existing.occurrences < current.occurrences)
-            {
-                continue;
-            }
-
-            const existing_len = existing.chain.map(x => Object.keys(x).length).reduce((sum, x) => sum + x, 0);
-            const current_len = current.chain.map(x => Object.keys(x).length).reduce((sum, x) => sum + x, 0);
-
-            if (existing.chain.length > current.chain.length || existing_len > current_len)
-            {
-                existing.score = scores.unusable;
+                if (is_bad(other, current))
+                {
+                    other.score = scores.unusable;
+                }
             }
 
             rtn.push(current);
