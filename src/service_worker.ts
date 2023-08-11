@@ -1,5 +1,5 @@
 import { model } from "../model";
-import { model_available, request_suffix } from "../model/messages";
+import { check_model, request_suffix } from "../model/messages";
 import { picker } from "./client/picker";
 import { sidebar } from "./client/sidebar";
 import { commands } from "./extension/commands";
@@ -18,10 +18,13 @@ commands.register("open-sidebar", async () =>
     await sidebar.open();
 });
 
-menu.register("open-vault", "Open Vault", () =>
+chrome.runtime.onInstalled.addListener(() =>
 {
-    const url = chrome.runtime.getURL("pages/vault/index.html");
-    chrome.tabs.create({ url });
+    menu.register("open-vault", "Open Vault", () =>
+    {
+        const url = chrome.runtime.getURL("pages/vault/index.html");
+        chrome.tabs.create({ url });
+    });
 });
 
 chrome.action.onClicked.addListener(async () =>
@@ -37,12 +40,13 @@ chrome.action.onClicked.addListener(async () =>
 messages.register(request_score, msg =>
 {
     return msg.chains.map(x => ({ score: score(x), chain: x }));
-});
+}, true);
 
-messages.register(model_available, async () =>
+messages.register(check_model, async () =>
 {
-    return !!(await model.get());
-});
+    const instance = await model.get();
+    return instance !== null || instance !== undefined;
+}, true);
 
 messages.register(request_suffix, async (msg) =>
 {
@@ -54,4 +58,4 @@ messages.register(request_suffix, async (msg) =>
     }
 
     return instance.suggest_suffix(msg.input);
-});
+}, true);

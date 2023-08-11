@@ -31,11 +31,18 @@ class Messages
         return await chrome.runtime.sendMessage({ message, id } as message<T>);
     }
 
-    async register<T, A extends Array<any>>(type: new(...args: A) => T, callback: (message: T, sender: chrome.runtime.MessageSender) => any, id = name_of(type))
+    async register<T, A extends Array<any>>(type: new(...args: A) => T, callback: (message: T, sender: chrome.runtime.MessageSender) => any, global = false, id = name_of(type))
     {
+        const tab = await chrome.tabs.getCurrent();
+
         chrome.runtime.onMessage.addListener((message: message<T>, sender, respond) =>
         {
             if (message.id !== id)
+            {
+                return false;
+            }
+
+            if (!global && sender?.tab?.id !== tab?.id)
             {
                 return false;
             }

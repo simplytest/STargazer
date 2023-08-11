@@ -21,13 +21,19 @@ export default function to_css(chain: chain_t): string | undefined
             switch (select.key)
             {
             case "id":
-                rtn += `#${select.value}`;
                 break;
             case "class":
                 rtn += `.${select.value}`;
                 break;
             default:
-                rtn += `[${select.key}="${select.value.replaceAll("\"", "\\\"")}"]`;
+                if (select.contains)
+                {
+                    rtn += `[${select.key}*="${select.value.replaceAll("\"", "\\\"")}"]`;
+                }
+                else
+                {
+                    rtn += `[${select.key}="${select.value.replaceAll("\"", "\\\"")}"]`;
+                }
                 break;
             }
         }

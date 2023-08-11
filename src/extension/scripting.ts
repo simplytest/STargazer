@@ -24,7 +24,7 @@ class Scripting
     async execute<Result, Args extends Array<any>>(func: (...args: Args) => Result, ...args: Args)
     {
         const tabs = await chrome.tabs?.query({ active: true, currentWindow: true });
-        const tab = tabs[0]?.id;
+        const tab = tabs?.[0]?.id;
 
         return new Promise((resolve, reject) =>
         {
@@ -47,7 +47,7 @@ class Scripting
     async export()
     {
         const tabs = await chrome.tabs?.query({ active: true, currentWindow: true });
-        const tab = tabs[0]?.id;
+        const tab = tabs?.[0]?.id;
 
         return new Promise<void>((resolve, reject) =>
         {

@@ -22,9 +22,9 @@ export class picking_done
 
 export class suggest_name
 {
-    public name: string;
+    public name: string | false;
 
-    constructor(name: string)
+    constructor(name: string | false)
     {
         this.name = name;
     }

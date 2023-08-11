@@ -1,9 +1,9 @@
 import { IconEdit, IconFolder, IconTrashX } from "@tabler/icons-react";
-import useStorage from "../src/hooks/storage";
 import { vault, vault_t } from "../src/vault";
 import { NavLink, Text } from "@mantine/core";
 import { useContextMenu } from "mantine-contextmenu";
 import { modals } from "@mantine/modals";
+import { useStorage } from "../src/hooks/storage";
 
 export interface FoldersProps
 {

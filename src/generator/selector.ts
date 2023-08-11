@@ -21,6 +21,7 @@ export namespace by
   {
     key: string;
     value: string;
+    contains?: boolean;
   }
 }
 

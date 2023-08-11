@@ -4,8 +4,8 @@ import { IconFolderPlus } from "@tabler/icons-react";
 import { useState } from "react";
 import { vault } from "../src/vault";
 import Folders from "./folders";
-import useStorage from "../src/hooks/storage";
 import { name_regex } from "../src/validation";
+import { useStorage } from "../src/hooks/storage";
 
 interface SaveModalProps
 {

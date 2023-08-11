@@ -1,16 +1,16 @@
 import { ActionIcon, Alert, Badge, Button, Card, Divider, Group, ScrollArea, Stack, Text, TextInput, Transition } from "@mantine/core";
-import { useDebouncedValue } from "@mantine/hooks";
+import { useDebouncedValue, useViewportSize } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { IconBomb, IconCheck, IconClick, IconCopy, IconDeviceFloppy, IconMoodEmpty, IconMoodTongueWink, IconSkull } from "@tabler/icons-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
+import { check_model } from "../model/messages";
 import { highlighter } from "../src/client/highlight";
 import { picker, picking_done, suggest_name } from "../src/client/picker";
 import { messages } from "../src/extension/messages";
 import { result_t } from "../src/generator";
 import { failed_to_score } from "../src/generator/messages";
-import useStorage from "../src/hooks/storage";
+import { useSessionStorage, useStorage } from "../src/hooks/storage";
 import CopyButton from "./copy_button";
-import { model } from "../model/messages";
 
 function Selector({ result, suggested_name }: {result: result_t, suggested_name: string})
 {
@@ -86,10 +86,13 @@ function Selector({ result, suggested_name }: {result: result_t, suggested_name:
     </Transition>;
 }
 
-export default function Generator({ style }: {style?: CSSProperties})
+export default function Generator({ id, style }: {id: number, style?: CSSProperties})
 {
-    const [results, set_results] = useStorage<result_t[]>("last-results", null);
+    const header_size = 313;
+    const { height } = useViewportSize();
+
     const [to_show] = useStorage("result-to-show", 3);
+    const [results, set_results] = useSessionStorage<result_t[]>(id, "last-results", null);
 
     const [suggested_name, set_suggested_name] = useState<string>(undefined);
     const [error, set_error] = useState<false | "empty" | "too-big">(false);
@@ -97,7 +100,7 @@ export default function Generator({ style }: {style?: CSSProperties})
 
     useEffect(() =>
     {
-        model.available().then(set_model_available);
+        messages.send(check_model).then(set_model_available);
 
         messages.register(picking_done, msg =>
         {
@@ -113,7 +116,12 @@ export default function Generator({ style }: {style?: CSSProperties})
 
         messages.register(suggest_name, msg =>
         {
-            set_suggested_name(msg.name);
+            if (msg.name === false)
+            {
+                set_model_available(false);
+            }
+
+            set_suggested_name(msg.name as string);
         });
     }, []);
 
@@ -126,33 +134,32 @@ export default function Generator({ style }: {style?: CSSProperties})
 
         <Divider style={{ width: "80%" }} my="sm" />
 
-        {
-            error === "empty" &&
+        <ScrollArea.Autosize style={{ width: "100%" }} mah={height - header_size} type="hover">
+            <Stack align="center" m="xs">
+                {
+                    error === "empty" &&
                     <Alert color="red" title="Nothing found!" icon={<IconMoodEmpty />}>
                         We could not find any selectors. <br />
                         This can have several reasons, the most common is that the element you&lsquo;re trying to generate a selector for doesn&lsquo;t have unique properties.<br />
                         If you&lsquo;re certain that <i>good and unique</i> selector exists for this element, feel free to open an issue <a href="https://github.com/simplytest/STargazer/issues/new" target="_blank" rel="noreferrer">here</a>!
                     </Alert>
-        }
+                }
 
-        {
-            error === "too-big" &&
+                {
+                    error === "too-big" &&
                     <Alert color="red" title="Too many selectors!" icon={<IconBomb />}>
                         We encountered an error while crunching all the selectors! <br />
                         This error can occur when the &quot;Mutate Top&quot; setting is set to a high value, please lower it and try again.
                     </Alert>
-        }
+                }
 
-        {
-            (!error && results === null) &&
+                {
+                    (!error && results === null) &&
                 <Alert color="lime" title="Welcome!" icon={<IconMoodTongueWink />}>
                     Welcome to STargazer!<br />
                     To begin, simply click the Mouse-Icon above and then select an element on the web-page just like you&lsquo;d do with the developer tools.
                 </Alert>
-        }
-
-        <ScrollArea.Autosize style={{ width: "100%" }} mah={550} type="hover">
-            <Stack align="center" m="xs">
+                }
                 {
                     !model_available &&
                     <Alert color="red" title="Model unavailable" icon={<IconSkull />}>

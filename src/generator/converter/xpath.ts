@@ -17,14 +17,13 @@ export default function to_xpath(chain: chain_t): string | undefined
 
         if ("key" in select)
         {
-            switch (select.key)
+            if (select.key === "class" || select.contains)
             {
-            case "class":
                 rtn += `contains(@${select.key}, "${escape(select.value)}") and `;
-                break;
-            default:
+            }
+            else
+            {
                 rtn += `@${select.key} = "${escape(select.value)}" and `;
-                break;
             }
         }
 

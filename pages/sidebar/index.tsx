@@ -6,7 +6,7 @@ import Generator from "../../components/generator";
 import Settings from "../../components/settings";
 import create_root from "../../src/react";
 
-function SideBar()
+function SideBar({ id }: { id: number })
 {
     const theme = useMantineTheme();
     const background = theme.colors[theme.colorScheme === "dark" ? "dark" : "gray"][3];
@@ -34,7 +34,7 @@ function SideBar()
 
             <Tabs.Panel value="generator">
                 <Transition transition="fade" mounted={tab === "generator"}>
-                    {style => <Generator style={style} />}
+                    {style => <Generator id={id} style={style} />}
                 </Transition>
             </Tabs.Panel>
 
@@ -48,4 +48,4 @@ function SideBar()
     </Stack>;
 }
 
-create_root(<SideBar />);
+chrome.tabs.getCurrent(tab => create_root(<SideBar id={tab.id} />));
