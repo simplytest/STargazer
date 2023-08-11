@@ -6,10 +6,10 @@ import { useEffect, useState } from "react";
 import { default as Zoom } from "react-zoom-image-hover";
 import Folders, { FoldersProps } from "../../components/folders";
 import Settings from "../../components/settings";
-import useStorage from "../../src/hooks/storage";
 import create_root from "../../src/react";
 import { entry_t, folder_t, vault, vault_t } from "../../src/vault";
 import { name_regex } from "../../src/validation";
+import { useStorage } from "../../src/hooks/storage";
 
 function ShellHeader()
 {

@@ -1,9 +1,14 @@
+type storage_type_t = "local" | "session";
+
 export class Listener<T>
 {
+    private storage_type: storage_type_t;
     private listener: (changes: {[key: string]: chrome.storage.StorageChange;}) => void;
 
-    constructor(key: string, callback: (value: T) => void)
+    constructor(key: string, callback: (value: T) => void, type: storage_type_t = "local")
     {
+        this.storage_type = type;
+
         this.listener = (changes: {[key: string]: chrome.storage.StorageChange}) =>
         {
             if (!changes[key])
@@ -14,26 +19,33 @@ export class Listener<T>
             callback(changes[key].newValue);
         };
 
-        chrome.storage.local.onChanged.addListener(this.listener);
+        chrome.storage[this.storage_type].onChanged.addListener(this.listener);
     }
 
     public destroy()
     {
-        chrome.storage.local.onChanged.removeListener(this.listener);
+        chrome.storage[this.storage_type].onChanged.removeListener(this.listener);
     }
 }
 
 class Storage
 {
+    private storage_type: storage_type_t;
+
+    constructor(type: storage_type_t = "local")
+    {
+        this.storage_type = type;
+    }
+
     async get<T = string>(key: string)
     {
-        const result = await chrome.storage.local.get(key);
+        const result = await chrome.storage[this.storage_type].get(key);
         return result[key] as T;
     }
 
     async set<T = string>(key: string, value: T)
     {
-        return await chrome.storage.local.set({ [key]: value });
+        return await chrome.storage[this.storage_type].set({ [key]: value });
     }
 
     watch<T = string>(key: string, callback: (new_value: T) => void)
@@ -42,4 +54,5 @@ class Storage
     }
 }
 
-export const storage = new Storage();
+export const storage = new Storage("local");
+export const session_storage = new Storage("session");

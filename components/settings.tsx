@@ -4,9 +4,9 @@ import { CSSProperties, Fragment, ReactNode, useEffect, useState } from "react";
 import { worker } from "../src/client/worker";
 import { meta } from "../src/extension/meta";
 import { scripting } from "../src/extension/scripting";
-import useStorage from "../src/hooks/storage";
 import { vault_t } from "../src/vault";
 import CopyButton from "./copy_button";
+import { useStorage } from "../src/hooks/storage";
 
 function IconText({ Icon, text, center }: {Icon: (props: TablerIconsProps) => JSX.Element, text: string, center?: boolean})
 {
