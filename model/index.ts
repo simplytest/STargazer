@@ -20,8 +20,8 @@ export class model
         }
         catch (error)
         {
-            console.error("Failed to load model", error);
-            model.model = null;
+            console.error("[AI-Model] [Load]", error);
+            return null;
         }
 
         return rtn;
@@ -39,21 +39,18 @@ export class model
 
     suggest_suffix(input: number[])
     {
-        let rtn: Tensor<Rank> | undefined;
-
         try
         {
-            rtn = this.model.predict(tensor2d([input], [1, 250])) as Tensor<Rank>;
+            const rtn = this.model.predict(tensor2d([input], [1, 250])) as Tensor<Rank>;
+            const index: number = topk(rtn).indices.arraySync() as number;
+            return index == 0 ? "Button" : "Select";
         }
         catch (error)
         {
-            console.error("Failed to predict", error);
-            model.model = null;
-            return undefined;
+            console.error("[AI-Model] [Predict]", error);
+            model.model = Promise.resolve(null);
+            return false;
         }
-
-        const index: number = topk(rtn).indices.arraySync() as number;
-        return index == 0 ? "Button" : "Select";
     }
 }
 
