@@ -31,7 +31,7 @@ class Messages
         return await chrome.runtime.sendMessage({ message, id } as message<T>);
     }
 
-    async register<T, A extends Array<any>>(type: new(...args: A) => T, callback: (message: T, sender: chrome.runtime.MessageSender) => any, same_tab = true, id = name_of(type))
+    async register<T, A extends Array<any>>(type: new(...args: A) => T, callback: (message: T, sender: chrome.runtime.MessageSender) => any, global = false, id = name_of(type))
     {
         const tab = await chrome.tabs.getCurrent();
 
@@ -42,7 +42,7 @@ class Messages
                 return false;
             }
 
-            if (same_tab && sender?.tab?.id != tab?.id)
+            if (!global && sender?.tab?.id !== tab?.id)
             {
                 return false;
             }

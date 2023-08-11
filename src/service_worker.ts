@@ -1,5 +1,5 @@
 import { model } from "../model";
-import { model_available, request_suffix } from "../model/messages";
+import { check_model, request_suffix } from "../model/messages";
 import { picker } from "./client/picker";
 import { sidebar } from "./client/sidebar";
 import { commands } from "./extension/commands";
@@ -40,12 +40,13 @@ chrome.action.onClicked.addListener(async () =>
 messages.register(request_score, msg =>
 {
     return msg.chains.map(x => ({ score: score(x), chain: x }));
-}, false);
+}, true);
 
-messages.register(model_available, async () =>
+messages.register(check_model, async () =>
 {
     const instance = await model.get();
     return instance !== null || instance !== undefined;
+}, true);
 
 messages.register(request_suffix, async (msg) =>
 {
@@ -57,4 +58,4 @@ messages.register(request_suffix, async (msg) =>
     }
 
     return instance.suggest_suffix(msg.input);
-}, false);
+}, true);
