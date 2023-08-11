@@ -180,7 +180,11 @@ export class sidebar
         close_button.style.position = "absolute";
         close_button.style.cursor = "pointer";
 
-        close_button.style.borderRadius = "100%";
+        close_button.style.padding = "unset";
+        close_button.style.margin = "unset";
+
+        close_button.style.borderRadius = "50%";
+        close_button.style.aspectRatio = "1";
         close_button.style.border = "none";
 
         close_button.style.height = "16px";
