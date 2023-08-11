@@ -18,10 +18,13 @@ commands.register("open-sidebar", async () =>
     await sidebar.open();
 });
 
-menu.register("open-vault", "Open Vault", () =>
+chrome.runtime.onInstalled.addListener(() =>
 {
-    const url = chrome.runtime.getURL("pages/vault/index.html");
-    chrome.tabs.create({ url });
+    menu.register("open-vault", "Open Vault", () =>
+    {
+        const url = chrome.runtime.getURL("pages/vault/index.html");
+        chrome.tabs.create({ url });
+    });
 });
 
 chrome.action.onClicked.addListener(async () =>
