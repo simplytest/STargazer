@@ -37,12 +37,12 @@ chrome.action.onClicked.addListener(async () =>
 messages.register(request_score, msg =>
 {
     return msg.chains.map(x => ({ score: score(x), chain: x }));
-});
+}, false);
 
 messages.register(model_available, async () =>
 {
     return !!(await model.get());
-});
+}, false);
 
 messages.register(request_suffix, async (msg) =>
 {
@@ -54,4 +54,4 @@ messages.register(request_suffix, async (msg) =>
     }
 
     return instance.suggest_suffix(msg.input);
-});
+}, false);

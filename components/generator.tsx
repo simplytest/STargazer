@@ -8,7 +8,7 @@ import { picker, picking_done, suggest_name } from "../src/client/picker";
 import { messages } from "../src/extension/messages";
 import { result_t } from "../src/generator";
 import { failed_to_score } from "../src/generator/messages";
-import useStorage from "../src/hooks/storage";
+import { useSessionStorage, useStorage } from "../src/hooks/storage";
 import CopyButton from "./copy_button";
 import { model } from "../model/messages";
 
@@ -86,10 +86,11 @@ function Selector({ result, suggested_name }: {result: result_t, suggested_name:
     </Transition>;
 }
 
-export default function Generator({ style }: {style?: CSSProperties})
+export default function Generator({ id, style }: {id: number, style?: CSSProperties})
 {
     const [results, set_results] = useStorage<result_t[]>("last-results", null);
     const [to_show] = useStorage("result-to-show", 3);
+    const [results, set_results] = useSessionStorage<result_t[]>(id, "last-results", null);
 
     const [suggested_name, set_suggested_name] = useState<string>(undefined);
     const [error, set_error] = useState<false | "empty" | "too-big">(false);
