@@ -1,8 +1,9 @@
 import { ActionIcon, Alert, Badge, Button, Card, Divider, Group, ScrollArea, Stack, Text, TextInput, Transition } from "@mantine/core";
-import { useDebouncedValue } from "@mantine/hooks";
+import { useDebouncedValue, useViewportSize } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { IconBomb, IconCheck, IconClick, IconCopy, IconDeviceFloppy, IconMoodEmpty, IconMoodTongueWink, IconSkull } from "@tabler/icons-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
+import { model } from "../model/messages";
 import { highlighter } from "../src/client/highlight";
 import { picker, picking_done, suggest_name } from "../src/client/picker";
 import { messages } from "../src/extension/messages";
@@ -10,7 +11,6 @@ import { result_t } from "../src/generator";
 import { failed_to_score } from "../src/generator/messages";
 import { useSessionStorage, useStorage } from "../src/hooks/storage";
 import CopyButton from "./copy_button";
-import { model } from "../model/messages";
 
 function Selector({ result, suggested_name }: {result: result_t, suggested_name: string})
 {
@@ -88,7 +88,9 @@ function Selector({ result, suggested_name }: {result: result_t, suggested_name:
 
 export default function Generator({ id, style }: {id: number, style?: CSSProperties})
 {
-    const [results, set_results] = useStorage<result_t[]>("last-results", null);
+    const header_size = 313;
+    const { height } = useViewportSize();
+
     const [to_show] = useStorage("result-to-show", 3);
     const [results, set_results] = useSessionStorage<result_t[]>(id, "last-results", null);
 
@@ -152,7 +154,7 @@ export default function Generator({ id, style }: {id: number, style?: CSSPropert
                 </Alert>
         }
 
-        <ScrollArea.Autosize style={{ width: "100%" }} mah={550} type="hover">
+        <ScrollArea.Autosize style={{ width: "100%" }} mah={height - header_size} type="hover">
             <Stack align="center" m="xs">
                 {
                     !model_available &&
