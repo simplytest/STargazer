@@ -2,6 +2,7 @@ import { chain_t, join, select, selector_t } from "../selector";
 
 const exclude = [
     /^class$/ig,
+    /^src(set)?$/ig,
 
     /length/ig,
     /^lang$/ig,
@@ -41,6 +42,23 @@ export default function by_attributes(element: HTMLElement): chain_t[]
             rtn.push(select({ key: "class", value: clazz }));
             tag && rtn.push(select({ tag, key: "class", value: clazz }));
         }
+    }
+
+    const src_attributes = attributes.filter(x => x.match(exclude[1]));
+
+    for (const attribute of src_attributes)
+    {
+        const src = element.getAttribute(attribute);
+        const file = src.substring(src.lastIndexOf("/") + 1);
+
+        if (file.length > 0)
+        {
+            rtn.push(select({ key: attribute, value: file, contains: true }));
+            tag && rtn.push(select({ tag, key: attribute, value: file, contains: true }));
+        }
+
+        rtn.push(select({ key: attribute, value: src }));
+        tag && rtn.push(select({ tag, key: attribute, value: src }));
     }
 
     if (!text)
