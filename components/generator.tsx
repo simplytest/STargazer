@@ -100,7 +100,7 @@ export default function Generator({ id, style }: {id: number, style?: CSSPropert
 
     useEffect(() =>
     {
-        model.available().then(set_model_available);
+        messages.send(check_model).then(set_model_available);
 
         messages.register(picking_done, msg =>
         {
@@ -116,7 +116,12 @@ export default function Generator({ id, style }: {id: number, style?: CSSPropert
 
         messages.register(suggest_name, msg =>
         {
-            set_suggested_name(msg.name);
+            if (msg.name === false)
+            {
+                set_model_available(false);
+            }
+
+            set_suggested_name(msg.name as string);
         });
     }, []);
 

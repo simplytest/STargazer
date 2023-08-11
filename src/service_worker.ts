@@ -44,8 +44,8 @@ messages.register(request_score, msg =>
 
 messages.register(model_available, async () =>
 {
-    return !!(await model.get());
-}, false);
+    const instance = await model.get();
+    return instance !== null || instance !== undefined;
 
 messages.register(request_suffix, async (msg) =>
 {

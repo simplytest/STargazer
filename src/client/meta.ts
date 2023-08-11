@@ -13,14 +13,14 @@ export class meta
 
         if (!text || text?.length === 0)
         {
-            return undefined;
+            return null;
         }
 
         const type = await model.predict_type(element);
 
-        if (!type || type?.length === 0)
+        if (!type)
         {
-            return undefined;
+            return type;
         }
 
         return `${text} ${type}`;

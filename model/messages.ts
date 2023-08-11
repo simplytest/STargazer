@@ -11,7 +11,7 @@ export class request_suffix
     }
 }
 
-export class model_available
+export class check_model
 {
 }
 
@@ -25,7 +25,7 @@ const allowed_attributes = [
 
 export class model
 {
-    public static async predict_type(element: HTMLElement): Promise<string>
+    public static async predict_type(element: HTMLElement): Promise<string | false>
     {
         let input = `${element.tagName.toLowerCase()}`;
 
@@ -61,10 +61,5 @@ export class model
         }
 
         return await messages.send(new request_suffix(tokens));
-    }
-
-    public static async available(): Promise<boolean>
-    {
-        return await messages.send(model_available);
     }
 }
