@@ -19,7 +19,7 @@ export default function (selector: selector_t)
         },
         {
             score  : scores.worst,
-            matches: [/^src$/ig, /^srcset$/ig, /^href$/ig, /^target$/ig, /^alt$/ig, /^title$/ig, /^placeholder$/ig],
+            matches: [/^src(set)?$/ig, /^href$/ig, /^target$/ig, /^alt$/ig, /^title$/ig, /^placeholder$/ig],
         },
     ];
 
