@@ -46,7 +46,7 @@ export class sidebar
         {
             await scripting.export();
 
-            await scripting.execute(async (url: string, style: style_t) =>
+            await scripting.execute("current", async (url: string, style: style_t) =>
             {
                 const instance = new sidebar();
                 instance.create(url, style);
@@ -62,7 +62,7 @@ export class sidebar
 
     static async close()
     {
-        scripting.execute(() =>
+        scripting.execute("current", () =>
         {
             sidebar.destroy();
         });
@@ -70,7 +70,7 @@ export class sidebar
 
     static is_open()
     {
-        return scripting.execute(() =>
+        return scripting.execute("current", () =>
         {
             !!document.getElementById(sidebar.ID);
         });

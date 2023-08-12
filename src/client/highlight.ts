@@ -20,7 +20,7 @@ export class highlighter
             background: `${theme.colors.orange[0]}80`,
         };
 
-        await scripting.execute((style, selector, text) =>
+        await scripting.execute("current", (style, selector, text) =>
         {
             const instance = new highlighter();
             instance.create(style, selector, text);
@@ -30,7 +30,7 @@ export class highlighter
 
     static async stop()
     {
-        scripting.execute(() =>
+        scripting.execute("current", () =>
         {
             highlighter.destroy();
         });

@@ -32,7 +32,7 @@ export function useSessionStorage<T>(id: number, key: string, initial?: T): [T, 
     useEffect(() =>
     {
         session_storage.get<T>(session_key).then(value => set_value(value ?? initial));
-        session_storage.watch(session_key, set_value);
+        session_storage.watch<T>(session_key, set_value);
     }, []);
 
     return [value, setter];

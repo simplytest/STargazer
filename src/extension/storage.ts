@@ -50,7 +50,7 @@ class Storage
 
     watch<T = string>(key: string, callback: (new_value: T) => void)
     {
-        return new Listener<T>(key, callback);
+        return new Listener<T>(key, callback, this.storage_type);
     }
 }
 

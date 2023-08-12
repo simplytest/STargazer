@@ -1,12 +1,11 @@
 import { Box, Button, Center, Divider, Group, NumberInput, SegmentedControl, Stack, Switch, Text, Tooltip, useMantineColorScheme } from "@mantine/core";
 import { IconBrain, IconBug, IconCheck, IconDatabaseExport, IconInfoCircle, IconMoon, IconPalette, IconSun, TablerIconsProps } from "@tabler/icons-react";
 import { CSSProperties, Fragment, ReactNode, useEffect, useState } from "react";
-import { worker } from "../src/client/worker";
 import { meta } from "../src/extension/meta";
 import { scripting } from "../src/extension/scripting";
+import { useStorage } from "../src/hooks/storage";
 import { vault_t } from "../src/vault";
 import CopyButton from "./copy_button";
-import { useStorage } from "../src/hooks/storage";
 
 function IconText({ Icon, text, center }: {Icon: (props: TablerIconsProps) => JSX.Element, text: string, center?: boolean})
 {
@@ -45,7 +44,7 @@ export function Option<P extends object>({ "option-label": option_label, Control
 }
 
 
-export default function Settings({ style }: {style?: CSSProperties})
+export default function Settings({ style }: { style?: CSSProperties})
 {
     const { colorScheme: theme, toggleColorScheme: set_theme } = useMantineColorScheme();
 
@@ -64,12 +63,6 @@ export default function Settings({ style }: {style?: CSSProperties})
         scripting.can_access().then(set_access);
     }, []);
 
-    const change_type = (value: string) =>
-    {
-        set_type(value);
-        worker.update_selectors();
-    };
-
     return <Stack m="lg" style={style}>
         <Section text="Appearance" Icon={IconPalette} />
         <Option Control={SegmentedControl} option-label="Theme" data={[
@@ -81,7 +74,7 @@ export default function Settings({ style }: {style?: CSSProperties})
         <Option Control={SegmentedControl} option-label="Selector Type" data={[
             { label: "CSS", value: "css" },
             { label: "XPath", value: "xpath" },
-        ]} value={type} onChange={change_type} disabled={!access} />
+        ]} value={type} onChange={set_type} disabled={!access} />
         <Option Control={NumberInput} option-label="Results to Show" min={1} precision={0} stepHoldDelay={500} stepHoldInterval={100} variant="filled" value={to_show} onChange={set_to_show} />
         <Option Control={NumberInput} option-label="Mutate Top" tooltip={
             <Text>

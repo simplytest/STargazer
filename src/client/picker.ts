@@ -48,7 +48,7 @@ export class picker
             background: `${theme.colors.blue[0]}80`,
         };
 
-        await scripting.execute(style =>
+        await scripting.execute("current", style =>
         {
             const instance = new picker();
             instance.create(style);
@@ -58,7 +58,7 @@ export class picker
 
     static async stop()
     {
-        scripting.execute(() =>
+        scripting.execute("current", () =>
         {
             picker.destroy();
         });
