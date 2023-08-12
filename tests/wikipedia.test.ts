@@ -42,6 +42,7 @@ describe("Wikipedia", () =>
         const selectors = await generator.generate();
         const top = selectors.slice(0, 5);
 
+        expect(top.findIndex(x => x.selector === "[src*=\"Wikipedia-logo-v2-de.svg\"]")).toBeGreaterThan(-1);
         expect(top.findIndex(x => x.selector === ".wikipedia-logo :nth-child(1) :nth-child(1)")).toBeGreaterThan(-1);
     });
 });
