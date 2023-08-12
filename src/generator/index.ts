@@ -56,6 +56,14 @@ class Generator
                         return false;
                     }
 
+                    if (first.contains || second.contains)
+                    {
+                        if (second.value.includes(first.value) || first.value.includes(second.value))
+                        {
+                            return true;
+                        }
+                    }
+
                     if (first.value !== second.value)
                     {
                         return false;
@@ -87,8 +95,9 @@ class Generator
                 return true;
             }
 
-            const current_selector_length = current.chain.map(x => Object.keys(x).length).reduce((sum, x) => sum + x, 0);
-            const other_selector_length = other.chain.map(x => Object.keys(x).length).reduce((sum, x) => sum + x, 0);
+            const selector_length = (chain: selector_t) => Object.keys(chain).filter(x => x !== "contains").length;
+            const current_selector_length = current.chain.map(selector_length).reduce((sum, x) => sum + x, 0);
+            const other_selector_length = other.chain.map(selector_length).reduce((sum, x) => sum + x, 0);
 
             if (current_selector_length > other_selector_length)
             {
