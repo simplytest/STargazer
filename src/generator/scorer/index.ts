@@ -8,6 +8,7 @@ import empty from "./rules/selector/empty";
 import indices from "./rules/selector/indices";
 import text from "./rules/selector/text";
 import words from "./rules/selector/words";
+import contains from "./rules/selector/contains";
 
 export function score(chain: chain_t)
 {
@@ -19,7 +20,7 @@ export function score(chain: chain_t)
     const chain_rules = [short, tag];
     const chain_score = score(chain_rules, chain);
 
-    const selector_rules = [attributes, empty, indices, words, text, sel_tag, sel_short];
+    const selector_rules = [attributes, contains, empty, indices, words, text, sel_tag, sel_short];
     const selector_scores = chain.map(selector => score(selector_rules, selector)).reduce((sum, x) => sum + x, 0);
 
     return chain_score + selector_scores;
