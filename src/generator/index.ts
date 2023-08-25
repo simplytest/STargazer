@@ -5,6 +5,7 @@ import to_xpath from "./converter/xpath";
 import { score } from "./messages";
 import { scores } from "./scorer/scores";
 import { chain_t, selector_t } from "./selector";
+import by_absolute from "./strategy/absolute";
 import by_attributes from "./strategy/attribute";
 import by_parents from "./strategy/parent";
 
@@ -174,7 +175,15 @@ class Generator
         }
 
         const filtered = this.filter_similar(rtn);
-        return filtered.sort((a, b) => b.score - a.score).sort((a, b) => a.occurrences - b.occurrences);
+        const sorted = filtered.sort((a, b) => b.score - a.score).sort((a, b) => a.occurrences - b.occurrences);
+
+        if (regenerate && sorted[0]?.occurrences > 1)
+        {
+            const absolute = (await this.transform(by_absolute(element))).flat();
+            sorted.unshift(...absolute);
+        }
+
+        return sorted;
     }
 }
 
